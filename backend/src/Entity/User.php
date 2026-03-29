@@ -3,6 +3,9 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -18,6 +21,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 180)]
     private ?string $email = null;
+
+    #[ORM\Column(length: 50, unique: true)]
+    private ?string $username = null;
 
     /**
      * @var list<string> The user roles
@@ -40,6 +46,39 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'boolean')]
     private bool $isTotpEnabled = false;
 
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $displayName = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $bio = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $avatar = null;
+
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $forumRank = 'Membre';
+
+    #[ORM\Column]
+    private \DateTimeImmutable $createdAt;
+
+    #[ORM\OneToMany(mappedBy: 'author', targetEntity: Topic::class)]
+    private Collection $topics;
+
+    #[ORM\OneToMany(mappedBy: 'author', targetEntity: Post::class)]
+    private Collection $posts;
+
+    #[ORM\OneToMany(mappedBy: 'author', targetEntity: ChatMessage::class)]
+    private Collection $chatMessages;
+
+    public function __construct()
+    {
+        $this->topics = new ArrayCollection();
+        $this->posts = new ArrayCollection();
+        $this->chatMessages = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
+        $this->roles = ['ROLE_USER'];
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -54,6 +93,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->email = $email;
 
+        return $this;
+    }
+
+    public function getUsername(): ?string
+    {
+        return $this->username;
+    }
+
+    public function setUsername(string $username): static
+    {
+        $this->username = $username;
         return $this;
     }
 
@@ -104,6 +154,76 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getDisplayName(): ?string
+    {
+        return $this->displayName;
+    }
+
+    public function setDisplayName(?string $displayName): static
+    {
+        $this->displayName = $displayName;
+        return $this;
+    }
+
+    public function getBio(): ?string
+    {
+        return $this->bio;
+    }
+
+    public function setBio(?string $bio): static
+    {
+        $this->bio = $bio;
+        return $this;
+    }
+
+    public function getAvatar(): ?string
+    {
+        return $this->avatar;
+    }
+
+    public function setAvatar(?string $avatar): static
+    {
+        $this->avatar = $avatar;
+        return $this;
+    }
+
+    public function getForumRank(): ?string
+    {
+        return $this->forumRank;
+    }
+
+    public function setForumRank(?string $forumRank): static
+    {
+        $this->forumRank = $forumRank;
+        return $this;
+    }
+
+    public function getCreatedAt(): \DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
+
+    public function getTopics(): Collection
+    {
+        return $this->topics;
+    }
+
+    public function getPosts(): Collection
+    {
+        return $this->posts;
+    }
+
+    public function getChatMessages(): Collection
+    {
+        return $this->chatMessages;
+    }
+
     /**
      * Ensure the session doesn't contain actual password hashes by CRC32C-hashing them, as supported since Symfony 7.3.
      */
@@ -113,5 +233,95 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $data["\0" . self::class . "\0password"] = hash('crc32c', $this->password);
 
         return $data;
+    }
+
+    public function getTotpSecret(): ?string
+    {
+        return $this->totpSecret;
+    }
+
+    public function setTotpSecret(?string $totpSecret): static
+    {
+        $this->totpSecret = $totpSecret;
+
+        return $this;
+    }
+
+    public function isTotpEnabled(): ?bool
+    {
+        return $this->isTotpEnabled;
+    }
+
+    public function setIsTotpEnabled(bool $isTotpEnabled): static
+    {
+        $this->isTotpEnabled = $isTotpEnabled;
+
+        return $this;
+    }
+
+    public function addTopic(Topic $topic): static
+    {
+        if (!$this->topics->contains($topic)) {
+            $this->topics->add($topic);
+            $topic->setAuthor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTopic(Topic $topic): static
+    {
+        if ($this->topics->removeElement($topic)) {
+            // set the owning side to null (unless already changed)
+            if ($topic->getAuthor() === $this) {
+                $topic->setAuthor(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function addPost(Post $post): static
+    {
+        if (!$this->posts->contains($post)) {
+            $this->posts->add($post);
+            $post->setAuthor($this);
+        }
+
+        return $this;
+    }
+
+    public function removePost(Post $post): static
+    {
+        if ($this->posts->removeElement($post)) {
+            // set the owning side to null (unless already changed)
+            if ($post->getAuthor() === $this) {
+                $post->setAuthor(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function addChatMessage(ChatMessage $chatMessage): static
+    {
+        if (!$this->chatMessages->contains($chatMessage)) {
+            $this->chatMessages->add($chatMessage);
+            $chatMessage->setAuthor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeChatMessage(ChatMessage $chatMessage): static
+    {
+        if ($this->chatMessages->removeElement($chatMessage)) {
+            // set the owning side to null (unless already changed)
+            if ($chatMessage->getAuthor() === $this) {
+                $chatMessage->setAuthor(null);
+            }
+        }
+
+        return $this;
     }
 }
