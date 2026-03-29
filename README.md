@@ -63,8 +63,11 @@ When finished proceed below.
 ## Access to all services
 
 As a regular tester, you'll only need the fist two ones.
-[http://localhost:8080](http://localhost:8080) Will redirect you to the https link below ( Thanks to nginx config )
-[http://localhost:8443](http://localhost:8443) Is the main systèm entry.
+[http://localhost:8080](http://localhost:8080) Will redirect you to the https link below ( Thanks to nginx config )  
+[http://localhost:8443](http://localhost:8443) Is the main system entry.  
+
+And the webmail to see interractions with users by mailling  
+[http://localhost:8025](http://localhost:8025)
 
 Due to the use of selfsigned certificates for the local server, you'll have to bypass web browser security
 to proceed to the content of the app. This disapear when deplying to an url with it's own requested certificates.
