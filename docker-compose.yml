@@ -59,6 +59,8 @@ services:
 
   # Frontend React + Vite (dev)
   frontend:
+    env_file:
+      - .env
     build:
       context: ./frontend
     working_dir: /app

@@ -1,0 +1,34 @@
+import { createBrowserRouter } from "react-router-dom";
+import AppLayout from "../components/layout/AppLayout";
+import HomePage from "../pages/HomePage";
+import LoginPage from "../pages/LoginPage";
+import RegisterPage from "../pages/RegisterPage";
+import TopicPage from "../pages/TopicPage";
+import NewTopicPage from "../pages/NewTopicPage";
+import ProtectedRoute from "../features/auth/ProtectedRoute";
+
+export const router = createBrowserRouter(
+    [
+        {
+            path: "/",
+            element: <AppLayout />,
+            children: [
+                { index: true, element: <HomePage /> },
+                { path: "login", element: <LoginPage /> },
+                { path: "register", element: <RegisterPage /> },
+                { path: "topic/:id", element: <TopicPage /> },
+                {
+                    path: "new-topic",
+                    element: (
+                        <ProtectedRoute>
+                            <NewTopicPage />
+                        </ProtectedRoute>
+                    ),
+                },
+            ],
+        }
+    ],
+    {
+        basename: '/app'
+    }
+);
