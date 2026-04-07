@@ -5,6 +5,9 @@ import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
 import TopicPage from "../pages/TopicPage";
 import NewTopicPage from "../pages/NewTopicPage";
+import CategoryPage from "../pages/CategoryPage";
+import ProfilePage from "../pages/ProfilePage";
+import SearchPage from "../pages/SearchPage";
 import ProtectedRoute from "../features/auth/ProtectedRoute";
 
 export const router = createBrowserRouter(
@@ -17,6 +20,9 @@ export const router = createBrowserRouter(
                 { path: "login", element: <LoginPage /> },
                 { path: "register", element: <RegisterPage /> },
                 { path: "topic/:id", element: <TopicPage /> },
+                { path: "category/:id", element: <CategoryPage /> },
+                { path: "profile/:id", element: <ProfilePage /> },
+                { path: "search", element: <SearchPage /> },
                 {
                     path: "new-topic",
                     element: (
@@ -26,7 +32,7 @@ export const router = createBrowserRouter(
                     ),
                 },
             ],
-        }
+        },
     ],
     {
         basename: '/app'

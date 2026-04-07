@@ -36,14 +36,13 @@ final class UserController extends AbstractController
     {
         return $this->json([
             'id' => $user->getId(),
-            'email' => $user->getEmail(),
             'username' => $user->getUsername(),
             'displayName' => $user->getDisplayName(),
             'bio' => $user->getBio(),
             'avatar' => $user->getAvatar(),
             'forumRank' => $user->getForumRank(),
+            'createdAt' => $user->getCreatedAt()?->format('c'),
             'roles' => $user->getRoles(),
-            'createdAt' => $user->getCreatedAt()->format('c'),
         ]);
     }
 

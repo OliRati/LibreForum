@@ -12,6 +12,12 @@ export type TopicCategory = {
   slug: string;
 };
 
+export type TopicTag = {
+  id: number;
+  name: string;
+  slug: string;
+};
+
 export type Topic = {
   id: number;
   title: string;
@@ -23,10 +29,16 @@ export type Topic = {
   isLocked?: boolean;
   author: TopicAuthor;
   category: TopicCategory;
+  tags?: TopicTag[];
 };
 
 export async function getTopics(): Promise<Topic[]> {
   const { data } = await api.get("/topics");
+  return data;
+}
+
+export async function getTopicsByCategory(categoryId: string | number): Promise<Topic[]> {
+  const { data } = await api.get(`/topics?categoryId=${categoryId}`);
   return data;
 }
 

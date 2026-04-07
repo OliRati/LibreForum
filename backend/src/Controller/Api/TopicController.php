@@ -18,20 +18,38 @@ use Symfony\Component\String\Slugger\AsciiSlugger;
 final class TopicController extends AbstractController
 {
     #[Route('', methods: ['GET'])]
-    public function index(TopicRepository $topicRepository): JsonResponse
+    public function index(Request $request, TopicRepository $topicRepository): JsonResponse
     {
-        $topics = $topicRepository->findBy([], ['createdAt' => 'DESC']);
+        $categoryId = $request->query->get('categoryId');
+        $search = $request->query->get('search');
+
+        $qb = $topicRepository->createQueryBuilder('t')
+            ->leftJoin('t.author', 'a')->addSelect('a')
+            ->leftJoin('t.category', 'c')->addSelect('c')
+            ->leftJoin('t.tags', 'tag')->addSelect('tag')
+            ->orderBy('t.createdAt', 'DESC');
+
+        if ($categoryId) {
+            $qb->andWhere('c.id = :categoryId')
+            ->setParameter('categoryId', $categoryId);
+        }
+
+        if ($search) {
+            $qb->andWhere('t.title LIKE :search OR t.content LIKE :search')
+            ->setParameter('search', '%' . $search . '%');
+        }
+
+        $topics = $qb->getQuery()->getResult();
 
         return $this->json(array_map(fn(Topic $topic) => [
             'id' => $topic->getId(),
             'title' => $topic->getTitle(),
             'slug' => $topic->getSlug(),
             'content' => $topic->getContent(),
-            'views' => $topic->getViews(),
+            'createdAt' => $topic->getCreatedAt()->format('c'),
+            'updatedAt' => $topic->getUpdatedAt()?->format('c'),
             'isPinned' => $topic->isPinned(),
             'isLocked' => $topic->isLocked(),
-            'createdAt' => $topic->getCreatedAt()->format('c'),
-            'updatedAt' => $topic->getUpdatedAt()->format('c'),
             'author' => [
                 'id' => $topic->getAuthor()?->getId(),
                 'username' => $topic->getAuthor()?->getUsername(),
@@ -42,7 +60,7 @@ final class TopicController extends AbstractController
                 'name' => $topic->getCategory()?->getName(),
                 'slug' => $topic->getCategory()?->getSlug(),
             ],
-            'tags' => array_map(fn(Tag $tag) => [
+            'tags' => array_map(fn($tag) => [
                 'id' => $tag->getId(),
                 'name' => $tag->getName(),
                 'slug' => $tag->getSlug(),
