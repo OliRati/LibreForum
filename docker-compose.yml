@@ -64,9 +64,9 @@ services:
     build:
       context: ./frontend
     working_dir: /app
+    user: "${UID:-1000}:${GID:-1000}"
     volumes:
       - ./frontend:/app
-      - /app/node_modules
     ports:
       - "5173:5173"
     command: ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
