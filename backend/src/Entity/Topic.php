@@ -5,7 +5,6 @@ namespace App\Entity;
 use App\Repository\TopicRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TopicRepository::class)]
@@ -29,17 +28,17 @@ class Topic
     #[ORM\Column(nullable: true)]
     private ?int $views = 0;
 
-    #[ORM\Column]
+    #[ORM\Column(options: ['default' => false])]
     private bool $isPinned = false;
 
-    #[ORM\Column]
+    #[ORM\Column(options: ['default' => false])]
     private bool $isLocked = false;
 
     #[ORM\Column]
-    private \DateTimeImmutable $createdAt;
+    private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column]
-    private \DateTimeImmutable $updatedAt;
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'topics')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
@@ -104,6 +103,7 @@ class Topic
     {
         return $this->views;
     }
+
     public function setViews(?int $views): static
     {
         $this->views = $views;
@@ -114,6 +114,7 @@ class Topic
     {
         return $this->isPinned;
     }
+
     public function setIsPinned(bool $isPinned): static
     {
         $this->isPinned = $isPinned;
@@ -124,6 +125,7 @@ class Topic
     {
         return $this->isLocked;
     }
+
     public function setIsLocked(bool $isLocked): static
     {
         $this->isLocked = $isLocked;
@@ -154,6 +156,7 @@ class Topic
     {
         return $this->author;
     }
+
     public function setAuthor(?User $author): static
     {
         $this->author = $author;
@@ -164,6 +167,7 @@ class Topic
     {
         return $this->category;
     }
+
     public function setCategory(?Category $category): static
     {
         $this->category = $category;
@@ -212,7 +216,6 @@ class Topic
     public function removeTag(Tag $tag): static
     {
         $this->tags->removeElement($tag);
-
         return $this;
     }
 }

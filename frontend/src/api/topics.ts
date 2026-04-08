@@ -1,4 +1,5 @@
 import { api } from "./client";
+import type { Tag } from "./tags";
 
 export type TopicAuthor = {
   id: number;
@@ -7,12 +8,6 @@ export type TopicAuthor = {
 };
 
 export type TopicCategory = {
-  id: number;
-  name: string;
-  slug: string;
-};
-
-export type TopicTag = {
   id: number;
   name: string;
   slug: string;
@@ -29,16 +24,24 @@ export type Topic = {
   isLocked?: boolean;
   author: TopicAuthor;
   category: TopicCategory;
-  tags?: TopicTag[];
+  tags?: Tag[];
 };
 
-export async function getTopics(): Promise<Topic[]> {
-  const { data } = await api.get("/topics");
-  return data;
-}
+export type PaginatedTopics = {
+  items: Topic[];
+  page: number;
+  totalPages: number;
+  total: number;
+};
 
-export async function getTopicsByCategory(categoryId: string | number): Promise<Topic[]> {
-  const { data } = await api.get(`/topics?categoryId=${categoryId}`);
+export async function getTopics(params?: {
+  page?: number;
+  limit?: number;
+  categoryId?: number | string;
+  search?: string;
+  tagId?: number | string;
+}): Promise<PaginatedTopics> {
+  const { data } = await api.get("/topics", { params });
   return data;
 }
 

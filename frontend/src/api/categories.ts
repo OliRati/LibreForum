@@ -1,4 +1,4 @@
-import { api } from "./client.js";
+import { api } from "./client";
 
 export type Category = {
   id: number;
@@ -9,5 +9,10 @@ export type Category = {
 
 export async function getCategories(): Promise<Category[]> {
   const { data } = await api.get("/categories");
+  return data;
+}
+
+export async function getCategory(id: string | number): Promise<Category> {
+  const { data } = await api.get(`/categories/${id}`);
   return data;
 }

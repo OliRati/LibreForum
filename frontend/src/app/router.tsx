@@ -5,10 +5,10 @@ import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
 import TopicPage from "../pages/TopicPage";
 import NewTopicPage from "../pages/NewTopicPage";
+import ProtectedRoute from "../features/auth/ProtectedRoute";
 import CategoryPage from "../pages/CategoryPage";
 import ProfilePage from "../pages/ProfilePage";
 import SearchPage from "../pages/SearchPage";
-import ProtectedRoute from "../features/auth/ProtectedRoute";
 
 export const router = createBrowserRouter(
     [

@@ -33,16 +33,25 @@ export default function TopicCard({ topic }: Props) {
       {topic.tags && topic.tags.length > 0 && (
         <div className="mt-4 flex flex-wrap gap-2">
           {topic.tags.map((tag) => (
-            <TagBadge key={tag.id} name={tag.name} />
+            <TagBadge key={tag.id} tag={tag.name} />
           ))}
         </div>
       )}
 
       <div className="mt-4 flex items-center justify-between text-xs text-zinc-500">
-        <Link to={`/profile/${topic.author?.id}`} className="hover:text-zinc-300">
+        <Link
+          to={`/profile/${topic.author?.id}`}
+          className="hover:text-zinc-300"
+        >
           {topic.author?.displayName || topic.author?.username}
         </Link>
-        <span>{topic.category?.name}</span>
+
+        <Link
+          to={`/category/${topic.category?.id}`}
+          className="hover:text-zinc-300"
+        >
+          {topic.category?.name}
+        </Link>
       </div>
     </div>
   );

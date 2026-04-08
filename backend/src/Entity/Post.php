@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\PostRepository;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PostRepository::class)]
@@ -19,7 +18,7 @@ class Post
     private ?string $content = null;
 
     #[ORM\Column]
-    private \DateTimeImmutable $createdAt;
+    private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;

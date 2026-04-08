@@ -19,7 +19,7 @@ class Tag
     #[ORM\Column(length: 100, unique: true)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 100, unique: true)]
+    #[ORM\Column(length: 120, unique: true)]
     private ?string $slug = null;
 
     #[ORM\ManyToMany(targetEntity: Topic::class, mappedBy: 'tags')]

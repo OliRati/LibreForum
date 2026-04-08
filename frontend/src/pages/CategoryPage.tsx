@@ -1,17 +1,19 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getCategories, type Category } from "../api/categories";
-import { getTopicsByCategory, type Topic } from "../api/topics";
+import { getCategory, type Category } from "../api/categories";
+import { getTopics, type Topic } from "../api/topics";
 import TopicCard from "../components/forum/TopicCard";
 import Loader from "../components/ui/Loader";
 import EmptyState from "../components/ui/EmptyState";
-import SectionTitle from "../components/ui/SectionTitle";
+import Pagination from "../components/ui/Pagination";
 
 export default function CategoryPage() {
   const { id } = useParams();
 
   const [category, setCategory] = useState<Category | null>(null);
   const [topics, setTopics] = useState<Topic[]>([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -20,52 +22,46 @@ export default function CategoryPage() {
 
       setLoading(true);
       try {
-        const [categories, topicsData] = await Promise.all([
-          getCategories(),
-          getTopicsByCategory(id),
+        const [categoryData, topicsData] = await Promise.all([
+          getCategory(id),
+          getTopics({ categoryId: id, page, limit: 10 }),
         ]);
 
-        const found = categories.find((c) => String(c.id) === id) || null;
-        setCategory(found);
-        setTopics(topicsData);
+        setCategory(categoryData);
+        setTopics(topicsData.items);
+        setTotalPages(topicsData.totalPages);
       } finally {
         setLoading(false);
       }
     }
 
     load();
-  }, [id]);
+  }, [id, page]);
 
   if (loading) return <Loader />;
-
-  if (!category) {
-    return (
-      <EmptyState
-        title="Catégorie introuvable"
-        description="La catégorie demandée n’existe pas ou a été supprimée."
-      />
-    );
-  }
+  if (!category) return <EmptyState title="Catégorie introuvable" />;
 
   return (
-    <div className="space-y-6">
-      <SectionTitle
-        title={category.name}
-        subtitle={category.description || "Discussion autour de cette catégorie"}
-      />
+    <div className="space-y-8">
+      <section className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
+        <h1 className="text-3xl font-bold">{category.name}</h1>
+        <p className="mt-3 text-zinc-400">
+          {category.description || "Aucune description"}
+        </p>
+      </section>
 
-      {topics.length > 0 ? (
-        <div className="space-y-4">
-          {topics.map((topic) => (
-            <TopicCard key={topic.id} topic={topic} />
-          ))}
-        </div>
-      ) : (
-        <EmptyState
-          title="Aucun sujet dans cette catégorie"
-          description="Sois le premier à lancer une discussion."
-        />
-      )}
+      <section className="space-y-4">
+        {topics.length > 0 ? (
+          topics.map((topic) => <TopicCard key={topic.id} topic={topic} />)
+        ) : (
+          <EmptyState
+            title="Aucun sujet dans cette catégorie"
+            description="Sois le premier à lancer une discussion."
+          />
+        )}
+      </section>
+
+      <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
     </div>
   );
 }

@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { getUser, type UserProfile } from "../api/users";
 import Loader from "../components/ui/Loader";
 import EmptyState from "../components/ui/EmptyState";
+import { formatDate } from "../lib/formatDate";
 
 export default function ProfilePage() {
   const { id } = useParams();
@@ -26,50 +27,42 @@ export default function ProfilePage() {
   }, [id]);
 
   if (loading) return <Loader />;
-
-  if (!user) {
-    return (
-      <EmptyState
-        title="Utilisateur introuvable"
-        description="Ce profil n’existe pas ou n’est plus disponible."
-      />
-    );
-  }
+  if (!user) return <EmptyState title="Utilisateur introuvable" />;
 
   return (
-    <div className="mx-auto max-w-3xl rounded-2xl border border-zinc-800 bg-zinc-900 p-8">
-      <div className="flex items-start gap-6">
-        <div className="flex h-24 w-24 items-center justify-center rounded-full bg-zinc-800 text-3xl font-bold text-zinc-300">
-          {(user.displayName || user.username)?.charAt(0).toUpperCase()}
+    <div className="mx-auto max-w-3xl space-y-6">
+      <section className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
+        <div className="flex items-start gap-5">
+          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-zinc-800 text-2xl font-bold text-zinc-300">
+            {(user.displayName || user.username).charAt(0).toUpperCase()}
+          </div>
+
+          <div>
+            <h1 className="text-3xl font-bold">
+              {user.displayName || user.username}
+            </h1>
+            <p className="mt-1 text-zinc-400">@{user.username}</p>
+
+            {user.forumRank && (
+              <p className="mt-3 inline-flex rounded-full bg-emerald-500/10 px-3 py-1 text-sm text-emerald-300">
+                {user.forumRank}
+              </p>
+            )}
+          </div>
         </div>
 
-        <div className="flex-1">
-          <h1 className="text-3xl font-bold text-zinc-100">
-            {user.displayName || user.username}
-          </h1>
+        {user.bio && (
+          <div className="mt-6 rounded-xl bg-zinc-800/60 p-4 text-zinc-300">
+            {user.bio}
+          </div>
+        )}
 
-          <p className="mt-1 text-sm text-zinc-500">@{user.username}</p>
-
-          {user.forumRank && (
-            <div className="mt-3 inline-flex rounded-full bg-emerald-500/15 px-3 py-1 text-sm text-emerald-300">
-              {user.forumRank}
-            </div>
-          )}
-
-          {user.bio && (
-            <p className="mt-5 whitespace-pre-wrap leading-7 text-zinc-300">
-              {user.bio}
-            </p>
-          )}
-
-          {user.createdAt && (
-            <p className="mt-5 text-sm text-zinc-500">
-              Membre depuis le{" "}
-              {new Date(user.createdAt).toLocaleDateString("fr-FR")}
-            </p>
-          )}
-        </div>
-      </div>
+        {user.createdAt && (
+          <p className="mt-6 text-sm text-zinc-500">
+            Membre depuis {formatDate(user.createdAt)}
+          </p>
+        )}
+      </section>
     </div>
   );
 }

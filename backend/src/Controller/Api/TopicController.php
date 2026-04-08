@@ -2,230 +2,146 @@
 
 namespace App\Controller\Api;
 
-use App\Entity\Category;
 use App\Entity\Tag;
 use App\Entity\Topic;
-use App\Entity\User;
+use App\Repository\CategoryRepository;
+use App\Repository\TagRepository;
 use App\Repository\TopicRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\String\Slugger\AsciiSlugger;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[Route('/api/topics')]
-final class TopicController extends AbstractController
+class TopicController extends AbstractController
 {
-    #[Route('', methods: ['GET'])]
+    #[Route('', name: 'api_topics_index', methods: ['GET'])]
     public function index(Request $request, TopicRepository $topicRepository): JsonResponse
     {
+        $page = max(1, (int) $request->query->get('page', 1));
+        $limit = max(1, min(50, (int) $request->query->get('limit', 10)));
+
         $categoryId = $request->query->get('categoryId');
-        $search = $request->query->get('search');
+        $categoryId = $categoryId !== null ? (int) $categoryId : null;
 
-        $qb = $topicRepository->createQueryBuilder('t')
-            ->leftJoin('t.author', 'a')->addSelect('a')
-            ->leftJoin('t.category', 'c')->addSelect('c')
-            ->leftJoin('t.tags', 'tag')->addSelect('tag')
-            ->orderBy('t.createdAt', 'DESC');
+        $tagId = $request->query->get('tagId');
+        $tagId = $tagId !== null ? (int) $tagId : null;
 
-        if ($categoryId) {
-            $qb->andWhere('c.id = :categoryId')
-            ->setParameter('categoryId', $categoryId);
-        }
+        $search = trim((string) $request->query->get('search', ''));
+        $search = $search !== '' ? $search : null;
 
-        if ($search) {
-            $qb->andWhere('t.title LIKE :search OR t.content LIKE :search')
-            ->setParameter('search', '%' . $search . '%');
-        }
+        $result = $topicRepository->findPaginatedFiltered(
+            page: $page,
+            limit: $limit,
+            categoryId: $categoryId,
+            search: $search,
+            tagId: $tagId
+        );
 
-        $topics = $qb->getQuery()->getResult();
-
-        return $this->json(array_map(fn(Topic $topic) => [
-            'id' => $topic->getId(),
-            'title' => $topic->getTitle(),
-            'slug' => $topic->getSlug(),
-            'content' => $topic->getContent(),
-            'createdAt' => $topic->getCreatedAt()->format('c'),
-            'updatedAt' => $topic->getUpdatedAt()?->format('c'),
-            'isPinned' => $topic->isPinned(),
-            'isLocked' => $topic->isLocked(),
-            'author' => [
-                'id' => $topic->getAuthor()?->getId(),
-                'username' => $topic->getAuthor()?->getUsername(),
-                'displayName' => $topic->getAuthor()?->getDisplayName(),
-            ],
-            'category' => [
-                'id' => $topic->getCategory()?->getId(),
-                'name' => $topic->getCategory()?->getName(),
-                'slug' => $topic->getCategory()?->getSlug(),
-            ],
-            'tags' => array_map(fn($tag) => [
-                'id' => $tag->getId(),
-                'name' => $tag->getName(),
-                'slug' => $tag->getSlug(),
-            ], $topic->getTags()->toArray()),
-        ], $topics));
-    }
-
-    #[Route('/{id}', methods: ['GET'])]
-    public function show(Topic $topic): JsonResponse
-    {
         return $this->json([
-            'id' => $topic->getId(),
-            'title' => $topic->getTitle(),
-            'slug' => $topic->getSlug(),
-            'content' => $topic->getContent(),
-            'views' => $topic->getViews(),
-            'isPinned' => $topic->isPinned(),
-            'isLocked' => $topic->isLocked(),
-            'createdAt' => $topic->getCreatedAt()->format('c'),
-            'updatedAt' => $topic->getUpdatedAt()->format('c'),
-            'author' => [
-                'id' => $topic->getAuthor()?->getId(),
-                'username' => $topic->getAuthor()?->getUsername(),
-                'displayName' => $topic->getAuthor()?->getDisplayName(),
-            ],
-            'category' => [
-                'id' => $topic->getCategory()?->getId(),
-                'name' => $topic->getCategory()?->getName(),
-                'slug' => $topic->getCategory()?->getSlug(),
-            ],
-            'tags' => array_map(fn(Tag $tag) => [
-                'id' => $tag->getId(),
-                'name' => $tag->getName(),
-                'slug' => $tag->getSlug(),
-            ], $topic->getTags()->toArray()),
-            'posts' => array_map(fn($post) => [
-                'id' => $post->getId(),
-                'content' => $post->getContent(),
-                'createdAt' => $post->getCreatedAt()->format('c'),
-                'author' => [
-                    'id' => $post->getAuthor()?->getId(),
-                    'username' => $post->getAuthor()?->getUsername(),
-                    'displayName' => $post->getAuthor()?->getDisplayName(),
-                ],
-            ], $topic->getPosts()->toArray()),
+            'items' => array_map([$this, 'normalizeTopic'], $result['items']),
+            'page' => $result['page'],
+            'totalPages' => $result['totalPages'],
+            'total' => $result['total'],
         ]);
     }
 
-    #[Route('', methods: ['POST'])]
-    public function store(Request $request, EntityManagerInterface $em): JsonResponse
+    #[Route('/{id}', name: 'api_topics_show', methods: ['GET'])]
+    public function show(Topic $topic): JsonResponse
     {
-        $user = $this->getUser();
+        return $this->json($this->normalizeTopic($topic));
+    }
 
-        if (!$user instanceof User) {
-            return $this->json(['error' => 'Non authentifié'], 401);
+    #[Route('', name: 'api_topics_create', methods: ['POST'])]
+    public function create(
+        Request $request,
+        EntityManagerInterface $em,
+        CategoryRepository $categoryRepository,
+        TagRepository $tagRepository,
+        Security $security,
+        SluggerInterface $slugger
+    ): JsonResponse {
+        $user = $security->getUser();
+        if (!$user) {
+            return $this->json(['message' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
         }
 
-        $payload = json_decode($request->getContent(), true);
-        $slugger = new AsciiSlugger();
+        $data = json_decode($request->getContent(), true);
 
-        if (empty($payload['title']) || empty($payload['content']) || empty($payload['categoryId'])) {
-            return $this->json(['error' => 'title, content et categoryId sont requis'], 400);
+        $title = trim($data['title'] ?? '');
+        $content = trim($data['content'] ?? '');
+        $categoryId = $data['categoryId'] ?? null;
+        $tagIds = $data['tagIds'] ?? [];
+
+        if (!$title || !$content || !$categoryId) {
+            return $this->json([
+                'message' => 'title, content et categoryId sont requis'
+            ], Response::HTTP_BAD_REQUEST);
         }
 
-        $category = $em->getRepository(Category::class)->find($payload['categoryId']);
-
+        $category = $categoryRepository->find($categoryId);
         if (!$category) {
-            return $this->json(['error' => 'Catégorie introuvable'], 404);
+            return $this->json(['message' => 'Catégorie introuvable'], Response::HTTP_NOT_FOUND);
         }
 
         $topic = new Topic();
-        $topic
-            ->setTitle($payload['title'])
-            ->setSlug(strtolower((string) $slugger->slug($payload['title'])))
-            ->setContent($payload['content'])
-            ->setAuthor($user)
-            ->setCategory($category)
-            ->setIsPinned($payload['isPinned'] ?? false)
-            ->setIsLocked($payload['isLocked'] ?? false);
+        $topic->setTitle($title);
+        $topic->setContent($content);
+        $topic->setCategory($category);
+        $topic->setAuthor($user);
+        $topic->setCreatedAt(new \DateTimeImmutable());
 
-        if (!empty($payload['tagIds']) && is_array($payload['tagIds'])) {
-            foreach ($payload['tagIds'] as $tagId) {
-                $tag = $em->getRepository(Tag::class)->find($tagId);
-                if ($tag) {
-                    $topic->addTag($tag);
-                }
+        $baseSlug = strtolower($slugger->slug($title)->toString());
+        $slug = $baseSlug . '-' . substr(uniqid(), -6);
+        $topic->setSlug($slug);
+
+        foreach ($tagIds as $tagId) {
+            $tag = $tagRepository->find((int) $tagId);
+            if ($tag) {
+                $topic->addTag($tag);
             }
         }
 
         $em->persist($topic);
         $em->flush();
 
-        return $this->json([
-            'message' => 'Sujet créé',
+        return $this->json($this->normalizeTopic($topic), Response::HTTP_CREATED);
+    }
+
+    private function normalizeTopic(Topic $topic): array
+    {
+        return [
             'id' => $topic->getId(),
-        ], 201);
-    }
-
-    #[Route('/{id}', methods: ['PUT', 'PATCH'])]
-    public function update(Topic $topic, Request $request, EntityManagerInterface $em): JsonResponse
-    {
-        $user = $this->getUser();
-
-        if (!$user instanceof User) {
-            return $this->json(['error' => 'Non authentifié'], 401);
-        }
-
-        $isOwner = $post->getAuthor()?->getId() === $user->getId();
-        $isModerator = in_array('ROLE_MODERATOR', $user->getRoles(), true) || in_array('ROLE_ADMIN', $user->getRoles(), true);
-
-        if (!$isOwner && !$isModerator) {
-            return $this->json(['error' => 'Accès refusé'], 403);
-        }
-
-        $payload = json_decode($request->getContent(), true);
-        $slugger = new AsciiSlugger();
-
-        if (isset($payload['title'])) {
-            $topic->setTitle($payload['title']);
-            $topic->setSlug(strtolower((string) $slugger->slug($payload['title'])));
-        }
-
-        if (array_key_exists('content', $payload)) {
-            $topic->setContent($payload['content']);
-        }
-
-        if (array_key_exists('isPinned', $payload)) {
-            $topic->setIsPinned((bool) $payload['isPinned']);
-        }
-
-        if (array_key_exists('isLocked', $payload)) {
-            $topic->setIsLocked((bool) $payload['isLocked']);
-        }
-
-        if (array_key_exists('categoryId', $payload)) {
-            $category = $em->getRepository(Category::class)->find($payload['categoryId']);
-            if ($category) {
-                $topic->setCategory($category);
-            }
-        }
-
-        if (array_key_exists('tagIds', $payload) && is_array($payload['tagIds'])) {
-            $topic->getTags()->clear();
-
-            foreach ($payload['tagIds'] as $tagId) {
-                $tag = $em->getRepository(Tag::class)->find($tagId);
-                if ($tag) {
-                    $topic->addTag($tag);
-                }
-            }
-        }
-
-        $topic->setUpdatedAt(new \DateTimeImmutable());
-
-        $em->flush();
-
-        return $this->json(['message' => 'Sujet mis à jour']);
-    }
-
-    #[Route('/{id}', methods: ['DELETE'])]
-    public function delete(Topic $topic, EntityManagerInterface $em): JsonResponse
-    {
-        $em->remove($topic);
-        $em->flush();
-
-        return $this->json(['message' => 'Sujet supprimé']);
+            'title' => $topic->getTitle(),
+            'slug' => $topic->getSlug(),
+            'content' => $topic->getContent(),
+            'createdAt' => $topic->getCreatedAt()?->format(DATE_ATOM),
+            'updatedAt' => $topic->getUpdatedAt()?->format(DATE_ATOM),
+            'isPinned' => $topic->isPinned(),
+            'isLocked' => $topic->isLocked(),
+            'author' => $topic->getAuthor() ? [
+                'id' => $topic->getAuthor()->getId(),
+                'username' => $topic->getAuthor()->getUsername(),
+                'displayName' => $topic->getAuthor()->getDisplayName() ?: $topic->getAuthor()->getUsername(),
+            ] : null,
+            'category' => $topic->getCategory() ? [
+                'id' => $topic->getCategory()->getId(),
+                'name' => $topic->getCategory()->getName(),
+                'slug' => $topic->getCategory()->getSlug(),
+            ] : null,
+            'tags' => array_map(
+                fn(Tag $tag) => [
+                    'id' => $tag->getId(),
+                    'name' => $tag->getName(),
+                    'slug' => $tag->getSlug(),
+                ],
+                $topic->getTags()->toArray()
+            ),
+            'postsCount' => $topic->getPosts()->count(),
+        ];
     }
 }

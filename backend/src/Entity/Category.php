@@ -5,7 +5,6 @@ namespace App\Entity;
 use App\Repository\CategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
@@ -17,10 +16,10 @@ class Category
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 150)]
+    #[ORM\Column(length: 150, unique: true)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255, unique: true)]
+    #[ORM\Column(length: 180, unique: true)]
     private ?string $slug = null;
 
     #[ORM\Column(type: 'text', nullable: true)]

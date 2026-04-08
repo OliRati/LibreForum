@@ -1,55 +1,71 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../features/auth/useAuth";
+import { FormEvent, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { login, saveToken } from '../services/auth';
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { login } = useAuth();
 
-  const [email, setEmail] = useState("admin@libreforum.local");
-  const [password, setPassword] = useState("password");
-  const [error, setError] = useState("");
+  const [email, setEmail] = useState('admin@libreforum.local');
+  const [password, setPassword] = useState('password');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError("");
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); // ✅ CRUCIAL
+    setError('');
+    setLoading(true);
 
     try {
-      await login(email, password);
-      navigate("/");
-    } catch {
-      setError("Identifiants invalides");
+      const data = await login(email, password);
+      saveToken(data.token);
+      navigate('/');
+    } catch (err: any) {
+      console.error(err);
+      setError('Identifiants invalides ou erreur API.');
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="mx-auto max-w-md rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
-      <h1 className="mb-6 text-2xl font-bold">Connexion</h1>
+    <div className="max-w-md mx-auto py-10">
+      <h1 className="text-2xl font-bold mb-6">Connexion</h1>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          className="w-full rounded bg-zinc-800 px-4 py-3"
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        <div>
+          <label className="block mb-1">Email</label>
+          <input
+            type="email"
+            className="w-full border rounded px-3 py-2"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            autoComplete="email"
+          />
+        </div>
 
-        <input
-          className="w-full rounded bg-zinc-800 px-4 py-3"
-          type="password"
-          placeholder="Mot de passe"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <div>
+          <label className="block mb-1">Mot de passe</label>
+          <input
+            type="password"
+            className="w-full border rounded px-3 py-2"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            autoComplete="current-password"
+          />
+        </div>
 
-        {error && <p className="text-sm text-red-400">{error}</p>}
+        {error && (
+          <div className="text-red-600 text-sm">
+            {error}
+          </div>
+        )}
 
         <button
           type="submit"
-          className="w-full rounded bg-emerald-600 px-4 py-3 font-semibold hover:bg-emerald-500"
+          disabled={loading}
+          className="w-full rounded bg-black text-white py-2"
         >
-          Se connecter
+          {loading ? 'Connexion...' : 'Se connecter'}
         </button>
       </form>
     </div>

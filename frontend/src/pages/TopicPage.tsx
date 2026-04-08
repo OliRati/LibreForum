@@ -1,9 +1,14 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { getTopic, type Topic } from "../api/topics";
 import { createPost, getPostsByTopic, type Post } from "../api/posts";
 import PostCard from "../components/forum/PostCard";
 import { useAuthStore } from "../features/auth/authStore";
+import Loader from "../components/ui/Loader";
+import EmptyState from "../components/ui/EmptyState";
+import TagBadge from "../components/forum/TagBadge";
+import { formatDate } from "../lib/formatDate";
+import Alert from "../components/ui/Alert";
 
 export default function TopicPage() {
   const { id } = useParams();
@@ -13,6 +18,7 @@ export default function TopicPage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [reply, setReply] = useState("");
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   async function loadData() {
     if (!id) return;
@@ -25,6 +31,8 @@ export default function TopicPage() {
       ]);
       setTopic(topicData);
       setPosts(postsData);
+    } catch {
+      setError("Impossible de charger le sujet.");
     } finally {
       setLoading(false);
     }
@@ -38,32 +46,52 @@ export default function TopicPage() {
     e.preventDefault();
     if (!id || !reply.trim()) return;
 
-    await createPost({
-      topicId: Number(id),
-      content: reply,
-    });
+    try {
+      await createPost({
+        topicId: Number(id),
+        content: reply,
+      });
 
-    setReply("");
-    await loadData();
+      setReply("");
+      await loadData();
+    } catch {
+      setError("Impossible de publier la réponse.");
+    }
   }
 
-  if (loading) {
-    return <p className="text-zinc-400">Chargement…</p>;
-  }
+  if (loading) return <Loader />;
+  if (!topic) return <EmptyState title="Sujet introuvable" />;
 
-  if (!topic) {
-    return <p className="text-red-400">Sujet introuvable.</p>;
-  }
-
+  
   return (
     <div className="space-y-8">
+      {error && <Alert type="error" message={error} />}
+
       <article className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
         <h1 className="text-3xl font-bold">{topic.title}</h1>
 
-        <div className="mt-3 text-sm text-zinc-500">
-          Par {topic.author?.displayName || topic.author?.username} •{" "}
-          {new Date(topic.createdAt).toLocaleString("fr-FR")}
+        <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-zinc-500">
+          <span>
+            Par{" "}
+            <Link to={`/profile/${topic.author?.id}`} className="hover:text-zinc-300">
+              {topic.author?.displayName || topic.author?.username}
+            </Link>
+          </span>
+          <span>•</span>
+          <span>{formatDate(topic.createdAt)}</span>
+          <span>•</span>
+          <Link to={`/category/${topic.category?.id}`} className="hover:text-zinc-300">
+            {topic.category?.name}
+          </Link>
         </div>
+
+        {topic.tags && topic.tags.length > 0 && (
+          <div className="mt-4 flex flex-wrap gap-2">
+            {topic.tags.map((tag) => (
+              <TagBadge key={tag.id} tag={tag.name} />
+            ))}
+          </div>
+        )}
 
         <div className="mt-6 whitespace-pre-wrap leading-8 text-zinc-300">
           {topic.content}
@@ -77,7 +105,10 @@ export default function TopicPage() {
           {posts.length > 0 ? (
             posts.map((post) => <PostCard key={post.id} post={post} />)
           ) : (
-            <p className="text-zinc-500">Aucune réponse pour le moment.</p>
+            <EmptyState
+              title="Aucune réponse"
+              description="Sois le premier à répondre à ce sujet."
+            />
           )}
         </div>
       </section>
@@ -88,7 +119,7 @@ export default function TopicPage() {
 
           <form onSubmit={handleReply} className="space-y-4">
             <textarea
-              className="min-h-[160px] w-full rounded-xl bg-zinc-800 px-4 py-3 text-zinc-100 outline-none ring-0"
+              className="min-h-[160px] w-full rounded-xl bg-zinc-800 px-4 py-3 text-zinc-100 outline-none"
               value={reply}
               onChange={(e) => setReply(e.target.value)}
               placeholder="Votre réponse..."

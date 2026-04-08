@@ -4,132 +4,93 @@ namespace App\Controller\Api;
 
 use App\Entity\Post;
 use App\Entity\Topic;
-use App\Entity\User;
 use App\Repository\PostRepository;
+use App\Repository\TopicRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/api/posts')]
-final class PostController extends AbstractController
+class PostController extends AbstractController
 {
-    #[Route('', methods: ['GET'])]
-    public function index(Request $request, EntityManagerInterface $em): JsonResponse
+    #[Route('', name: 'api_posts_index', methods: ['GET'])]
+    public function index(Request $request, PostRepository $postRepository): JsonResponse
     {
-        $topicId = $request->query->get('topicId');
+        $topicId = (int) $request->query->get('topicId', 0);
 
-        if ($topicId) {
-            $posts = $em->getRepository(Post::class)->findBy(
-                ['topic' => $topicId],
-                ['createdAt' => 'ASC']
-            );
-        } else {
-            $posts = $em->getRepository(Post::class)->findAll();
+        if (!$topicId) {
+            return $this->json(['message' => 'topicId requis'], Response::HTTP_BAD_REQUEST);
         }
 
-        return $this->json(array_map(fn(Post $post) => [
-            'id' => $post->getId(),
-            'content' => $post->getContent(),
-            'createdAt' => $post->getCreatedAt()->format('c'),
-            'updatedAt' => $post->getUpdatedAt()?->format('c'),
-            'author' => [
-                'id' => $post->getAuthor()?->getId(),
-                'username' => $post->getAuthor()?->getUsername(),
-                'displayName' => $post->getAuthor()?->getDisplayName(),
-            ],
-        ], $posts));
-    }    #[Route('', methods: ['GET'])]
+        $posts = $postRepository->findBy(
+            ['topic' => $topicId],
+            ['createdAt' => 'ASC']
+        );
 
-    #[Route('/{id}', methods: ['GET'])]
-    public function show(Post $post): JsonResponse
-    {
-        return $this->json([
-            'id' => $post->getId(),
-            'content' => $post->getContent(),
-            'createdAt' => $post->getCreatedAt()->format('c'),
-            'updatedAt' => $post->getUpdatedAt()?->format('c'),
-            'author' => [
-                'id' => $post->getAuthor()?->getId(),
-                'username' => $post->getAuthor()?->getUsername(),
-                'displayName' => $post->getAuthor()?->getDisplayName(),
-            ],
-            'topic' => [
-                'id' => $post->getTopic()?->getId(),
-                'title' => $post->getTopic()?->getTitle(),
-                'slug' => $post->getTopic()?->getSlug(),
-            ],
-        ]);
+        return $this->json(array_map([$this, 'normalizePost'], $posts));
     }
 
-    #[Route('', methods: ['POST'])]
-    public function store(Request $request, EntityManagerInterface $em): JsonResponse
-    {
-        $user = $this->getUser();
-
-        if (!$user instanceof User) {
-            return $this->json(['error' => 'Non authentifié'], 401);
+    #[Route('', name: 'api_posts_create', methods: ['POST'])]
+    public function create(
+        Request $request,
+        TopicRepository $topicRepository,
+        EntityManagerInterface $em,
+        Security $security
+    ): JsonResponse {
+        $user = $security->getUser();
+        if (!$user) {
+            return $this->json(['message' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
         }
 
-        $payload = json_decode($request->getContent(), true);
+        $data = json_decode($request->getContent(), true);
 
-        if (empty($payload['content']) || empty($payload['topicId'])) {
-            return $this->json(['error' => 'content et topicId sont requis'], 400);
+        $content = trim($data['content'] ?? '');
+        $topicId = (int) ($data['topicId'] ?? 0);
+
+        if (!$content || !$topicId) {
+            return $this->json([
+                'message' => 'content et topicId sont requis'
+            ], Response::HTTP_BAD_REQUEST);
         }
 
-        $topic = $em->getRepository(Topic::class)->find($payload['topicId']);
-
+        $topic = $topicRepository->find($topicId);
         if (!$topic) {
-            return $this->json(['error' => 'Sujet introuvable'], 404);
+            return $this->json(['message' => 'Topic introuvable'], Response::HTTP_NOT_FOUND);
+        }
+
+        if ($topic->isLocked()) {
+            return $this->json(['message' => 'Topic verrouillé'], Response::HTTP_FORBIDDEN);
         }
 
         $post = new Post();
-        $post
-            ->setContent($payload['content'])
-            ->setAuthor($user)
-            ->setTopic($topic);
+        $post->setContent($content);
+        $post->setTopic($topic);
+        $post->setAuthor($user);
+        $post->setCreatedAt(new \DateTimeImmutable());
 
         $em->persist($post);
         $em->flush();
 
-        return $this->json(['message' => 'Réponse créée', 'id' => $post->getId()], 201);
+        return $this->json($this->normalizePost($post), Response::HTTP_CREATED);
     }
 
-    #[Route('/{id}', methods: ['PUT', 'PATCH'])]
-    public function update(Post $post, Request $request, EntityManagerInterface $em): JsonResponse
+    private function normalizePost(Post $post): array
     {
-        $user = $this->getUser();
-
-        if (!$user instanceof User) {
-            return $this->json(['error' => 'Non authentifié'], 401);
-        }
-
-        $isOwner = $post->getAuthor()?->getId() === $user->getId();
-        $isModerator = in_array('ROLE_MODERATOR', $user->getRoles(), true) || in_array('ROLE_ADMIN', $user->getRoles(), true);
-
-        if (!$isOwner && !$isModerator) {
-            return $this->json(['error' => 'Accès refusé'], 403);
-        }
-
-        $payload = json_decode($request->getContent(), true);
-
-        if (array_key_exists('content', $payload)) {
-            $post->setContent($payload['content']);
-            $post->setUpdatedAt(new \DateTimeImmutable());
-        }
-
-        $em->flush();
-
-        return $this->json(['message' => 'Réponse mise à jour']);
-    }
-
-    #[Route('/{id}', methods: ['DELETE'])]
-    public function delete(Post $post, EntityManagerInterface $em): JsonResponse
-    {
-        $em->remove($post);
-        $em->flush();
-
-        return $this->json(['message' => 'Réponse supprimée']);
+        return [
+            'id' => $post->getId(),
+            'content' => $post->getContent(),
+            'createdAt' => $post->getCreatedAt()?->format(DATE_ATOM),
+            'updatedAt' => $post->getUpdatedAt()?->format(DATE_ATOM),
+            'topicId' => $post->getTopic()?->getId(),
+            'author' => $post->getAuthor() ? [
+                'id' => $post->getAuthor()->getId(),
+                'username' => $post->getAuthor()->getUsername(),
+                'displayName' => $post->getAuthor()->getDisplayName() ?: $post->getAuthor()->getUsername(),
+            ] : null,
+        ];
     }
 }
