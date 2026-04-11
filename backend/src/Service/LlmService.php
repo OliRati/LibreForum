@@ -37,6 +37,18 @@ class LlmService
             'json' => ['text' => $text]
         ]);
 
-        return $response->toArray();
+        return $response->toArray()['tags'] ?? [];
+    }
+
+    public function assist(string $text, string $action): string
+    {
+        $response = $this->client->request('POST', $this->baseUrl . '/assist', [
+            'json' => [
+                'text' => $text,
+                'action' => $action
+            ]
+        ]);
+
+        return $response->toArray()['result'] ?? '';
     }
 }

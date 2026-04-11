@@ -138,7 +138,7 @@ export default function TopicPage() {
         </div>
 
         <ReportButton topicId={topic.id} />
-        
+
         {isModerator && (
           <div className="mb-6">
             <TopicModerationActions topic={topic} onUpdated={loadTopic} />

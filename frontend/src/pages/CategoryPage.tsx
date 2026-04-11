@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { getCategory, type Category } from "../api/categories";
 import { getTopics, type Topic } from "../api/topics";
 import TopicCard from "../components/forum/TopicCard";
@@ -60,6 +60,13 @@ export default function CategoryPage() {
           />
         )}
       </section>
+
+      <Link
+        to="/topics/create"
+        className="rounded bg-black px-4 py-2 text-white"
+      >
+        Nouveau topic
+      </Link>
 
       <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
     </div>

@@ -10,6 +10,7 @@ import CategoryPage from "../pages/CategoryPage";
 import ProfilePage from "../pages/ProfilePage";
 import SearchPage from "../pages/SearchPage";
 import ModerationReportsPage from '../pages/moderation/ModerationReportsPage';
+import CreateTopicPage from '../pages/topics/CreateTopicPage';
 
 export const router = createBrowserRouter(
     [
@@ -25,6 +26,7 @@ export const router = createBrowserRouter(
                 { path: "profile/:id", element: <ProfilePage /> },
                 { path: "search", element: <SearchPage /> },
                 { path: "moderation/reports", element: <ModerationReportsPage /> },
+                { path: "topics/create", element: <CreateTopicPage /> },
                 {
                     path: "new-topic",
                     element: (

@@ -8,6 +8,7 @@ use App\Repository\TopicRepository;
 use App\Service\LlmService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/api/llm')]
@@ -43,5 +44,46 @@ class LlmController extends AbstractController
         $analysis = $llm->moderate($post->getContent());
 
         return $this->json($analysis);
+    }
+
+    #[Route('/topics/suggest-tags', methods: ['POST'])]
+    public function suggestTags(
+        Request $request,
+        LlmService $llm
+    ): JsonResponse {
+        $data = json_decode($request->getContent(), true);
+
+        $text = $data['text'] ?? '';
+
+        if (!$text) {
+            return $this->json(['tags' => []]);
+        }
+
+        $tags = $llm->suggestTags($text);
+
+        return $this->json([
+            'tags' => $tags
+        ]);
+    }
+
+    #[Route('/assist', methods: ['POST'])]
+    public function assist(
+        Request $request,
+        LlmService $llm
+    ): JsonResponse {
+        $data = json_decode($request->getContent(), true);
+
+        $text = $data['text'] ?? '';
+        $action = $data['action'] ?? 'improve';
+
+        if (!$text) {
+            return $this->json(['result' => '']);
+        }
+
+        $result = $llm->assist($text, $action);
+
+        return $this->json([
+            'result' => $result
+        ]);
     }
 }

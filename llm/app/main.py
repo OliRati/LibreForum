@@ -76,11 +76,65 @@ Texte :
 @app.post("/suggest-tags")
 def suggest_tags(req: TextRequest):
     prompt = f"""
-Donne 5 tags pertinents pour ce contenu.
-Réponds en JSON array.
+Tu es un assistant qui génère des tags pour un forum technique.
+
+Réponds UNIQUEMENT en JSON valide :
+[
+  "tag1",
+  "tag2",
+  "tag3",
+  "tag4",
+  "tag5"
+]
+
+Contraintes :
+- tags courts (1 ou 2 mots)
+- en minuscules
+- pertinents
 
 Contenu :
 {req.text}
 """
+
+    raw = call_ollama(prompt)
+
+    parsed = extract_json(raw)
+
+    if not parsed:
+        return {
+            "tags": []
+        }
+
+    return {
+        "tags": parsed
+    }
+
+
+@app.post("/assist")
+def assist(req: dict):
+    text = req.get("text", "")
+    action = req.get("action", "improve")
+
+    prompts = {
+        "improve": "Améliore ce message pour le rendre plus clair et structuré.",
+        "correct": "Corrige les fautes d'orthographe et de grammaire.",
+        "summarize": "Résume ce message en version courte.",
+        "simplify": "Simplifie ce texte pour le rendre plus compréhensible."
+    }
+
+    instruction = prompts.get(action, prompts["improve"])
+
+    prompt = f"""
+{instruction}
+
+Réponds uniquement avec le texte final.
+
+Texte :
+{text}
+"""
+
     result = call_ollama(prompt)
-    return {"tags": result}
+
+    return {
+        "result": result.strip()
+    }

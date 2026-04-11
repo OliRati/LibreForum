@@ -10,6 +10,7 @@ import ReportButton from '../components/moderation/ReportButton';
 import TopicModerationActions from '../components/moderation/TopicModerationActions';
 import PostModerationActions from '../components/moderation/PostModerationActions';
 
+import CreatePostForm from '../components/posts/CreatePostForm';
 import TopicSummaryCard from '../components/ai/TopicSummaryCard';
 
 import { isModerator } from '../utils/auth';
@@ -127,6 +128,11 @@ export default function TopicDetailPage() {
                     </div>
                 ))}
             </div>
+
+            <CreatePostForm
+                topicId={topic.id}
+                onCreated={loadPosts}
+            />
         </div>
     );
 }
