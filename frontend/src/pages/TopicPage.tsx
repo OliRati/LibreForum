@@ -106,6 +106,7 @@ export default function TopicPage() {
             status={topic.moderationStatus}
             isPinned={topic.isPinned}
             isLocked={topic.isLocked}
+            toxicityScore={topic.toxicityScore}
           />
         </div>
 
@@ -132,17 +133,17 @@ export default function TopicPage() {
           </div>
         )}
 
-        {isModerator && (
-          <div className="mb-6">
-            <TopicModerationActions topic={topic} onUpdated={loadTopic} />
-          </div>
-        )}
-
         <div className="mt-6 whitespace-pre-wrap leading-8 text-zinc-300">
           {topic.content}
         </div>
 
         <ReportButton topicId={topic.id} />
+        
+        {isModerator && (
+          <div className="mb-6">
+            <TopicModerationActions topic={topic} onUpdated={loadTopic} />
+          </div>
+        )}
 
       </article>
 

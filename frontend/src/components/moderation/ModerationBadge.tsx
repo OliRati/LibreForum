@@ -2,12 +2,14 @@ interface ModerationBadgeProps {
   status?: string | null;
   isPinned?: boolean;
   isLocked?: boolean;
+  toxicityScore?: number | null;
 }
 
 export default function ModerationBadge({
   status,
   isPinned,
   isLocked,
+  toxicityScore
 }: ModerationBadgeProps) {
   return (
     <div className="flex flex-wrap gap-2">
@@ -38,6 +40,12 @@ export default function ModerationBadge({
       {status === 'approved' && (
         <span className="rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800">
           Validé
+        </span>
+      )}
+
+      {toxicityScore !== undefined && toxicityScore !== null && (
+        <span className="rounded-full bg-purple-100 px-2 py-1 text-xs">
+          Toxicité: {(toxicityScore * 100).toFixed(0)}%
         </span>
       )}
     </div>

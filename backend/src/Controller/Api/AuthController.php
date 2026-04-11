@@ -83,7 +83,7 @@ final class AuthController extends AbstractController
             'username' => $user->getUsername(),
             'displayName' => $user->getDisplayName(),
             'bio' => $user->getBio(),
-            'avatar' => $user->getAvatar(),
+            'avatar' => $user->getAvatarUrl(),
             'forumRank' => $user->getForumRank(),
             'roles' => $user->getRoles(),
             'createdAt' => $user->getCreatedAt()->format('c'),

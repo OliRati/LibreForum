@@ -57,11 +57,11 @@ export default function TopicModerationActions({
   };
 
   return (
-    <div className="flex flex-wrap gap-2 rounded-xl border bg-gray-50 p-3">
+    <div className="flex flex-wrap gap-2 rounded-xl border bg-gray-600 p-3">
       <button
         disabled={loading}
         onClick={handlePin}
-        className="rounded border px-3 py-1 text-sm hover:bg-white"
+        className="rounded border px-3 py-1 text-sm hover:bg-gray-500"
       >
         {topic.isPinned ? 'Désépingler' : 'Épingler'}
       </button>
@@ -69,7 +69,7 @@ export default function TopicModerationActions({
       <button
         disabled={loading}
         onClick={handleLock}
-        className="rounded border px-3 py-1 text-sm hover:bg-white"
+        className="rounded border px-3 py-1 text-sm hover:bg-gray-500"
       >
         {topic.isLocked ? 'Déverrouiller' : 'Verrouiller'}
       </button>
@@ -77,7 +77,7 @@ export default function TopicModerationActions({
       <button
         disabled={loading}
         onClick={() => handleModerate('approved')}
-        className="rounded border px-3 py-1 text-sm hover:bg-white"
+        className="rounded border px-3 py-1 text-sm hover:bg-gray-500"
       >
         Valider
       </button>
@@ -85,7 +85,7 @@ export default function TopicModerationActions({
       <button
         disabled={loading}
         onClick={() => handleModerate('flagged')}
-        className="rounded border px-3 py-1 text-sm hover:bg-white"
+        className="rounded border px-3 py-1 text-sm hover:bg-gray-500"
       >
         Signaler
       </button>
@@ -93,7 +93,7 @@ export default function TopicModerationActions({
       <button
         disabled={loading}
         onClick={() => handleModerate('blocked')}
-        className="rounded border px-3 py-1 text-sm hover:bg-white"
+        className="rounded border px-3 py-1 text-sm hover:bg-gray-500"
       >
         Bloquer
       </button>

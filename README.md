@@ -60,6 +60,15 @@ docker-compose up -d --build
 
 When finished proceed below.
 
+## Setup OLLAMA
+
+install a llm model in the container
+use of mistral as a good and fast model
+
+```bash
+docker-compose exec ollama ollama pull mistral
+```
+
 ## Access to all services
 
 As a regular tester, you'll only need the fist two ones.

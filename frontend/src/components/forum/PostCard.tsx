@@ -22,9 +22,15 @@ export default function PostCard({ post }: Props) {
         </span>
       </div>
 
-      <p className="whitespace-pre-wrap text-sm leading-7 text-zinc-300">
-        {post.content}
-      </p>
+      {post.moderationStatus === 'blocked' ? (
+        <p className="italic text-red-500">
+          Ce message a été bloqué pour non-respect des règles.
+        </p>
+      ) : (
+        <p className="whitespace-pre-wrap text-sm leading-7 text-zinc-300">
+          {post.content}
+        </p>
+      )}
     </div>
   );
 }

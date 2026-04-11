@@ -35,7 +35,7 @@ class Post
     private bool $isDeleted = false;
 
     #[ORM\Column(length: 30, nullable: true)]
-    private ?string $moderationStatus = null; // approved / flagged / blocked
+    private ?string $moderationStatus = null;
 
     #[ORM\Column(type: 'float', nullable: true)]
     private ?float $toxicityScore = null;

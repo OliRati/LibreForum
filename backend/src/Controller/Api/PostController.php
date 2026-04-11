@@ -75,6 +75,18 @@ class PostController extends AbstractController
         $em->persist($post);
         $em->flush();
 
+        $analysis = $llm->moderate($post->getContent());
+
+        $post->setToxicityScore($analysis['toxicity'] ?? 0);
+
+        $status = match ($analysis['label'] ?? 'clean') {
+            'toxic' => 'blocked',
+            'warning' => 'flagged',
+            default => 'approved'
+        };
+
+        $post->setModerationStatus($status);
+
         return $this->json($this->normalizePost($post), Response::HTTP_CREATED);
     }
 
