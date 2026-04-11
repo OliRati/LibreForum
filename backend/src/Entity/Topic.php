@@ -56,6 +56,18 @@ class Topic
     #[ORM\JoinTable(name: 'topic_tags')]
     private Collection $tags;
 
+    #[ORM\Column(options: ['default' => false])]
+    private bool $isDeleted = false;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $summary = null;
+
+    #[ORM\Column(length: 30, nullable: true)]
+    private ?string $moderationStatus = null; // approved / flagged / blocked
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $lastActivityAt = null;
+
     public function __construct()
     {
         $this->posts = new ArrayCollection();
@@ -216,6 +228,50 @@ class Topic
     public function removeTag(Tag $tag): static
     {
         $this->tags->removeElement($tag);
+        return $this;
+    }
+
+    public function isDeleted(): bool
+    {
+        return $this->isDeleted;
+    }
+
+    public function setIsDeleted(bool $isDeleted): static
+    {
+        $this->isDeleted = $isDeleted;
+        return $this;
+    }
+
+    public function getSummary(): ?string
+    {
+        return $this->summary;
+    }
+
+    public function setSummary(?string $summary): static
+    {
+        $this->summary = $summary;
+        return $this;
+    }
+
+    public function getModerationStatus(): ?string
+    {
+        return $this->moderationStatus;
+    }
+
+    public function setModerationStatus(?string $moderationStatus): static
+    {
+        $this->moderationStatus = $moderationStatus;
+        return $this;
+    }
+
+    public function getLastActivityAt(): ?\DateTimeImmutable
+    {
+        return $this->lastActivityAt;
+    }
+
+    public function setLastActivityAt(?\DateTimeImmutable $lastActivityAt): static
+    {
+        $this->lastActivityAt = $lastActivityAt;
         return $this;
     }
 }

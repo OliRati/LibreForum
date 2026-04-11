@@ -31,6 +31,15 @@ class Post
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?User $author = null;
 
+    #[ORM\Column(options: ['default' => false])]
+    private bool $isDeleted = false;
+
+    #[ORM\Column(length: 30, nullable: true)]
+    private ?string $moderationStatus = null; // approved / flagged / blocked
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $toxicityScore = null;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -87,6 +96,39 @@ class Post
     public function setAuthor(?User $author): static
     {
         $this->author = $author;
+        return $this;
+    }
+
+    public function isDeleted(): bool
+    {
+        return $this->isDeleted;
+    }
+
+    public function setIsDeleted(bool $isDeleted): static
+    {
+        $this->isDeleted = $isDeleted;
+        return $this;
+    }
+
+    public function getModerationStatus(): ?string
+    {
+        return $this->moderationStatus;
+    }
+
+    public function setModerationStatus(?string $moderationStatus): static
+    {
+        $this->moderationStatus = $moderationStatus;
+        return $this;
+    }
+
+    public function getToxicityScore(): ?float
+    {
+        return $this->toxicityScore;
+    }
+
+    public function setToxicityScore(?float $toxicityScore): static
+    {
+        $this->toxicityScore = $toxicityScore;
         return $this;
     }
 }

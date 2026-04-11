@@ -53,7 +53,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $bio = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $avatar = null;
+    private ?string $avatarUrl = null;
 
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $forumRank = 'Membre';
@@ -70,12 +70,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'author', targetEntity: ChatMessage::class)]
     private Collection $chatMessages;
 
+    #[ORM\OneToMany(mappedBy: 'reporter', targetEntity: Report::class)]
+    private Collection $reports;
+
     public function __construct()
     {
         $this->topics = new ArrayCollection();
         $this->posts = new ArrayCollection();
         $this->chatMessages = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
+        $this->reports = new ArrayCollection();
         $this->roles = ['ROLE_USER'];
     }
 
@@ -162,28 +166,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setDisplayName(?string $displayName): static
     {
         $this->displayName = $displayName;
-        return $this;
-    }
-
-    public function getBio(): ?string
-    {
-        return $this->bio;
-    }
-
-    public function setBio(?string $bio): static
-    {
-        $this->bio = $bio;
-        return $this;
-    }
-
-    public function getAvatar(): ?string
-    {
-        return $this->avatar;
-    }
-
-    public function setAvatar(?string $avatar): static
-    {
-        $this->avatar = $avatar;
         return $this;
     }
 
@@ -323,5 +305,32 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         return $this;
+    }
+
+    public function getBio(): ?string
+    {
+        return $this->bio;
+    }
+
+    public function setBio(?string $bio): static
+    {
+        $this->bio = $bio;
+        return $this;
+    }
+
+    public function getAvatarUrl(): ?string
+    {
+        return $this->avatarUrl;
+    }
+
+    public function setAvatarUrl(?string $avatarUrl): static
+    {
+        $this->avatarUrl = $avatarUrl;
+        return $this;
+    }
+
+    public function getReports(): Collection
+    {
+        return $this->reports;
     }
 }

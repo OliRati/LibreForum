@@ -30,7 +30,6 @@ services:
   # MySQL
   mysql:
     image: mysql:8.0
-    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: libreforum
@@ -81,7 +80,6 @@ services:
       - "11434:11434"
     volumes:
       - ollama_data:/root/.ollama
-    restart: unless-stopped
 
   # API Python (LLM)
   llm:

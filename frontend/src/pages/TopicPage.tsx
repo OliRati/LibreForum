@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getTopic, type Topic } from "../api/topics";
+
 import { createPost, getPostsByTopic, type Post } from "../api/posts";
 import PostCard from "../components/forum/PostCard";
 import { useAuthStore } from "../features/auth/authStore";
@@ -9,6 +10,11 @@ import EmptyState from "../components/ui/EmptyState";
 import TagBadge from "../components/forum/TagBadge";
 import { formatDate } from "../lib/formatDate";
 import Alert from "../components/ui/Alert";
+import ModerationBadge from '../components/moderation/ModerationBadge';
+import ReportButton from '../components/moderation/ReportButton';
+import TopicModerationActions from '../components/moderation/TopicModerationActions';
+import PostModerationActions from '../components/moderation/PostModerationActions';
+import { isModerator } from '../utils/auth';
 
 export default function TopicPage() {
   const { id } = useParams();
@@ -59,16 +65,49 @@ export default function TopicPage() {
     }
   }
 
+  // Charge le topic
+  const loadTopic = async () => {
+    if (!id) return;
+
+    try {
+      const data = await getTopic(Number(id));
+      setTopic(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Charge les posts
+  const loadPosts = async () => {
+    if (!id) return;
+
+    try {
+      const data = await getTopicPosts(Number(id));
+      setPosts(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+
   if (loading) return <Loader />;
   if (!topic) return <EmptyState title="Sujet introuvable" />;
 
-  
+
   return (
     <div className="space-y-8">
       {error && <Alert type="error" message={error} />}
 
       <article className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
         <h1 className="text-3xl font-bold">{topic.title}</h1>
+
+        <div className="mt-2">
+          <ModerationBadge
+            status={topic.moderationStatus}
+            isPinned={topic.isPinned}
+            isLocked={topic.isLocked}
+          />
+        </div>
 
         <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-zinc-500">
           <span>
@@ -93,9 +132,18 @@ export default function TopicPage() {
           </div>
         )}
 
+        {isModerator && (
+          <div className="mb-6">
+            <TopicModerationActions topic={topic} onUpdated={loadTopic} />
+          </div>
+        )}
+
         <div className="mt-6 whitespace-pre-wrap leading-8 text-zinc-300">
           {topic.content}
         </div>
+
+        <ReportButton topicId={topic.id} />
+
       </article>
 
       <section>
@@ -103,7 +151,22 @@ export default function TopicPage() {
 
         <div className="space-y-4">
           {posts.length > 0 ? (
-            posts.map((post) => <PostCard key={post.id} post={post} />)
+            posts.map((post) =>
+              <>
+                <PostCard key={post.id} post={post} />
+                <div className="mt-3 flex items-center justify-between">
+                  <ModerationBadge status={post.moderationStatus} />
+
+                  <div className="flex gap-2">
+                    <ReportButton postId={post.id} />
+
+                    {isModerator && (
+                      <PostModerationActions post={post} onUpdated={loadPosts} />
+                    )}
+                  </div>
+                </div>
+              </>
+            )
           ) : (
             <EmptyState
               title="Aucune réponse"

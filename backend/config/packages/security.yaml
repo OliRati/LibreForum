@@ -45,28 +45,22 @@ security:
 
     # Note: Only the *first* matching rule is applied
     access_control:
-        # Public
-        - { path: ^/api/login$, roles: PUBLIC_ACCESS, method: [POST] }
-        - { path: ^/api/register$, roles: PUBLIC_ACCESS, methods: [POST] }
+        - { path: ^/api/login, roles: PUBLIC_ACCESS }
+        - { path: ^/api/register, roles: PUBLIC_ACCESS }
 
-        - { path: ^/api/categories$, roles: PUBLIC_ACCESS, methods: [GET] }
-        - { path: ^/api/categories/\d+$, roles: PUBLIC_ACCESS, methods: [GET] }
+        - { path: ^/api/topics$, methods: [GET], roles: PUBLIC_ACCESS }
+        - { path: ^/api/topics/\d+$, methods: [GET], roles: PUBLIC_ACCESS }
+        - { path: ^/api/categories, roles: PUBLIC_ACCESS }
+        - { path: ^/api/tags, roles: PUBLIC_ACCESS }
+        - { path: ^/api/posts$, methods: [GET], roles: PUBLIC_ACCESS }
+        - { path: ^/api/users/\d+$, methods: [GET], roles: PUBLIC_ACCESS }
 
-        - { path: ^/api/topics$, roles: PUBLIC_ACCESS, methods: [GET] }
-        - { path: ^/api/topics/\d+$, roles: PUBLIC_ACCESS, methods: [GET] }
+        - { path: ^/api/reports, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/topics/\d+/(lock|pin|moderate)$, roles: ROLE_MODERATOR }
+        - { path: ^/api/posts/\d+/moderate$, roles: ROLE_MODERATOR }
 
-        - { path: ^/api/posts$, roles: PUBLIC_ACCESS, methods: [GET] }
-        - { path: ^/api/posts/\d+$, roles: PUBLIC_ACCESS, methods: [GET] }
-
-        - { path: ^/api/tags$, roles: PUBLIC_ACCESS, methods: [GET] }
-        - { path: ^/api/tags/\d+$, roles: PUBLIC_ACCESS, methods: [GET] }
-
-        - { path: ^/api/users/\d+$, roles: PUBLIC_ACCESS, methods: [GET] }
-
-        - { path: ^/api/me$, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/users/me, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
 
 when@test:
     security:

@@ -9,6 +9,7 @@ import ProtectedRoute from "../features/auth/ProtectedRoute";
 import CategoryPage from "../pages/CategoryPage";
 import ProfilePage from "../pages/ProfilePage";
 import SearchPage from "../pages/SearchPage";
+import ModerationReportsPage from '../pages/moderation/ModerationReportsPage';
 
 export const router = createBrowserRouter(
     [
@@ -23,6 +24,7 @@ export const router = createBrowserRouter(
                 { path: "category/:id", element: <CategoryPage /> },
                 { path: "profile/:id", element: <ProfilePage /> },
                 { path: "search", element: <SearchPage /> },
+                { path: "moderation/reports", element: <ModerationReportsPage /> },
                 {
                     path: "new-topic",
                     element: (
