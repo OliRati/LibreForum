@@ -18,3 +18,8 @@ export function isModerator(): boolean {
   const roles = getUserRoles();
   return roles.includes('ROLE_MODERATOR') || roles.includes('ROLE_ADMIN');
 }
+
+export function isOnline(lastSeenAt: string): boolean {
+  const diff = Date.now() - new Date(lastSeenAt).getTime();
+  return diff < 2 * 60 * 1000; // 2 minutes
+}

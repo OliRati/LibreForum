@@ -1,10 +1,9 @@
 import { Outlet, Link, useNavigate } from "react-router-dom";
-import { useAuthStore } from "../../features/auth/authStore";
+import { useAuth } from "../../features/auth/useAuth";
 import { useState } from "react";
 
 export default function AppLayout() {
-  const user = useAuthStore((state) => state.user);
-  const logout = useAuthStore((state) => state.logout);
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const [search, setSearch] = useState("");

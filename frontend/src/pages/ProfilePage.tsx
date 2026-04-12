@@ -4,6 +4,7 @@ import { getUser, type UserProfile } from "../api/users";
 import Loader from "../components/ui/Loader";
 import EmptyState from "../components/ui/EmptyState";
 import { formatDate } from "../lib/formatDate";
+import { isOnline } from '../utils/auth.js';
 
 export default function ProfilePage() {
   const { id } = useParams();
@@ -61,6 +62,12 @@ export default function ProfilePage() {
           <p className="mt-6 text-sm text-zinc-500">
             Membre depuis {formatDate(user.createdAt)}
           </p>
+        )}
+
+        {isOnline(user.lastSeenAt) ? (
+          <span className="text-green-500">●</span>
+        ) : (
+          <span className="text-gray-400">●</span>
         )}
       </section>
     </div>

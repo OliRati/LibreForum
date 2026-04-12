@@ -26,9 +26,9 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   setToken: (token) => {
     if (token) {
-      localStorage.setItem("lf_token", token);
+      localStorage.setItem("token", token);
     } else {
-      localStorage.removeItem("lf_token");
+      localStorage.removeItem("token");
     }
     set({ token });
   },
@@ -36,12 +36,12 @@ export const useAuthStore = create<AuthState>((set) => ({
   setUser: (user) => set({ user }),
 
   logout: () => {
-    localStorage.removeItem("lf_token");
+    localStorage.removeItem("token");
     set({ token: null, user: null });
   },
 
   hydrate: () => {
-    const token = localStorage.getItem("lf_token");
+    const token = localStorage.getItem("token");
     if (token) {
       set({ token });
     }

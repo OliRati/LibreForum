@@ -6,6 +6,8 @@ use App\Entity\Post;
 use App\Entity\Topic;
 use App\Repository\PostRepository;
 use App\Repository\TopicRepository;
+use App\Service\LlmService;
+use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -43,6 +45,8 @@ class PostController extends AbstractController
     public function create(
         Request $request,
         TopicRepository $topicRepository,
+        NotificationService $notificationService,
+        LlmService $llm,
         EntityManagerInterface $em,
         Security $security
     ): JsonResponse {
@@ -109,6 +113,22 @@ class PostController extends AbstractController
         );
 
         $this->hub->publish($update);
+
+        // Launch a Post created notification
+        $author = $topic->getAuthor();
+
+        if ($author && $author !== $currentUser) {
+            $notificationService->notify(
+                $author,
+                'new_reply',
+                [
+                    'topicId' => $topic->getId(),
+                    'topicTitle' => $topic->getTitle(),
+                ]
+            );
+        }
+
+        $user->setLastSeenAt(new \DateTimeImmutable());
 
         return $this->json($this->normalizePost($post), Response::HTTP_CREATED);
     }

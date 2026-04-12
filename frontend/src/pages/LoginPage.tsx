@@ -1,9 +1,10 @@
 import { FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { login, saveToken } from '../services/auth';
+import { useAuth } from '../features/auth/useAuth'; 
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const [email, setEmail] = useState('admin@libreforum.local');
   const [password, setPassword] = useState('password');
@@ -11,13 +12,12 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); // ✅ CRUCIAL
+    e.preventDefault();
     setError('');
     setLoading(true);
 
     try {
-      const data = await login(email, password);
-      saveToken(data.token);
+      await login(email, password);;
       navigate('/');
     } catch (err: any) {
       console.error(err);

@@ -73,7 +73,7 @@ final class UserController extends AbstractController
         }
 
         if (array_key_exists('avatar', $payload)) {
-            $user->setAvatar($payload['avatar']);
+            $user->setAvatarUrl($payload['avatar']);
         }
 
         if (array_key_exists('forumRank', $payload)) {

@@ -16,6 +16,9 @@ class Notification
     #[ORM\Column(length: 255)]
     private ?string $type = null;
 
+    #[ORM\Column(type: 'json')]
+    private array $data = [];
+
     #[ORM\Column(length: 255)]
     private ?string $message = null;
 
@@ -30,6 +33,11 @@ class Notification
 
     #[ORM\Column(length: 255)]
     private ?string $payload = null;
+
+    public function __construct()
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {
@@ -106,5 +114,17 @@ class Notification
         $this->payload = $payload;
 
         return $this;
+    }
+
+    public function getData(): ?array
+    {
+        return $this->data;
+    }
+
+    public function setData(array $data): static
+    {
+       $this->data = $data;
+       
+       return $this;
     }
 }

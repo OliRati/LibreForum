@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -72,6 +73,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\OneToMany(mappedBy: 'reporter', targetEntity: Report::class)]
     private Collection $reports;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $lastSeenAt = null;
 
     public function __construct()
     {
@@ -332,5 +336,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getReports(): Collection
     {
         return $this->reports;
+    }
+
+    public function setLastSeenAt(?DateTimeImmutable $lastSeenAt) {
+        $this->lastSeenAt = $lastSeenAt;
+        return $this;
+    }
+
+    public function getLastSeenAt(): DateTimeImmutable
+    {
+        return $this->lastSeenAt;
     }
 }
