@@ -13,10 +13,15 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-
+use Symfony\Component\Mercure\HubInterface;
+use Symfony\Component\Mercure\Update;
 #[Route('/api/posts')]
 class PostController extends AbstractController
 {
+    public function __construct(private HubInterface $hub)
+    {
+    }
+
     #[Route('', name: 'api_posts_index', methods: ['GET'])]
     public function index(Request $request, PostRepository $postRepository): JsonResponse
     {
@@ -72,9 +77,7 @@ class PostController extends AbstractController
         $post->setAuthor($user);
         $post->setCreatedAt(new \DateTimeImmutable());
 
-        $em->persist($post);
-        $em->flush();
-
+        // LLM Automatic moderation on post
         $analysis = $llm->moderate($post->getContent());
 
         $post->setToxicityScore($analysis['toxicity'] ?? 0);
@@ -86,6 +89,26 @@ class PostController extends AbstractController
         };
 
         $post->setModerationStatus($status);
+
+        // Store to Database
+        $em->persist($post);
+        $em->flush();
+
+        // Mercure intégration
+        $update = new Update(
+            'topic/' . $topic->getId(),
+            json_encode([
+                'type' => 'post_created',
+                'post' => [
+                    'id' => $post->getId(),
+                    'content' => $post->getContent(),
+                    'author' => $post->getAuthor()->getUsername(),
+                    'createdAt' => $post->getCreatedAt()->format(DATE_ATOM),
+                ]
+            ])
+        );
+
+        $this->hub->publish($update);
 
         return $this->json($this->normalizePost($post), Response::HTTP_CREATED);
     }

@@ -15,6 +15,8 @@ import TopicSummaryCard from '../components/ai/TopicSummaryCard';
 
 import { isModerator } from '../utils/auth';
 
+import { subscribeToTopic } from '../lib/mercure';
+
 export default function TopicDetailPage() {
     const { id } = useParams();
 
@@ -62,6 +64,18 @@ export default function TopicDetailPage() {
     if (loading || !topic) {
         return <div className="p-6">Chargement...</div>;
     }
+
+    useEffect(() => {
+        if (!topic) return;
+
+        const unsubscribe = subscribeToTopic(topic.id, (data) => {
+            if (data.type === 'post_created') {
+                setPosts((prev) => [...prev, data.post]);
+            }
+        });
+
+        return unsubscribe;
+    }, [topic]);
 
     return (
         <div className="mx-auto max-w-4xl p-6">

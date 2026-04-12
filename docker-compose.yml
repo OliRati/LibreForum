@@ -92,6 +92,21 @@ services:
     ports:
       - "8000:8000"
 
+  mercure:
+    image: dunglas/mercure
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "3000:80"
+    environment:
+      SERVER_NAME: ':80'
+      MERCURE_PUBLISHER_JWT_KEY: ${MERCURE_JWT_SECRET}
+      MERCURE_SUBSCRIBER_JWT_KEY: ${MERCURE_JWT_SECRET}
+      MERCURE_EXTRA_DIRECTIVES: |
+        cors_origins *
+        anonymous
+
 volumes:
   db_data:
   ollama_data:
