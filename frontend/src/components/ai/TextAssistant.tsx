@@ -43,7 +43,7 @@ export default function TextAssistant({ value, onChange }: Props) {
         <div className="mt-3">
           <div className="text-sm text-gray-600 mb-1">Suggestion :</div>
 
-          <div className="rounded bg-gray-50 p-3 text-sm whitespace-pre-wrap">
+          <div className="rounded bg-gray-600 p-3 text-sm whitespace-pre-wrap">
             {preview}
           </div>
 

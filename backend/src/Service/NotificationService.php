@@ -18,9 +18,14 @@ class NotificationService
     public function notify($user, string $type, array $data = [])
     {
         $notification = new Notification();
-        $notification->setUser($user);
+        $notification->setUser($user->getId());
         $notification->setType($type);
         $notification->setData($data);
+
+        $notification->setMessage('');
+        $notification->setIsRead(false);
+        $notification->setPayload('');
+
 
         $this->em->persist($notification);
         $this->em->flush();

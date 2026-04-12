@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Update;
+
 #[Route('/api/posts')]
 class PostController extends AbstractController
 {
@@ -115,6 +116,16 @@ class PostController extends AbstractController
         $this->hub->publish($update);
 
         // Launch a Post created notification
+        $notificationService->notify(
+                $user,
+                'new_reply',
+                [
+                    'topicId' => $topic->getId(),
+                    'topicTitle' => $topic->getTitle(),
+                ]
+            );
+
+        /*
         $author = $topic->getAuthor();
 
         if ($author && $author !== $currentUser) {
@@ -127,6 +138,7 @@ class PostController extends AbstractController
                 ]
             );
         }
+        */
 
         $user->setLastSeenAt(new \DateTimeImmutable());
 

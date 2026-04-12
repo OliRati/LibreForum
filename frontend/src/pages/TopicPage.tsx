@@ -93,6 +93,7 @@ export default function TopicPage() {
   if (loading) return <Loader />;
   if (!topic) return <EmptyState title="Sujet introuvable" />;
 
+  const moderator = isModerator();
 
   return (
     <div className="space-y-8">
@@ -139,8 +140,8 @@ export default function TopicPage() {
 
         <ReportButton topicId={topic.id} />
 
-        {isModerator && (
-          <div className="mb-6">
+        {moderator && (
+          <div className="mb-0 mt-3">
             <TopicModerationActions topic={topic} onUpdated={loadTopic} />
           </div>
         )}
@@ -161,7 +162,7 @@ export default function TopicPage() {
                   <div className="flex gap-2">
                     <ReportButton postId={post.id} />
 
-                    {isModerator && (
+                    {moderator && (
                       <PostModerationActions post={post} onUpdated={loadPosts} />
                     )}
                   </div>

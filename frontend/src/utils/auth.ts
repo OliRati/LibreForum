@@ -8,6 +8,7 @@ export function parseJwt(token: string) {
 
 export function getUserRoles(): string[] {
   const token = localStorage.getItem('token');
+
   if (!token) return [];
 
   const payload = parseJwt(token);
@@ -16,7 +17,20 @@ export function getUserRoles(): string[] {
 
 export function isModerator(): boolean {
   const roles = getUserRoles();
-  return roles.includes('ROLE_MODERATOR') || roles.includes('ROLE_ADMIN');
+  console.log('isModerator() : ' + roles);
+  return roles.includes('ROLE_MODERATOR');
+}
+
+export function isAdmin(): boolean {
+  const roles = getUserRoles();
+  console.log('isModerator() : ' + roles);
+  return roles.includes('ROLE_ADMIN');
+}
+
+export function isUser(): boolean {
+  const roles = getUserRoles();
+  console.log('isModerator() : ' + roles);
+  return roles.includes('ROLE_USER');
 }
 
 export function isOnline(lastSeenAt: string): boolean {
