@@ -15,6 +15,7 @@ import ReportButton from '../components/moderation/ReportButton';
 import TopicModerationActions from '../components/moderation/TopicModerationActions';
 import PostModerationActions from '../components/moderation/PostModerationActions';
 import { isModerator } from '../utils/auth';
+import { getTopicPosts } from "../services/topics.js";
 
 export default function TopicPage() {
   const { id } = useParams();
@@ -138,7 +139,9 @@ export default function TopicPage() {
           {topic.content}
         </div>
 
-        <ReportButton topicId={topic.id} />
+        <div className="text-end">
+          <ReportButton topicId={topic.id} />
+        </div>
 
         {moderator && (
           <div className="mb-0 mt-3">

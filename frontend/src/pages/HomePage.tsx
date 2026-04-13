@@ -6,6 +6,8 @@ import TopicCard from "../components/forum/TopicCard";
 import Loader from "../components/ui/Loader";
 import Pagination from "../components/ui/Pagination";
 import EmptyState from "../components/ui/EmptyState";
+import { Link } from "react-router-dom";
+import { isModerator } from '../utils/auth';
 
 export default function HomePage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -43,6 +45,12 @@ export default function HomePage() {
           Forum communautaire autour du logiciel libre, du code et des projets open source.
         </p>
       </section>
+
+      { isModerator() && (
+        <Link to={'/moderation/reports'} className="hover:text-zinc-300">
+          Gérer les signalements
+        </Link>
+      )}
 
       <section>
         <h2 className="mb-4 text-2xl font-semibold">Catégories</h2>

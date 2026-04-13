@@ -140,8 +140,6 @@ class PostController extends AbstractController
         }
         */
 
-        $user->setLastSeenAt(new \DateTimeImmutable());
-
         return $this->json($this->normalizePost($post), Response::HTTP_CREATED);
     }
 

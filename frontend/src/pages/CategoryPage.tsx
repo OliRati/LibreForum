@@ -6,6 +6,7 @@ import TopicCard from "../components/forum/TopicCard";
 import Loader from "../components/ui/Loader";
 import EmptyState from "../components/ui/EmptyState";
 import Pagination from "../components/ui/Pagination";
+import { isUser } from '../utils/auth';
 
 export default function CategoryPage() {
   const { id } = useParams();
@@ -60,13 +61,6 @@ export default function CategoryPage() {
           />
         )}
       </section>
-
-      <Link
-        to="/topics/create"
-        className="rounded bg-black px-4 py-2 text-white"
-      >
-        Nouveau topic
-      </Link>
 
       <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
     </div>

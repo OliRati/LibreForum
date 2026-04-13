@@ -5,6 +5,9 @@ import { getCategories, type Category } from "../api/categories";
 import { getTags, type Tag } from "../api/tags";
 import Alert from "../components/ui/Alert";
 
+import TagSuggestion from '../components/ai/TagSuggestion';
+import TextAssistant from '../components/ai/TextAssistant';
+
 export default function NewTopicPage() {
   const navigate = useNavigate();
 
@@ -126,6 +129,17 @@ export default function NewTopicPage() {
           />
         </div>
 
+        {/* Assistant IA */}
+        <TextAssistant value={content} onChange={setContent} />
+
+        {/* Tags IA */}
+        <TagSuggestion
+          content={content}
+          onSelect={(newTags) =>
+            setTags((prev) => [...new Set([...prev, ...newTags])])
+          }
+        />
+        
         <button
           type="submit"
           className="rounded-xl bg-emerald-600 px-5 py-3 font-medium hover:bg-emerald-500"

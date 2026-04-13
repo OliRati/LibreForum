@@ -17,19 +17,16 @@ export function getUserRoles(): string[] {
 
 export function isModerator(): boolean {
   const roles = getUserRoles();
-  console.log('isModerator() : ' + roles);
   return roles.includes('ROLE_MODERATOR');
 }
 
 export function isAdmin(): boolean {
   const roles = getUserRoles();
-  console.log('isModerator() : ' + roles);
   return roles.includes('ROLE_ADMIN');
 }
 
 export function isUser(): boolean {
   const roles = getUserRoles();
-  console.log('isModerator() : ' + roles);
   return roles.includes('ROLE_USER');
 }
 
