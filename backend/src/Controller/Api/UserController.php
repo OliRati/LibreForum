@@ -27,7 +27,8 @@ final class UserController extends AbstractController
             'avatar' => $user->getAvatarUrl(),
             'forumRank' => $user->getForumRank(),
             'roles' => $user->getRoles(),
-            'createdAt' => $user->getCreatedAt()->format('c'),
+            'lastSeenAt' => $user->getLastSeenAt()?->format('c'),
+            'createdAt' => $user->getCreatedAt()?->format('c'),
         ], $users));
     }
 
@@ -41,6 +42,7 @@ final class UserController extends AbstractController
             'bio' => $user->getBio(),
             'avatar' => $user->getAvatarUrl(),
             'forumRank' => $user->getForumRank(),
+            'lastSeenAt' => $user->getLastSeenAt()?->format('c'),
             'createdAt' => $user->getCreatedAt()?->format('c'),
             'roles' => $user->getRoles(),
         ]);
