@@ -24,7 +24,14 @@ export const router = createBrowserRouter(
                 { path: "category/:id", element: <CategoryPage /> },
                 { path: "profile/:id", element: <ProfilePage /> },
                 { path: "search", element: <SearchPage /> },
-                { path: "moderation/reports", element: <ModerationReportsPage /> },
+                { 
+                    path: "moderation/reports",
+                    element: (
+                        <ProtectedRoute>
+                            <ModerationReportsPage />
+                        </ProtectedRoute>
+                    ),
+                },
                 {
                     path: "new-topic",
                     element: (

@@ -39,21 +39,24 @@ export default function HomePage() {
 
   return (
     <div className="space-y-10">
-      <section>
-        <h1 className="mb-4 text-3xl font-bold">Bienvenue sur LibreForum</h1>
-        <p className="text-zinc-400">
-          Forum communautaire autour du logiciel libre, du code et des projets open source.
-        </p>
-      </section>
 
       { isModerator() && (
-        <Link to={'/moderation/reports'} className="hover:text-zinc-300">
-          Gérer les signalements
-        </Link>
+        <section className="text-left">
+          <Link to={'/moderation/reports'} className="hover:text-zinc-300">
+            Gérer les signalements
+          </Link>
+        </section>
       )}
 
       <section>
-        <h2 className="mb-4 text-2xl font-semibold">Catégories</h2>
+        <h1 className="mb-4 text-3xl font-bold">Bienvenue sur LibreForum</h1>
+        <p className="text-zinc-400">
+          LibreForum est un forum communautaire dédiée à l'echange, à l'entraide et au partage de connaissance autour de l'informatique en général, du logiciel libre, de l'open-source et de son écosystèmes.
+        </p>
+      </section>
+
+      <section>
+        <h2 className="pb-6 text-2xl font-semibold">Catégories</h2>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {categories.map((category) => (
             <CategoryCard key={category.id} category={category} />
@@ -62,7 +65,7 @@ export default function HomePage() {
       </section>
 
       <section>
-        <h2 className="mb-4 text-2xl font-semibold">Derniers sujets</h2>
+        <h2 className="pb-6 text-2xl font-semibold">Derniers sujets</h2>
 
         {topics.length > 0 ? (
           <>

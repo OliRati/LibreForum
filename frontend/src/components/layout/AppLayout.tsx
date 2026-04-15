@@ -1,6 +1,7 @@
 import { Outlet, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../features/auth/useAuth";
 import { useState } from "react";
+import libreForumLogo from "../../assets/img/LibreForum-logo.png";
 
 export default function AppLayout() {
   const { user, logout } = useAuth();
@@ -20,7 +21,15 @@ export default function AppLayout() {
         <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-4 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-6">
             <Link to="/" className="text-xl font-bold">
-              LibreForum
+              <div>
+                <div className="w-16 mx-auto">
+                  <img src={libreForumLogo} alt="LibreForum" />
+                </div>
+                <div className="text-center mx-auto font-mono text-base">
+                  <span className="text-blue-500">Libre</span>
+                  <span className="text-green-600">Forum</span>
+                </div>
+              </div>
             </Link>
 
             <nav className="flex items-center gap-4 text-sm">
@@ -73,6 +82,10 @@ export default function AppLayout() {
       <main className="mx-auto max-w-6xl px-4 py-8">
         <Outlet />
       </main>
+
+      <footer className="py-8 border-b border-zinc-800 bg-zinc-900">
+        <p>LibreForum est un projet mené dans le cadre d'un travail d'étudiant en Developpement Web et Web mobile.</p>
+      </footer>
     </div>
   );
 }
