@@ -5,6 +5,8 @@ import { getTopic, getTopicPosts } from '../services/topics';
 import type { Topic } from '../types/topic';
 import type { Post } from '../types/post';
 
+import ReactMarkdown from "react-markdown";
+
 import ModerationBadge from '../components/moderation/ModerationBadge';
 import ReportButton from '../components/moderation/ReportButton';
 import TopicModerationActions from '../components/moderation/TopicModerationActions';
@@ -122,7 +124,9 @@ export default function TopicDetailPage() {
                                 Ce message a été bloqué pour non-respect des règles.
                             </div>
                         ) : (
-                            <div className="mb-3">{post.content}</div>
+                            <div className="mb-3">
+                                <ReactMarkdown>{post.content}</ReactMarkdown>
+                            </div>
                         )}
 
                         <div className="flex items-center justify-between">

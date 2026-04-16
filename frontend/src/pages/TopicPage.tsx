@@ -152,7 +152,7 @@ export default function TopicPage() {
       </article>
 
       <section>
-        <h2 className="mb-4 text-2xl font-semibold">Réponses</h2>
+        <h2 className="mb-4 pb-4 text-2xl font-semibold">Réponses</h2>
 
         <div className="space-y-4">
           {posts.length > 0 ? (

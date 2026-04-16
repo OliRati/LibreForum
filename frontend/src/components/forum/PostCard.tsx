@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import ReactMarkdown from "react-markdown";
 import type { Post } from "../../api/posts";
 import { formatDate } from "../../lib/formatDate";
 
@@ -22,15 +23,19 @@ export default function PostCard({ post }: Props) {
         </span>
       </div>
 
-      {post.moderationStatus === 'blocked' ? (
-        <p className="italic text-red-500">
-          Ce message a été bloqué pour non-respect des règles.
-        </p>
-      ) : (
-        <p className="whitespace-pre-wrap text-sm leading-7 text-zinc-300">
-          {post.content}
-        </p>
-      )}
+      <div className="mb-3 p-2 rounded border border-zinc-600 bg-zinc-800 items-left text-left">
+        {post.moderationStatus === 'blocked' ? (
+          <p className="italic text-red-500">
+            Ce message a été bloqué pour non-respect des règles.
+          </p>
+        ) : (
+          <div className="prose lg:prose-xl">
+            <ReactMarkdown>
+              {post.content}
+            </ReactMarkdown>          
+          </div>
+        )}
+      </div>
     </div>
   );
 }
