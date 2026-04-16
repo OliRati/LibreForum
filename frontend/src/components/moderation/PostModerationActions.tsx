@@ -27,11 +27,11 @@ export default function PostModerationActions({
   };
 
   return (
-    <div className="mt-2 flex flex-wrap gap-2">
+    <div className="mt-2 flex flex-wrap gap-2 rounded border bg-gray-600 p-3">
       <button
         disabled={loading}
         onClick={() => handleModerate('approved')}
-        className="rounded border px-2 py-1 text-xs hover:bg-gray-50"
+        className="rounded border px-3 py-1 text-sm hover:bg-gray-500"
       >
         Valider
       </button>
@@ -39,7 +39,7 @@ export default function PostModerationActions({
       <button
         disabled={loading}
         onClick={() => handleModerate('flagged')}
-        className="rounded border px-2 py-1 text-xs hover:bg-gray-50"
+        className="rounded border px-3 py-1 text-sm hover:bg-gray-500"
       >
         Signaler
       </button>
@@ -47,7 +47,7 @@ export default function PostModerationActions({
       <button
         disabled={loading}
         onClick={() => handleModerate('blocked')}
-        className="rounded border px-2 py-1 text-xs hover:bg-gray-50"
+        className="rounded border px-3 py-1 text-sm hover:bg-gray-500"
       >
         Bloquer
       </button>

@@ -4,14 +4,17 @@ namespace App\Service;
 
 use App\Entity\ModerationLog;
 use App\Entity\Post;
+use App\Entity\Report;
 use App\Entity\Topic;
 use App\Entity\User;
+use App\Repository\ReportRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 class ModerationService
 {
     public function __construct(
-        private EntityManagerInterface $em
+        private EntityManagerInterface $em,
+        private ReportRepository $reportRepository
     ) {}
 
     public function log(
@@ -37,12 +40,28 @@ class ModerationService
         $topic->setModerationStatus($status);
         $this->em->flush();
 
+        // Mettre à jour les rapports associés au topic
+        $reports = $this->reportRepository->findBy(['topic' => $topic, 'status' => 'pending']);
+        foreach ($reports as $report) {
+            $report->setStatus('resolved');
+            $this->em->persist($report);
+        }
+        $this->em->flush();
+
         $this->log($moderator, 'topic_moderated', $reason, $topic);
     }
 
     public function moderatePost(Post $post, string $status, ?string $reason, User $moderator): void
     {
         $post->setModerationStatus($status);
+        $this->em->flush();
+
+        // Mettre à jour les rapports associés au post
+        $reports = $this->reportRepository->findBy(['post' => $post, 'status' => 'pending']);
+        foreach ($reports as $report) {
+            $report->setStatus('resolved');
+            $this->em->persist($report);
+        }
         $this->em->flush();
 
         $this->log($moderator, 'post_moderated', $reason, null, $post);

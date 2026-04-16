@@ -57,7 +57,7 @@ export default function TopicModerationActions({
   };
 
   return (
-    <div className="flex flex-wrap gap-2 rounded-xl border bg-gray-600 p-3">
+    <div className="mt-1 flex flex-wrap gap-2 rounded border bg-gray-600 p-3">
       <button
         disabled={loading}
         onClick={handlePin}

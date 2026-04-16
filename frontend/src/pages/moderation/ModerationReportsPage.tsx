@@ -1,21 +1,14 @@
 import { useEffect, useState } from 'react';
 import { getReports } from '../../services/reports';
 import type { Report } from '../../types/report';
+import type { Post } from '../../types/post';
 import TopicModerationActions from '../../components/moderation/TopicModerationActions';
 import PostModerationActions from '../../components/moderation/PostModerationActions';
-import { getTopic, type Topic } from "../../api/topics";
-import { useParams } from 'react-router-dom';
-import { getTopicPosts } from "../../services/topics.js";
-
 
 export default function ModerationReportsPage() {
-  const { id } = useParams();
-
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [topic, setTopic] = useState<Topic | null>(null);
-  const [posts, setPosts] = useState<Post[]>([]);
 
   const loadReports = async () => {
     try {
@@ -28,30 +21,6 @@ export default function ModerationReportsPage() {
       setError("Impossible de charger les signalements.");
     } finally {
       setLoading(false);
-    }
-  };
-
-  // Charge le topic
-  const loadTopic = async () => {
-    if (!id) return;
-
-    try {
-      const data = await getTopic(Number(id));
-      setTopic(data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  // Charge les posts
-  const loadPosts = async () => {
-    if (!id) return;
-
-    try {
-      const data = await getTopicPosts(Number(id));
-      setPosts(data);
-    } catch (err) {
-      console.error(err);
     }
   };
 
@@ -88,7 +57,7 @@ export default function ModerationReportsPage() {
                 </span>
               </div>
 
-              <div className="mb-2 text-sm text-gray-600">
+              <div className="mb-2 text-sm text-gray-400">
                 Par : {report.reporter?.username || 'Utilisateur inconnu'}
               </div>
 
@@ -104,7 +73,7 @@ export default function ModerationReportsPage() {
                   </div>
 
                   <div className="mb-0 mt-3">
-                    <TopicModerationActions topic={report.topic} onUpdated={loadTopic} />
+                    <TopicModerationActions topic={report.topic} onUpdated={loadReports} />
                   </div>
                 </>
               )}
@@ -117,7 +86,7 @@ export default function ModerationReportsPage() {
                   </div>
 
                   <div className="mb-0 mt-3">
-                    <PostModerationActions post={report.post} onUpdated={loadPosts} />
+                    <PostModerationActions post={report.post} onUpdated={loadReports} />
                   </div>
                 </>
               )}

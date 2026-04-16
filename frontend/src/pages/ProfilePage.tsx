@@ -29,8 +29,6 @@ export default function ProfilePage() {
 
   if (loading) return <Loader />;
   if (!user) return <EmptyState title="Utilisateur introuvable" />;
-
-  console.dir(user);
   
   return (
     <div className="mx-auto max-w-3xl space-y-6">

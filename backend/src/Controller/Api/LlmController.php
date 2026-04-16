@@ -36,8 +36,8 @@ class LlmController extends AbstractController
         ]);
     }
 
-    #[Route('/posts/{id}/moderate', methods: ['POST'])]
-    public function moderatePost(
+    #[Route('/posts/{id}/analyze', methods: ['POST'])]
+    public function analyzePost(
         Post $post,
         LlmService $llm
     ): JsonResponse {

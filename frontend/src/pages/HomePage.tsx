@@ -41,7 +41,7 @@ export default function HomePage() {
     <div className="space-y-10">
 
       { isModerator() && (
-        <section className="text-left">
+        <section className="text-left p-3 bg-amber-950 border border-amber-800 rounded-xl">
           <Link to={'/moderation/reports'} className="hover:text-zinc-300">
             Gérer les signalements
           </Link>
