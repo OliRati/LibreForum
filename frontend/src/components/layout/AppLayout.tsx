@@ -2,6 +2,7 @@ import { Outlet, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../features/auth/useAuth";
 import { useState } from "react";
 import libreForumLogo from "../../assets/img/LibreForum-logo.png";
+import Footer from "./Footer";
 
 export default function AppLayout() {
   const { user, logout } = useAuth();
@@ -91,9 +92,7 @@ export default function AppLayout() {
         <Outlet />
       </main>
 
-      <footer className="py-8 border-b border-zinc-800 bg-zinc-900">
-        <p>LibreForum est un projet mené dans le cadre d'un travail d'étudiant en Developpement Web et Web mobile.</p>
-      </footer>
+      <Footer />
     </div>
   );
 }
