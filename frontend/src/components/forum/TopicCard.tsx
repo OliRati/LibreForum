@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import type { Topic } from "../../api/topics";
 import TagBadge from "./TagBadge";
+import ModerationBadge from "../moderation/ModerationBadge.js";
 
 type Props = {
   topic: Topic;
@@ -11,16 +12,10 @@ export default function TopicCard({ topic }: Props) {
     <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-5 transition hover:border-zinc-700 hover:bg-zinc-800">
       <Link to={`/topic/${topic.id}`} className="block">
         <div className="mb-2 flex items-center gap-2">
-          {topic.isPinned && (
-            <span className="rounded bg-amber-500/20 px-2 py-1 text-xs text-amber-300">
-              Épinglé
-            </span>
-          )}
-          {topic.isLocked && (
-            <span className="rounded bg-red-500/20 px-2 py-1 text-xs text-red-300">
-              Verrouillé
-            </span>
-          )}
+          <ModerationBadge
+            isPinned={topic.isPinned}
+            isLocked={topic.isLocked}
+            toxicityScore={topic.toxicityScore}/>
         </div>
 
         <h3 className="text-xl font-semibold text-zinc-100">{topic.title}</h3>

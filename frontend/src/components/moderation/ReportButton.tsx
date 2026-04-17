@@ -56,14 +56,14 @@ export default function ReportButton({
     <>
       <button
         onClick={() => setOpen(true)}
-        className="rounded border px-3 py-1 text-sm hover:bg-gray-50"
+        className="rounded border px-3 py-1 text-sm hover:bg-gray-500"
       >
         {label}
       </button>
 
       <Modal open={open} onClose={() => setOpen(false)} title="Signaler ce contenu">
         <div className="space-y-4">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-300 pb-2">
             Explique brièvement pourquoi ce contenu doit être signalé.
           </p>
 

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getTopic, type Topic } from "../api/topics";
 
-import { createPost, getPostsByTopic, type Post } from "../api/posts";
+import { type Post } from "../api/posts";
 import PostCard from "../components/forum/PostCard";
 import { useAuthStore } from "../features/auth/authStore";
 import Loader from "../components/ui/Loader";
@@ -15,7 +15,7 @@ import ReportButton from '../components/moderation/ReportButton';
 import TopicModerationActions from '../components/moderation/TopicModerationActions';
 import PostModerationActions from '../components/moderation/PostModerationActions';
 import { isModerator } from '../utils/auth';
-import { getTopicPosts } from "../services/topics.js";
+import { getTopicPosts, createPost } from "../services/topics.js";
 
 export default function TopicPage() {
   const { id } = useParams();
@@ -34,7 +34,7 @@ export default function TopicPage() {
     try {
       const [topicData, postsData] = await Promise.all([
         getTopic(id),
-        getPostsByTopic(id),
+        getTopicPosts(Number(id)),
       ]);
       setTopic(topicData);
       setPosts(postsData);
@@ -54,10 +54,7 @@ export default function TopicPage() {
     if (!id || !reply.trim()) return;
 
     try {
-      await createPost({
-        topicId: Number(id),
-        content: reply,
-      });
+      await createPost(Number(id), reply);
 
       setReply("");
       await loadData();
@@ -163,8 +160,6 @@ export default function TopicPage() {
                   <ModerationBadge status={post.moderationStatus} />
 
                   <div className="flex gap-2">
-                    <ReportButton postId={post.id} />
-
                     {moderator && (
                       <PostModerationActions post={post} onUpdated={loadPosts} />
                     )}

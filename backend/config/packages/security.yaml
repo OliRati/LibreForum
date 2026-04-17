@@ -50,12 +50,14 @@ security:
 
         - { path: ^/api/topics$, methods: [GET], roles: PUBLIC_ACCESS }
         - { path: ^/api/topics/\d+$, methods: [GET], roles: PUBLIC_ACCESS }
+        - { path: ^/api/topics/\d+/posts$, methods: [GET], roles: PUBLIC_ACCESS }
         - { path: ^/api/categories, roles: PUBLIC_ACCESS }
         - { path: ^/api/tags, roles: PUBLIC_ACCESS }
         - { path: ^/api/posts$, methods: [GET], roles: PUBLIC_ACCESS }
         - { path: ^/api/users/\d+$, methods: [GET], roles: PUBLIC_ACCESS }
 
         - { path: ^/api/reports, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/topics/\d+/posts$, methods: [POST], roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/api/topics/\d+/(lock|pin|moderate)$, roles: ROLE_MODERATOR }
         - { path: ^/api/posts/\d+/moderate$, roles: ROLE_MODERATOR }
 

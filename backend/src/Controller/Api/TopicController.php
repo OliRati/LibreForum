@@ -2,11 +2,14 @@
 
 namespace App\Controller\Api;
 
+use App\Entity\Post;
 use App\Entity\Tag;
 use App\Entity\Topic;
 use App\Repository\CategoryRepository;
 use App\Repository\TagRepository;
 use App\Repository\TopicRepository;
+use App\Service\LlmService;
+use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -19,6 +22,11 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 #[Route('/api/topics')]
 class TopicController extends AbstractController
 {
+    public function __construct(
+        private LlmService $llm,
+        private NotificationService $notificationService
+    ) {}
+
     #[Route('', name: 'api_topics_index', methods: ['GET'])]
     public function index(Request $request, TopicRepository $topicRepository): JsonResponse
     {
@@ -54,6 +62,66 @@ class TopicController extends AbstractController
     public function show(Topic $topic): JsonResponse
     {
         return $this->json($this->normalizeTopic($topic));
+    }
+
+    #[Route('/{id}/posts', name: 'api_topics_posts', methods: ['GET'])]
+    public function posts(Topic $topic): JsonResponse
+    {
+        $posts = $topic->getPosts()->toArray();
+        return $this->json(array_map([$this, 'normalizePost'], $posts));
+    }
+
+    #[Route('/{id}/posts', name: 'api_topics_posts_create', methods: ['POST'])]
+    public function createPost(
+        Topic $topic,
+        Request $request,
+        EntityManagerInterface $em,
+        Security $security
+    ): JsonResponse {
+        $user = $security->getUser();
+        if (!$user) {
+            return $this->json(['message' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        if ($topic->isLocked()) {
+            return $this->json(['message' => 'Topic verrouillé'], Response::HTTP_FORBIDDEN);
+        }
+
+        $data = json_decode($request->getContent(), true);
+        $content = trim($data['content'] ?? '');
+
+        if (!$content) {
+            return $this->json(['message' => 'Le contenu est requis'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $post = new Post();
+        $post->setContent($content);
+        $post->setTopic($topic);
+        $post->setAuthor($user);
+        $post->setCreatedAt(new \DateTimeImmutable());
+
+        // LLM Automatic moderation on post
+        $analysis = $this->llm->moderate($post->getContent());
+
+        $post->setToxicityScore($analysis['toxicity'] ?? 0);
+
+        $status = match ($analysis['label'] ?? 'clean') {
+            'toxic' => 'blocked',
+            'warning' => 'flagged',
+            default => 'approved'
+        };
+
+        $post->setModerationStatus($status);
+
+        $em->persist($post);
+        $em->flush();
+
+        // Send notification to topic author if different from post author
+        if ($topic->getAuthor() !== $user) {
+            $this->notificationService->notifyNewPost($post);
+        }
+
+        return $this->json($this->normalizePost($post), Response::HTTP_CREATED);
     }
 
     #[Route('', name: 'api_topics_create', methods: ['POST'])]
@@ -143,6 +211,28 @@ class TopicController extends AbstractController
                 $topic->getTags()->toArray()
             ),
             'postsCount' => $topic->getPosts()->count(),
+        ];
+    }
+
+    private function normalizePost(Post $post): array
+    {
+        return [
+            'id' => $post->getId(),
+            'content' => $post->getContent(),
+            'createdAt' => $post->getCreatedAt()?->format(DATE_ATOM),
+            'updatedAt' => $post->getUpdatedAt()?->format(DATE_ATOM),
+            'isDeleted' => $post->isDeleted(),
+            'moderationStatus' => $post->getModerationStatus(),
+            'toxicityScore' => $post->getToxicityScore(),
+            'author' => $post->getAuthor() ? [
+                'id' => $post->getAuthor()->getId(),
+                'username' => $post->getAuthor()->getUsername(),
+                'displayName' => $post->getAuthor()->getDisplayName() ?: $post->getAuthor()->getUsername(),
+            ] : null,
+            'topic' => $post->getTopic() ? [
+                'id' => $post->getTopic()->getId(),
+                'title' => $post->getTopic()->getTitle(),
+            ] : null,
         ];
     }
 }

@@ -5,22 +5,16 @@ export type Post = {
   content: string;
   createdAt: string;
   updatedAt?: string | null;
+  isDeleted?: boolean;
+  moderationStatus?: string | null;
+  toxicityScore?: number | null;
   author: {
     id: number;
     username: string;
     displayName?: string;
   };
+  topic?: {
+    id: number;
+    title?: string;
+  };
 };
-
-export async function getPostsByTopic(topicId: string | number): Promise<Post[]> {
-  const { data } = await api.get(`/posts?topicId=${topicId}`);
-  return data;
-}
-
-export async function createPost(payload: {
-  topicId: number;
-  content: string;
-}) {
-  const { data } = await api.post("/posts", payload);
-  return data;
-}

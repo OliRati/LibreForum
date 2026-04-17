@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import type { Post } from "../../api/posts";
 import { formatDate } from "../../lib/formatDate";
+import ReportButton from '../../components/moderation/ReportButton';
 
 type Props = {
   post: Post;
@@ -36,6 +37,11 @@ export default function PostCard({ post }: Props) {
           </div>
         )}
       </div>
+
+      <div className="text-end">
+        <ReportButton postId={post.id} />
+      </div>
+
     </div>
   );
 }

@@ -22,6 +22,7 @@ export type Topic = {
   updatedAt?: string | null;
   isPinned?: boolean;
   isLocked?: boolean;
+  toxicityScore?: number | null;
   author: TopicAuthor;
   category: TopicCategory;
   tags?: Tag[];

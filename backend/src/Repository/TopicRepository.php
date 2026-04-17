@@ -27,8 +27,7 @@ class TopicRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('t')
             ->leftJoin('t.author', 'a')->addSelect('a')
             ->leftJoin('t.category', 'c')->addSelect('c')
-            ->leftJoin('t.tags', 'tag')->addSelect('tag')
-            ->leftJoin('t.posts', 'p')->addSelect('p');
+            ->leftJoin('t.tags', 'tag')->addSelect('tag');
 
         if ($categoryId) {
             $qb->andWhere('c.id = :categoryId')
@@ -53,7 +52,7 @@ class TopicRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
 
         $items = $qb
-            ->groupBy('t.id, a.id, c.id, tag.id, p.id')
+            ->groupBy('t.id, a.id, c.id, tag.id')
             ->orderBy('t.isPinned', 'DESC')
             ->addOrderBy('t.createdAt', 'DESC')
             ->setFirstResult($offset)
