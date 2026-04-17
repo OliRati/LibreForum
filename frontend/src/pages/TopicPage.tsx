@@ -16,6 +16,7 @@ import TopicModerationActions from '../components/moderation/TopicModerationActi
 import PostModerationActions from '../components/moderation/PostModerationActions';
 import { isModerator } from '../utils/auth';
 import { getTopicPosts, createPost } from "../services/topics.js";
+import CreatePostForm from "../components/posts/CreatePostForm.js";
 
 export default function TopicPage() {
   const { id } = useParams();
@@ -179,6 +180,8 @@ export default function TopicPage() {
       {token && !topic.isLocked && (
         <section className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
           <h3 className="mb-4 text-xl font-semibold">Répondre</h3>
+
+          <CreatePostForm topicId={topic.id} onCreated={loadData} />
 
           <form onSubmit={handleReply} className="space-y-4">
             <textarea

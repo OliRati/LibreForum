@@ -1,5 +1,8 @@
 import { Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import {dark} from 'react-syntax-highlighter/dist/esm/styles/prism'
+
 import type { Post } from "../../api/posts";
 import { formatDate } from "../../lib/formatDate";
 import ReportButton from '../../components/moderation/ReportButton';
@@ -31,9 +34,30 @@ export default function PostCard({ post }: Props) {
           </p>
         ) : (
           <div className="prose lg:prose-xl">
-            <ReactMarkdown>
-              {post.content}
-            </ReactMarkdown>          
+
+            <ReactMarkdown
+              children={post.content}
+              components={{
+                code(props) {
+                  const { children, className, node, ...rest } = props
+                  const match = /language-(\w+)/.exec(className || '')
+                  return match ? (
+                    <SyntaxHighlighter
+                      {...rest}
+                      PreTag="div"
+                      children={String(children).replace(/\n$/, '')}
+                      language={match[1]}
+                      style={dark}
+                    />
+                  ) : (
+                    <code {...rest} className={className}>
+                      {post.content}
+                    </code>
+                  )
+                }
+              }}
+            />
+
           </div>
         )}
       </div>

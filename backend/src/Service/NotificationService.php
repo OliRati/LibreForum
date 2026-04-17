@@ -45,4 +45,20 @@ class NotificationService
 
         $this->hub->publish($update);
     }
+
+    public function notifyNewPost($post)
+    {
+        $topic = $post->getTopic();
+        $author = $topic->getAuthor();
+
+        // Notifier l'auteur du topic (sauf si c'est lui qui poste)
+        if ($author->getId() !== $post->getAuthor()->getId()) {
+            $this->notify($author, 'new_post', [
+                'postId' => $post->getId(),
+                'topicId' => $topic->getId(),
+                'topicTitle' => $topic->getTitle(),
+                'authorName' => $post->getAuthor()->getDisplayName() ?: $post->getAuthor()->getUsername(),
+            ]);
+        }
+    }
 }
