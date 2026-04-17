@@ -274,4 +274,23 @@ class Topic
         $this->lastActivityAt = $lastActivityAt;
         return $this;
     }
+
+    public function getToxicityScore(): float
+    {
+        if ($this->posts->isEmpty()) {
+            return 0.0;
+        }
+
+        $totalScore = 0.0;
+        $count = 0;
+
+        foreach ($this->posts as $post) {
+            if ($post->getToxicityScore() !== null) {
+                $totalScore += $post->getToxicityScore();
+                $count++;
+            }
+        }
+
+        return $count > 0 ? $totalScore / $count : 0.0;
+    }
 }

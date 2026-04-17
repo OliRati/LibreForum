@@ -44,7 +44,7 @@ export default function ModerationBadge({
       )}
 
       {toxicityScore !== undefined && toxicityScore !== null && (
-        <span className="rounded-full bg-purple-100 px-2 py-1 text-xs">
+        <span className="rounded-full bg-purple-100 px-2 py-1 text-xs font-medium text-purple-600">
           Toxicité: {(toxicityScore * 100).toFixed(0)}%
         </span>
       )}
