@@ -125,21 +125,6 @@ class PostController extends AbstractController
                 ]
             );
 
-        /*
-        $author = $topic->getAuthor();
-
-        if ($author && $author !== $currentUser) {
-            $notificationService->notify(
-                $author,
-                'new_reply',
-                [
-                    'topicId' => $topic->getId(),
-                    'topicTitle' => $topic->getTitle(),
-                ]
-            );
-        }
-        */
-
         return $this->json($this->normalizePost($post), Response::HTTP_CREATED);
     }
 
@@ -155,6 +140,8 @@ class PostController extends AbstractController
                 'id' => $post->getAuthor()->getId(),
                 'username' => $post->getAuthor()->getUsername(),
                 'displayName' => $post->getAuthor()->getDisplayName() ?: $post->getAuthor()->getUsername(),
+                'avatar' => $post->getAuthor()->getAvatarUrl(),
+                'lastSeenAt' => $post->getAuthor()->getLastSeenAt()?->format(DATE_ATOM),
             ] : null,
         ];
     }

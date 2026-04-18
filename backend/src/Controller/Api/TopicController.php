@@ -196,6 +196,8 @@ class TopicController extends AbstractController
                 'id' => $topic->getAuthor()->getId(),
                 'username' => $topic->getAuthor()->getUsername(),
                 'displayName' => $topic->getAuthor()->getDisplayName() ?: $topic->getAuthor()->getUsername(),
+                'avatar' => $topic->getAuthor()->getAvatarUrl(),
+                'lastSeenAt' => $topic->getAuthor()->getLastSeenAt()?->format(DATE_ATOM),
             ] : null,
             'category' => $topic->getCategory() ? [
                 'id' => $topic->getCategory()->getId(),
@@ -228,6 +230,8 @@ class TopicController extends AbstractController
                 'id' => $post->getAuthor()->getId(),
                 'username' => $post->getAuthor()->getUsername(),
                 'displayName' => $post->getAuthor()->getDisplayName() ?: $post->getAuthor()->getUsername(),
+                'avatar' => $post->getAuthor()->getAvatarUrl(),
+                'lastSeenAt' => $post->getAuthor()->getLastSeenAt()?->format(DATE_ATOM),
             ] : null,
             'topic' => $post->getTopic() ? [
                 'id' => $post->getTopic()->getId(),

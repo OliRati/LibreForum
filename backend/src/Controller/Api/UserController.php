@@ -6,8 +6,11 @@ use App\Entity\User;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/api/users')]
@@ -26,9 +29,9 @@ final class UserController extends AbstractController
             'bio' => $user->getBio(),
             'avatar' => $user->getAvatarUrl(),
             'forumRank' => $user->getForumRank(),
-            'roles' => $user->getRoles(),
             'lastSeenAt' => $user->getLastSeenAt()?->format('c'),
             'createdAt' => $user->getCreatedAt()?->format('c'),
+            'roles' => $user->getRoles(),
         ], $users));
     }
 
@@ -49,41 +52,95 @@ final class UserController extends AbstractController
     }
 
     #[Route('/{id}', methods: ['PUT', 'PATCH'])]
-    public function update(User $user, Request $request, EntityManagerInterface $em): JsonResponse
+    public function update(User $user, Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher): JsonResponse
     {
-        $user = $this->getUser();
+        $currentUser = $this->getUser();
 
-        if (!$user instanceof User) {
+        if (!$currentUser instanceof User) {
             return $this->json(['error' => 'Non authentifié'], 401);
         }
 
-        $isOwner = $post->getAuthor()?->getId() === $user->getId();
-        $isModerator = in_array('ROLE_MODERATOR', $user->getRoles(), true) || in_array('ROLE_ADMIN', $user->getRoles(), true);
+        $isOwner = $currentUser->getId() === $user->getId();
+        $isModerator = in_array('ROLE_MODERATOR', $currentUser->getRoles(), true) || in_array('ROLE_ADMIN', $currentUser->getRoles(), true);
 
         if (!$isOwner && !$isModerator) {
             return $this->json(['error' => 'Accès refusé'], 403);
         }
-        
-        $payload = json_decode($request->getContent(), true);
+
+        $payload = [];
+        if ($request->files->count() > 0 || str_contains($request->headers->get('Content-Type', ''), 'multipart/form-data')) {
+            $payload = $request->request->all();
+        } else {
+            $payload = json_decode($request->getContent(), true) ?? [];
+        }
+
+        if (!is_array($payload)) {
+            $payload = [];
+        }
+
+        /** @var UploadedFile|null $avatarFile */
+        $avatarFile = $request->files->get('avatarFile');
+        if ($avatarFile) {
+            $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+            if (!in_array($avatarFile->getMimeType(), $allowedMimeTypes, true)) {
+                return $this->json(['error' => 'Format d\'image non valide'], 400);
+            }
+
+            if ($avatarFile->getSize() > 2 * 1024 * 1024) {
+                return $this->json(['error' => 'Avatar trop volumineux (max 2 Mo)'], 400);
+            }
+
+            $uploadsDir = $this->getParameter('kernel.project_dir') . '/public/uploads/avatars';
+            if (!is_dir($uploadsDir)) {
+                mkdir($uploadsDir, 0777, true);
+            }
+
+            $safeFilename = uniqid('avatar_', true);
+            $extension = $avatarFile->guessExtension() ?: 'png';
+
+            try {
+                $avatarFile->move($uploadsDir, sprintf('%s.%s', $safeFilename, $extension));
+            } catch (FileException $e) {
+                return $this->json(['error' => 'Impossible de sauvegarder l\'avatar'], 500);
+            }
+
+            $user->setAvatarUrl('/uploads/avatars/' . $safeFilename . '.' . $extension);
+        } elseif (array_key_exists('avatar', $payload)) {
+            $user->setAvatarUrl($payload['avatar'] ?: null);
+        }
 
         if (array_key_exists('displayName', $payload)) {
-            $user->setDisplayName($payload['displayName']);
+            $user->setDisplayName($payload['displayName'] ?: null);
         }
 
         if (array_key_exists('bio', $payload)) {
-            $user->setBio($payload['bio']);
+            $user->setBio($payload['bio'] ?: null);
         }
 
-        if (array_key_exists('avatar', $payload)) {
-            $user->setAvatarUrl($payload['avatar']);
+        if (!empty($payload['password'])) {
+            $hashedPassword = $passwordHasher->hashPassword($user, $payload['password']);
+            $user->setPassword($hashedPassword);
         }
 
-        if (array_key_exists('forumRank', $payload)) {
-            $user->setForumRank($payload['forumRank']);
+        if ($isModerator && array_key_exists('forumRank', $payload)) {
+            $user->setForumRank($payload['forumRank'] ?: null);
         }
 
         $em->flush();
 
-        return $this->json(['message' => 'Utilisateur mis à jour']);
+        return $this->json([
+            'message' => 'Utilisateur mis à jour',
+            'user' => [
+                'id' => $user->getId(),
+                'username' => $user->getUsername(),
+                'displayName' => $user->getDisplayName(),
+                'bio' => $user->getBio(),
+                'avatar' => $user->getAvatarUrl(),
+                'forumRank' => $user->getForumRank(),
+                'lastSeenAt' => $user->getLastSeenAt()?->format('c'),
+                'createdAt' => $user->getCreatedAt()?->format('c'),
+                'roles' => $user->getRoles(),
+            ],
+        ]);
     }
 }

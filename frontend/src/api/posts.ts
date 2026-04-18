@@ -12,6 +12,8 @@ export type Post = {
     id: number;
     username: string;
     displayName?: string;
+    avatar?: string | null;
+    lastSeenAt?: string;
   };
   topic?: {
     id: number;

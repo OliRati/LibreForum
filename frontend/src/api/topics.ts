@@ -5,6 +5,8 @@ export type TopicAuthor = {
   id: number;
   username: string;
   displayName?: string;
+  avatar?: string | null;
+  lastSeenAt?: string;
 };
 
 export type TopicCategory = {
