@@ -36,17 +36,15 @@ export default function CreatePostForm({ topicId, onCreated }: Props) {
   };
 
   return (
-    <div className="mt-6 rounded-xl border p-4">
-      <h3 className="mb-3 font-semibold">Répondre</h3>
-
+    <>
       <textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        className="min-h-[120px] w-full rounded border px-3 py-2"
+        className="min-h-[160px] w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-3 text-zinc-100 outline-none"
         placeholder="Votre réponse..."
       />
 
-      {/* 🤖 Assistant IA */}
+      {/* Assistant IA */}
       <TextAssistant value={content} onChange={setContent} />
 
       {error && <div className="text-red-600 mt-2">{error}</div>}
@@ -54,10 +52,10 @@ export default function CreatePostForm({ topicId, onCreated }: Props) {
       <button
         onClick={handleSubmit}
         disabled={loading}
-        className="mt-3 rounded bg-black px-4 py-2 text-white"
+        className="cursor-pointer rounded-xl bg-emerald-600 px-5 py-3 mt-6 font-medium hover:bg-emerald-700"
       >
-        {loading ? 'Envoi...' : 'Envoyer'}
+        {loading ? 'Envoi en cours...' : 'Publier la réponse'}
       </button>
-    </div>
+    </>
   );
 }

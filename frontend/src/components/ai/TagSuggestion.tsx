@@ -28,15 +28,15 @@ export default function TagSuggestion({ content, onSelect }: Props) {
   };
 
   return (
-    <div className="rounded-xl border p-4">
+    <div className="rounded-xl border bg-cyan-950 border-cyan-800 p-4 mt-4">
       <div className="mb-2 font-semibold">Suggestions IA</div>
 
       {tags.length === 0 ? (
         <button
           onClick={generate}
-          className="rounded bg-black px-3 py-2 text-sm text-white"
+          className="cursor-pointer rounded-xl px-3 py-2 bg-cyan-700 hover:bg-cyan-800 mr-2"
         >
-          {loading ? 'Analyse...' : 'Suggérer des tags'}
+          {loading ? 'Analyse en cours...' : 'Suggérer des tags'}
         </button>
       ) : (
         <div className="flex flex-wrap gap-2">

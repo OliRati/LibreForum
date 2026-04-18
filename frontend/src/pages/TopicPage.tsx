@@ -182,22 +182,7 @@ export default function TopicPage() {
           <h3 className="mb-4 text-xl font-semibold">Répondre</h3>
 
           <CreatePostForm topicId={topic.id} onCreated={loadData} />
-
-          <form onSubmit={handleReply} className="space-y-4">
-            <textarea
-              className="min-h-[160px] w-full rounded-xl bg-zinc-800 px-4 py-3 text-zinc-100 outline-none"
-              value={reply}
-              onChange={(e) => setReply(e.target.value)}
-              placeholder="Votre réponse..."
-            />
-
-            <button
-              type="submit"
-              className="rounded-xl bg-emerald-600 px-5 py-3 font-medium hover:bg-emerald-500"
-            >
-              Publier la réponse
-            </button>
-          </form>
+          
         </section>
       )}
     </div>

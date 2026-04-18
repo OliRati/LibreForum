@@ -27,14 +27,14 @@ export default function TextAssistant({ value, onChange }: Props) {
   };
 
   return (
-    <div className="rounded-xl border p-4 mt-4">
+    <div className="rounded-xl border bg-cyan-950 border-cyan-800 p-4 mt-4">
       <div className="mb-2 font-semibold">Assistant IA</div>
 
       <div className="flex flex-wrap gap-2 mb-3">
-        <button onClick={() => run('improve')} className="btn">Améliorer</button>
-        <button onClick={() => run('correct')} className="btn">Corriger</button>
-        <button onClick={() => run('summarize')} className="btn">Résumer</button>
-        <button onClick={() => run('simplify')} className="btn">Simplifier</button>
+        <button onClick={() => run('improve')} className="cursor-pointer rounded-xl px-3 py-2 bg-cyan-700 hover:bg-cyan-800 mr-2">Améliorer</button>
+        <button onClick={() => run('correct')} className="cursor-pointer rounded-xl px-3 py-2 bg-cyan-700 hover:bg-cyan-800 mr-2">Corriger</button>
+        <button onClick={() => run('summarize')} className="cursor-pointer rounded-xl px-3 py-2 bg-cyan-700 hover:bg-cyan-800 mr-2">Résumer</button>
+        <button onClick={() => run('simplify')} className="cursor-pointer rounded-xl px-3 py-2 bg-cyan-700 hover:bg-cyan-800 mr-2">Simplifier</button>
       </div>
 
       {loading && <div className="text-sm text-gray-500">Analyse en cours...</div>}
