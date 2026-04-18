@@ -40,7 +40,7 @@ export default function HomePage() {
   return (
     <div className="space-y-10">
 
-      { isModerator() && (
+      {isModerator() && (
         <section className="text-left p-3 bg-amber-950 border border-amber-800 rounded-xl">
           <Link to={'/moderation/reports'} className="hover:text-zinc-300">
             Gérer les signalements
@@ -57,11 +57,18 @@ export default function HomePage() {
 
       <section>
         <h2 className="pb-6 text-2xl font-semibold">Catégories</h2>
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {categories.map((category) => (
-            <CategoryCard key={category.id} category={category} />
-          ))}
-        </div>
+        {categories.length > 0 ? (
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {categories.map((category) => (
+              <CategoryCard key={category.id} category={category} />
+            ))}
+          </div>
+        ) : (
+          <EmptyState
+            title="Aucune catégorie pour le moment"
+            description="Crée la premiere catégorie de LibreForum."
+          />
+        )}
       </section>
 
       <section>

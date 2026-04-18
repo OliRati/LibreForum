@@ -3,7 +3,7 @@ import { getMe, login as loginApi, register as registerApi } from "../../api/aut
 import { useAuthStore } from "./authStore";
 
 export function useAuth() {
-  const { token, user, setToken, setUser, logout, hydrate } = useAuthStore();
+  const { token, user, setToken, setUser, logout, setSessionExpired, hydrate } = useAuthStore();
 
   useEffect(() => {
     hydrate();
@@ -16,13 +16,20 @@ export function useAuth() {
       try {
         const me = await getMe();
         setUser(me);
-      } catch {
-        logout();
+      } catch (error: any) {
+        // Si c'est une erreur 401, c'est que le token est expiré
+        if (error.response?.status === 401) {
+          logout();
+          setSessionExpired(true);
+        } else {
+          // Autre erreur, on logout quand même
+          logout();
+        }
       }
     }
 
     fetchMe();
-  }, [token, setUser, logout]);
+  }, [token, setUser, logout, setSessionExpired]);
 
   const login = async (email: string, password: string) => {
     const data = await loginApi({ email, password });

@@ -14,15 +14,18 @@ type User = {
 type AuthState = {
   token: string | null;
   user: User | null;
+  sessionExpired: boolean;
   setToken: (token: string | null) => void;
   setUser: (user: User | null) => void;
   logout: () => void;
+  setSessionExpired: (expired: boolean) => void;
   hydrate: () => void;
 };
 
 export const useAuthStore = create<AuthState>((set) => ({
   token: null,
   user: null,
+  sessionExpired: false,
 
   setToken: (token) => {
     if (token) {
@@ -37,8 +40,10 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   logout: () => {
     localStorage.removeItem("token");
-    set({ token: null, user: null });
+    set({ token: null, user: null, sessionExpired: false });
   },
+
+  setSessionExpired: (expired) => set({ sessionExpired: expired }),
 
   hydrate: () => {
     const token = localStorage.getItem("token");

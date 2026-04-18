@@ -21,3 +21,19 @@ api.interceptors.request.use((config) => {
 
   return config;
 });
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Token expiré ou invalide
+      const authStore = useAuthStore.getState();
+      if (authStore.token) {
+        // Seulement si on était connecté
+        authStore.logout();
+        authStore.setSessionExpired(true);
+      }
+    }
+    return Promise.reject(error);
+  }
+);

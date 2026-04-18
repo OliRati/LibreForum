@@ -3,6 +3,7 @@ import { useAuth } from "../../features/auth/useAuth";
 import { useState } from "react";
 import libreForumLogo from "../../assets/img/LibreForum-logo.png";
 import Footer from "./Footer";
+import SessionExpiredModal from "../SessionExpiredModal";
 
 export default function AppLayout() {
   const { user, logout } = useAuth();
@@ -93,6 +94,7 @@ export default function AppLayout() {
       </main>
 
       <Footer />
+      <SessionExpiredModal />
     </div>
   );
 }

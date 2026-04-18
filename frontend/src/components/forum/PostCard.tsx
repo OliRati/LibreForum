@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import {dark} from 'react-syntax-highlighter/dist/esm/styles/prism'
+import {dracula} from 'react-syntax-highlighter/dist/esm/styles/prism'
 
 import type { Post } from "../../api/posts";
 import { formatDate } from "../../lib/formatDate";
@@ -78,7 +78,7 @@ export default function PostCard({ post }: Props) {
                       PreTag="div"
                       children={String(children).replace(/\n$/, '')}
                       language={match[1]}
-                      style={dark}
+                      style={dracula}
                     />
                   ) : (
                     <code {...rest} className={className}>
