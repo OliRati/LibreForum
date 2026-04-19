@@ -17,6 +17,7 @@ import PostModerationActions from '../components/moderation/PostModerationAction
 import { isModerator } from '../utils/auth';
 import { getTopicPosts, createPost } from "../services/topics.js";
 import CreatePostForm from "../components/posts/CreatePostForm.js";
+import { subscribeToTopic } from "../lib/mercure";
 
 export default function TopicPage() {
   const { id } = useParams();
@@ -48,6 +49,21 @@ export default function TopicPage() {
 
   useEffect(() => {
     loadData();
+  }, [id]);
+
+  useEffect(() => {
+    if (!id) return;
+
+    // S'abonner aux mises à jour Mercure pour ce topic
+    const unsubscribe = subscribeToTopic(Number(id), (data) => {
+      if (data.type === 'post_created') {
+        // Ajouter le nouveau post à la liste
+        const newPost = data.post;
+        setPosts((prev) => [...prev, newPost]);
+      }
+    });
+
+    return unsubscribe;
   }, [id]);
 
   async function handleReply(e: React.FormEvent) {
@@ -158,11 +174,16 @@ export default function TopicPage() {
               <>
                 <PostCard key={post.id} post={post} />
                 <div className="mt-3 flex items-center justify-between">
-                  <ModerationBadge status={post.moderationStatus} />
-
-                  <div className="flex gap-2">
+                  <div className="flex gap-3 ml-auto items-center ">
                     {moderator && (
-                      <PostModerationActions post={post} onUpdated={loadPosts} />
+                      <>
+                        <div>
+                          <ModerationBadge status={post.moderationStatus} />
+                        </div>
+                        <div>
+                          <PostModerationActions post={post} onUpdated={loadPosts} />
+                        </div>
+                      </>
                     )}
                   </div>
                 </div>
@@ -182,7 +203,7 @@ export default function TopicPage() {
           <h3 className="mb-4 text-xl font-semibold">Répondre</h3>
 
           <CreatePostForm topicId={topic.id} onCreated={loadData} />
-          
+
         </section>
       )}
     </div>

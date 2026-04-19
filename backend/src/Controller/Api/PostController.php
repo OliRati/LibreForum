@@ -9,6 +9,7 @@ use App\Repository\TopicRepository;
 use App\Service\LlmService;
 use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,8 +22,10 @@ use Symfony\Component\Mercure\Update;
 #[Route('/api/posts')]
 class PostController extends AbstractController
 {
-    public function __construct(private HubInterface $hub)
-    {
+    public function __construct(
+        private HubInterface $hub,
+        private LoggerInterface $logger
+    ) {
     }
 
     #[Route('', name: 'api_posts_index', methods: ['GET'])]
@@ -100,20 +103,32 @@ class PostController extends AbstractController
         $em->flush();
 
         // Mercure intégration
-        $update = new Update(
-            'topic/' . $topic->getId(),
-            json_encode([
-                'type' => 'post_created',
-                'post' => [
-                    'id' => $post->getId(),
-                    'content' => $post->getContent(),
-                    'author' => $post->getAuthor()->getUsername(),
-                    'createdAt' => $post->getCreatedAt()->format(DATE_ATOM),
-                ]
-            ])
-        );
+        try {
+            $update = new Update(
+                'topic/' . $topic->getId(),
+                json_encode([
+                    'type' => 'post_created',
+                    'post' => [
+                        'id' => $post->getId(),
+                        'content' => $post->getContent(),
+                        'author' => $post->getAuthor()->getUsername(),
+                        'createdAt' => $post->getCreatedAt()->format(DATE_ATOM),
+                    ]
+                ])
+            );
 
-        $this->hub->publish($update);
+            $this->hub->publish($update);
+            $this->logger->info('Mercure update published for topic', [
+                'topicId' => $topic->getId(),
+                'postId' => $post->getId()
+            ]);
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to publish Mercure update', [
+                'error' => $e->getMessage(),
+                'topicId' => $topic->getId(),
+                'postId' => $post->getId()
+            ]);
+        }
 
         // Launch a Post created notification
         $notificationService->notify(

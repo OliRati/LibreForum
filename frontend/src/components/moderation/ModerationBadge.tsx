@@ -26,25 +26,25 @@ export default function ModerationBadge({
       )}
 
       {status === 'flagged' && (
-        <span className="rounded bg-orange-100 px-2 py-1 text-xs text-orange-800">
+        <span className="rounded bg-orange-500/20 px-2 py-1 text-xs text-orange-300">
           Signalé
         </span>
       )}
 
       {status === 'blocked' && (
-        <span className="rounded bg-red-100 px-2 py-1 text-xs text-red-800">
+        <span className="rounded  bg-pink-500/20 px-2 py-1 text-xs text-pink-300">
           Bloqué
         </span>
       )}
 
       {status === 'approved' && (
-        <span className="rounded bg-green-100 px-2 py-1 text-xs text-green-800">
+        <span className="rounded bg-green-500/20 px-2 py-1 text-xs text-green-300">
           Validé
         </span>
       )}
 
       {toxicityScore !== undefined && toxicityScore !== null && (
-        <span className="rounded bg-purple-100 px-2 py-1 text-xs text-purple-600">
+        <span className="rounded bg-purple-500/20 px-2 py-1 text-xs text-purple-300">
           Toxicité: {(toxicityScore * 100).toFixed(0)}%
         </span>
       )}
