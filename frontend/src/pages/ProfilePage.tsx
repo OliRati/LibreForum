@@ -141,6 +141,27 @@ export default function ProfilePage() {
                 {user.forumRank}
               </p>
             )}
+
+            <div className="mt-4 grid gap-3 sm:grid-cols-3">
+              <div className="rounded-2xl border border-zinc-800 bg-zinc-950/50 p-4">
+                <p className="text-3xl font-semibold text-zinc-100">
+                  {user.postsCount ?? 0}
+                </p>
+                <p className="mt-1 text-sm text-zinc-500">Posts écrits</p>
+              </div>
+              <div className="rounded-2xl border border-zinc-800 bg-zinc-950/50 p-4">
+                <p className="text-3xl font-semibold text-zinc-100">
+                  {user.topicsCreatedCount ?? 0}
+                </p>
+                <p className="mt-1 text-sm text-zinc-500">Sujets créés</p>
+              </div>
+              <div className="rounded-2xl border border-zinc-800 bg-zinc-950/50 p-4">
+                <p className="text-3xl font-semibold text-zinc-100">
+                  {user.topicsParticipatedCount ?? 0}
+                </p>
+                <p className="mt-1 text-sm text-zinc-500">Sujets participés</p>
+              </div>
+            </div>
           </div>
         </div>
 

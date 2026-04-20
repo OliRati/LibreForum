@@ -10,6 +10,9 @@ export type UserProfile = {
   lastSeenAt?: string;
   forumRank?: string | null;
   createdAt?: string;
+  postsCount?: number;
+  topicsCreatedCount?: number;
+  topicsParticipatedCount?: number;
   roles?: string[];
 };
 

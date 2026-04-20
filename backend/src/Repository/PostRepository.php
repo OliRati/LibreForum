@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Post;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -14,6 +15,27 @@ class PostRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Post::class);
+    }
+
+    public function countByAuthor(User $author): int
+    {
+        return (int) $this->createQueryBuilder('p')
+            ->select('COUNT(p.id)')
+            ->andWhere('p.author = :author')
+            ->setParameter('author', $author)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function countDistinctTopicsByAuthor(User $author): int
+    {
+        return (int) $this->createQueryBuilder('p')
+            ->select('COUNT(DISTINCT t.id)')
+            ->join('p.topic', 't')
+            ->andWhere('p.author = :author')
+            ->setParameter('author', $author)
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 
     //    /**

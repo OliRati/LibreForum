@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Topic;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -11,6 +12,16 @@ class TopicRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Topic::class);
+    }
+
+    public function countByAuthor(User $author): int
+    {
+        return (int) $this->createQueryBuilder('t')
+            ->select('COUNT(t.id)')
+            ->andWhere('t.author = :author')
+            ->setParameter('author', $author)
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 
     public function findPaginatedFiltered(

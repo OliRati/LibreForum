@@ -3,6 +3,8 @@
 namespace App\Controller\Api;
 
 use App\Entity\User;
+use App\Repository\PostRepository;
+use App\Repository\TopicRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -69,7 +71,7 @@ final class AuthController extends AbstractController
     }
 
     #[Route('/me', name: 'api_me', methods: ['GET'])]
-    public function me(): JsonResponse
+    public function me(PostRepository $postRepository, TopicRepository $topicRepository): JsonResponse
     {
         $user = $this->getUser();
 
@@ -88,6 +90,9 @@ final class AuthController extends AbstractController
             'lastSeenAt' => $user->getLastSeenAt()?->format('c'),
             'roles' => $user->getRoles(),
             'createdAt' => $user->getCreatedAt()->format('c'),
+            'postsCount' => $postRepository->countByAuthor($user),
+            'topicsCreatedCount' => $topicRepository->countByAuthor($user),
+            'topicsParticipatedCount' => $postRepository->countDistinctTopicsByAuthor($user),
         ]);
     }
 }

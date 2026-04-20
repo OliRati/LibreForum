@@ -3,6 +3,8 @@
 namespace App\Controller\Api;
 
 use App\Entity\User;
+use App\Repository\PostRepository;
+use App\Repository\TopicRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -36,7 +38,7 @@ final class UserController extends AbstractController
     }
 
     #[Route('/{id}', methods: ['GET'])]
-    public function show(User $user): JsonResponse
+    public function show(User $user, PostRepository $postRepository, TopicRepository $topicRepository): JsonResponse
     {
         return $this->json([
             'id' => $user->getId(),
@@ -48,11 +50,21 @@ final class UserController extends AbstractController
             'lastSeenAt' => $user->getLastSeenAt()?->format('c'),
             'createdAt' => $user->getCreatedAt()?->format('c'),
             'roles' => $user->getRoles(),
+            'postsCount' => $postRepository->countByAuthor($user),
+            'topicsCreatedCount' => $topicRepository->countByAuthor($user),
+            'topicsParticipatedCount' => $postRepository->countDistinctTopicsByAuthor($user),
         ]);
     }
 
     #[Route('/{id}', methods: ['PUT', 'PATCH'])]
-    public function update(User $user, Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher): JsonResponse
+    public function update(
+        User $user,
+        Request $request,
+        EntityManagerInterface $em,
+        UserPasswordHasherInterface $passwordHasher,
+        PostRepository $postRepository,
+        TopicRepository $topicRepository
+    ): JsonResponse
     {
         $currentUser = $this->getUser();
 
@@ -140,6 +152,9 @@ final class UserController extends AbstractController
                 'lastSeenAt' => $user->getLastSeenAt()?->format('c'),
                 'createdAt' => $user->getCreatedAt()?->format('c'),
                 'roles' => $user->getRoles(),
+                'postsCount' => $postRepository->countByAuthor($user),
+                'topicsCreatedCount' => $topicRepository->countByAuthor($user),
+                'topicsParticipatedCount' => $postRepository->countDistinctTopicsByAuthor($user),
             ],
         ]);
     }
