@@ -65,10 +65,25 @@ class TopicController extends AbstractController
     }
 
     #[Route('/{id}/posts', name: 'api_topics_posts', methods: ['GET'])]
-    public function posts(Topic $topic): JsonResponse
+    public function posts(Topic $topic, Request $request): JsonResponse
     {
-        $posts = $topic->getPosts()->toArray();
-        return $this->json(array_map([$this, 'normalizePost'], $posts));
+        $page = max(1, (int) $request->query->get('page', 1));
+        $limit = max(1, min(50, (int) $request->query->get('limit', 10)));
+        $offset = ($page - 1) * $limit;
+
+        $allPosts = $topic->getPosts()->toArray();
+        $total = count($allPosts);
+        $posts = array_slice($allPosts, $offset, $limit);
+
+        $data = array_map([$this, 'normalizePost'], $posts);
+
+        return $this->json([
+            'items' => $data,
+            'page' => $page,
+            'limit' => $limit,
+            'total' => $total,
+            'totalPages' => max(1, (int) ceil($total / $limit)),
+        ]);
     }
 
     #[Route('/{id}/posts', name: 'api_topics_posts_create', methods: ['POST'])]

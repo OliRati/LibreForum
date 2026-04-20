@@ -1,6 +1,14 @@
 import { apiFetch } from '../lib/api.js';
 import type { Report } from '../types/report.js';
 
+export type PaginatedReports = {
+  items: Report[];
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+};
+
 export async function createReport(payload: {
   topicId?: number;
   postId?: number;
@@ -12,8 +20,13 @@ export async function createReport(payload: {
   });
 }
 
-export async function getReports(): Promise<Report[]> {
-  return apiFetch<Report[]>('/api/reports');
+export async function getReports(page?: number, limit?: number): Promise<PaginatedReports> {
+  const params = new URLSearchParams();
+  if (page) params.append('page', page.toString());
+  if (limit) params.append('limit', limit.toString());
+  const queryString = params.toString();
+  const url = queryString ? `/api/reports?${queryString}` : '/api/reports';
+  return apiFetch<PaginatedReports>(url);
 }
 
 export async function getMyReports(): Promise<Report[]> {

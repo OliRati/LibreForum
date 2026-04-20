@@ -81,11 +81,16 @@ class ReportController extends AbstractController
     }
 
     #[Route('', name: 'api_reports_list', methods: ['GET'])]
-    public function list(ReportRepository $reportRepository): JsonResponse
+    public function list(Request $request, ReportRepository $reportRepository): JsonResponse
     {
         $this->denyAccessUnlessGranted('ROLE_MODERATOR');
 
-        $reports = $reportRepository->findBy([], ['createdAt' => 'DESC']);
+        $page = max(1, (int) $request->query->get('page', 1));
+        $limit = max(1, min(50, (int) $request->query->get('limit', 10)));
+        $offset = ($page - 1) * $limit;
+
+        $total = $reportRepository->count([]);
+        $reports = $reportRepository->findBy([], ['createdAt' => 'DESC'], $limit, $offset);
 
         $data = array_map(function (Report $report) {
             return [
@@ -108,7 +113,13 @@ class ReportController extends AbstractController
             ];
         }, $reports);
 
-        return $this->json($data);
+        return $this->json([
+            'items' => $data,
+            'page' => $page,
+            'limit' => $limit,
+            'total' => $total,
+            'totalPages' => max(1, (int) ceil($total / $limit)),
+        ]);
     }
 
     #[Route('/mine', name: 'api_reports_mine', methods: ['GET'])]

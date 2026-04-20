@@ -19,6 +19,9 @@ import { getTopicPosts, createPost } from "../services/topics.js";
 import CreatePostForm from "../components/posts/CreatePostForm.js";
 import { subscribeToTopic } from "../lib/mercure";
 import ShowMarkdown from "../components/ui/ShowMarkdown";
+import Pagination from "../components/ui/Pagination";
+
+const ITEMS_PER_PAGE = 10;
 
 export default function TopicPage() {
   const { id } = useParams();
@@ -29,6 +32,9 @@ export default function TopicPage() {
   const [reply, setReply] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [total, setTotal] = useState(0);
 
   async function loadData() {
     if (!id) return;
@@ -37,10 +43,13 @@ export default function TopicPage() {
     try {
       const [topicData, postsData] = await Promise.all([
         getTopic(id),
-        getTopicPosts(Number(id)),
+        getTopicPosts(Number(id), 1, ITEMS_PER_PAGE),
       ]);
       setTopic(topicData);
-      setPosts(postsData);
+      setPosts(postsData.items);
+      setCurrentPage(postsData.page);
+      setTotalPages(postsData.totalPages);
+      setTotal(postsData.total);
     } catch {
       setError("Impossible de charger le sujet.");
     } finally {
@@ -93,16 +102,24 @@ export default function TopicPage() {
     }
   };
 
-  // Charge les posts
-  const loadPosts = async () => {
+  // Charge les posts avec pagination
+  const loadPosts = async (page: number = 1) => {
     if (!id) return;
 
     try {
-      const data = await getTopicPosts(Number(id));
-      setPosts(data);
+      const data = await getTopicPosts(Number(id), page, ITEMS_PER_PAGE);
+      setPosts(data.items);
+      setCurrentPage(data.page);
+      setTotalPages(data.totalPages);
+      setTotal(data.total);
     } catch (err) {
       console.error(err);
     }
+  };
+
+  const handlePageChange = (page: number) => {
+    loadPosts(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
 
@@ -189,6 +206,18 @@ export default function TopicPage() {
             />
           )}
         </div>
+
+        {totalPages > 1 && (
+          <Pagination
+            page={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            total={total}
+            itemsPerPage={ITEMS_PER_PAGE}
+            showInfo
+            variant="light"
+          />
+        )}
       </section>
 
       {token && !topic.isLocked && (
