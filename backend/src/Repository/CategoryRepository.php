@@ -16,10 +16,54 @@ class CategoryRepository extends ServiceEntityRepository
         parent::__construct($registry, Category::class);
     }
 
-    //    /**
-    //     * @return Category[] Returns an array of Category objects
-    //     */
-    //    public function findByExampleField($value): array
+    public function countTopics(Category $category): int
+    {
+        return (int) $this->createQueryBuilder('c')
+            ->select('COUNT(t.id)')
+            ->join('c.topics', 't')
+            ->andWhere('c = :category')
+            ->setParameter('category', $category)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function countPosts(Category $category): int
+    {
+        return (int) $this->createQueryBuilder('c')
+            ->select('COUNT(p.id)')
+            ->join('c.topics', 't')
+            ->join('t.posts', 'p')
+            ->andWhere('c = :category')
+            ->setParameter('category', $category)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function getLastContributionAt(Category $category): ?\DateTimeImmutable
+    {
+        $result = $this->createQueryBuilder('c')
+            ->select('MAX(p.createdAt) as lastContribution')
+            ->join('c.topics', 't')
+            ->join('t.posts', 'p')
+            ->andWhere('c = :category')
+            ->setParameter('category', $category)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return $result ? new \DateTimeImmutable($result) : null;
+    }
+
+    public function countParticipants(Category $category): int
+    {
+        return (int) $this->createQueryBuilder('c')
+            ->select('COUNT(DISTINCT p.author)')
+            ->join('c.topics', 't')
+            ->join('t.posts', 'p')
+            ->andWhere('c = :category')
+            ->setParameter('category', $category)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
     //    {
     //        return $this->createQueryBuilder('c')
     //            ->andWhere('c.exampleField = :val')

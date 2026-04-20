@@ -51,7 +51,7 @@ class TopicController extends AbstractController
         );
 
         return $this->json([
-            'items' => array_map([$this, 'normalizeTopic'], $result['items']),
+            'items' => array_map(fn(Topic $topic) => $this->normalizeTopic($topic, $topicRepository), $result['items']),
             'page' => $result['page'],
             'totalPages' => $result['totalPages'],
             'total' => $result['total'],
@@ -59,9 +59,9 @@ class TopicController extends AbstractController
     }
 
     #[Route('/{id}', name: 'api_topics_show', methods: ['GET'])]
-    public function show(Topic $topic): JsonResponse
+    public function show(Topic $topic, TopicRepository $topicRepository): JsonResponse
     {
-        return $this->json($this->normalizeTopic($topic));
+        return $this->json($this->normalizeTopic($topic, $topicRepository));
     }
 
     #[Route('/{id}/posts', name: 'api_topics_posts', methods: ['GET'])]
@@ -76,7 +76,8 @@ class TopicController extends AbstractController
         Topic $topic,
         Request $request,
         EntityManagerInterface $em,
-        Security $security
+        Security $security,
+        TopicRepository $topicRepository
     ): JsonResponse {
         $user = $security->getUser();
         if (!$user) {
@@ -177,10 +178,10 @@ class TopicController extends AbstractController
         $em->persist($topic);
         $em->flush();
 
-        return $this->json($this->normalizeTopic($topic), Response::HTTP_CREATED);
+        return $this->json($this->normalizeTopic($topic, $topicRepository), Response::HTTP_CREATED);
     }
 
-    private function normalizeTopic(Topic $topic): array
+    private function normalizeTopic(Topic $topic, TopicRepository $topicRepository): array
     {
         return [
             'id' => $topic->getId(),
@@ -213,6 +214,8 @@ class TopicController extends AbstractController
                 $topic->getTags()->toArray()
             ),
             'postsCount' => $topic->getPosts()->count(),
+            'participantsCount' => $topicRepository->countParticipants($topic),
+            'lastContributionAt' => $topicRepository->getLastPostDate($topic)?->format(DATE_ATOM) ?? $topic->getCreatedAt()?->format(DATE_ATOM),
         ];
     }
 

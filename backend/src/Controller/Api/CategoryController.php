@@ -22,19 +22,27 @@ class CategoryController extends AbstractController
                 'name' => $category->getName(),
                 'slug' => $category->getSlug(),
                 'description' => $category->getDescription(),
+                'topicsCount' => $categoryRepository->countTopics($category),
+                'postsCount' => $categoryRepository->countPosts($category),
+                'participantsCount' => $categoryRepository->countParticipants($category),
+                'lastContributionAt' => $categoryRepository->getLastContributionAt($category)?->format(DATE_ATOM),
             ],
             $categories
         ));
     }
 
     #[Route('/{id}', name: 'api_categories_show', methods: ['GET'])]
-    public function show(Category $category): JsonResponse
+    public function show(Category $category, CategoryRepository $categoryRepository): JsonResponse
     {
         return $this->json([
             'id' => $category->getId(),
             'name' => $category->getName(),
             'slug' => $category->getSlug(),
             'description' => $category->getDescription(),
+            'topicsCount' => $categoryRepository->countTopics($category),
+            'postsCount' => $categoryRepository->countPosts($category),
+            'participantsCount' => $categoryRepository->countParticipants($category),
+            'lastContributionAt' => $categoryRepository->getLastContributionAt($category)?->format(DATE_ATOM),
         ]);
     }
 }

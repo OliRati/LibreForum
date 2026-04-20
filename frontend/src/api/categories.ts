@@ -5,6 +5,10 @@ export type Category = {
   name: string;
   slug: string;
   description?: string | null;
+  topicsCount?: number;
+  postsCount?: number;
+  participantsCount?: number;
+  lastContributionAt?: string | null;
 };
 
 export async function getCategories(): Promise<Category[]> {

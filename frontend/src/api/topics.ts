@@ -28,6 +28,9 @@ export type Topic = {
   author: TopicAuthor;
   category: TopicCategory;
   tags?: Tag[];
+  postsCount?: number;
+  participantsCount?: number;
+  lastContributionAt?: string;
 };
 
 export type PaginatedTopics = {

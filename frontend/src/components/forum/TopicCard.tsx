@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import type { Topic } from "../../api/topics";
 import TagBadge from "./TagBadge";
 import ModerationBadge from "../moderation/ModerationBadge.js";
+import { formatDate } from "../../lib/formatDate";
 
 type Props = {
   topic: Topic;
@@ -34,13 +35,19 @@ export default function TopicCard({ topic }: Props) {
       )}
 
       <div className="mt-4 flex items-center justify-between text-xs text-zinc-500">
-        <Link
-          to={`/profile/${topic.author?.id}`}
-          className="hover:text-zinc-300"
-        >
-          {topic.author?.displayName || topic.author?.username}
-        </Link>
-
+        <div className="flex items-center gap-4">
+          <Link
+            to={`/profile/${topic.author?.id}`}
+            className="hover:text-zinc-300"
+          >
+            {topic.author?.displayName || topic.author?.username}
+          </Link>
+          <span>{topic.postsCount ?? 0} posts</span>
+          <span>{topic.participantsCount ?? 0} participants</span>
+          {topic.lastContributionAt && (
+            <span>Dernière activité: {formatDate(topic.lastContributionAt)}</span>
+          )}
+        </div>
         <Link
           to={`/category/${topic.category?.id}`}
           className="hover:text-zinc-300"

@@ -24,6 +24,30 @@ class TopicRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
+    public function getLastPostDate(Topic $topic): ?\DateTimeImmutable
+    {
+        $result = $this->getEntityManager()->createQueryBuilder()
+            ->select('MAX(p.createdAt)')
+            ->from('App\Entity\Post', 'p')
+            ->where('p.topic = :topic')
+            ->setParameter('topic', $topic)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return $result ? new \DateTimeImmutable($result) : null;
+    }
+
+    public function countParticipants(Topic $topic): int
+    {
+        return (int) $this->getEntityManager()->createQueryBuilder()
+            ->select('COUNT(DISTINCT p.author)')
+            ->from('App\Entity\Post', 'p')
+            ->where('p.topic = :topic')
+            ->setParameter('topic', $topic)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
     public function findPaginatedFiltered(
         int $page = 1,
         int $limit = 10,
