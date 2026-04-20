@@ -4,6 +4,8 @@ import type { Report } from '../../types/report';
 import type { Post } from '../../types/post';
 import TopicModerationActions from '../../components/moderation/TopicModerationActions';
 import PostModerationActions from '../../components/moderation/PostModerationActions';
+import ModerationBadge from '../../components/moderation/ModerationBadge';
+import ShowMarkdown from '../../components/ui/ShowMarkdown';
 
 export default function ModerationReportsPage() {
   const [reports, setReports] = useState<Report[]>([]);
@@ -47,17 +49,17 @@ export default function ModerationReportsPage() {
       ) : (
         <div className="space-y-4">
           {reports.map((report) => (
-            <div key={report.id} className="rounded-2xl border bg-gray-600 p-5 shadow-sm">
+            <div key={report.id} className="rounded-2xl border border-gray-400 bg-gray-600 p-5 shadow-sm">
               <div className="mb-2 flex items-center justify-between">
                 <div className="font-semibold">
                   Signalement #{report.id}
                 </div>
-                <span className="rounded-full bg-gray-700 px-2 py-1 text-xs">
-                  {report.status}
-                </span>
+                <div>
+                  <ModerationBadge status={report.status} />
+                </div>
               </div>
 
-              <div className="mb-2 text-sm text-gray-400">
+              <div className="mb-2 text-sm text-gray-300">
                 Par : {report.reporter?.username || 'Utilisateur inconnu'}
               </div>
 
@@ -68,7 +70,7 @@ export default function ModerationReportsPage() {
               {report.topic && (
                 <>
                   <div className="mb-2 rounded-lg bg-gray-700 p-3 text-sm">
-                    <div className="font-medium">Topic concerné</div>
+                    <div className="font-medium pb-2 mb-2 border-b-2 border-gray-600">Topic concerné</div>
                     <div>#{report.topic.id} — {report.topic.title}</div>
                   </div>
 
@@ -81,8 +83,10 @@ export default function ModerationReportsPage() {
               {report.post && (
                 <>
                   <div className="rounded-lg bg-gray-700 p-3 text-sm">
-                    <div className="font-medium">Message concerné</div>
-                    <div>{report.post.content}</div>
+                    <div className="font-medium pb-2 mb-2 border-b-2 border-gray-600">Message concerné</div>
+                    <div>
+                      <ShowMarkdown content={report.post.content} />
+                    </div>
                   </div>
 
                   <div className="mb-0 mt-3">
@@ -91,7 +95,7 @@ export default function ModerationReportsPage() {
                 </>
               )}
 
-              <div className="mt-3 text-xs text-gray-500">
+              <div className="mt-3 text-xs text-gray-300">
                 Créé le {new Date(report.createdAt).toLocaleString()}
               </div>
             </div>

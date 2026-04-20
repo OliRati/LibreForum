@@ -43,6 +43,12 @@ export default function ModerationBadge({
         </span>
       )}
 
+      {status === 'resolved' && (
+        <span className="rounded bg-cyan-500/20 px-2 py-1 text-xs text-cyan-300">
+          Résolue
+        </span>
+      )}
+
       {toxicityScore !== undefined && toxicityScore !== null && (
         <span className="rounded bg-purple-500/20 px-2 py-1 text-xs text-purple-300">
           Toxicité: {(toxicityScore * 100).toFixed(0)}%

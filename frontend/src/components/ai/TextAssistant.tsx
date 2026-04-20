@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { assistText } from '../../services/llm';
+import ShowMarkdown from '../ui/ShowMarkdown';
 
 interface Props {
   value: string;
@@ -44,7 +45,7 @@ export default function TextAssistant({ value, onChange }: Props) {
           <div className="text-sm text-gray-600 mb-1">Suggestion :</div>
 
           <div className="rounded bg-gray-600 p-3 text-sm whitespace-pre-wrap">
-            {preview}
+            <ShowMarkdown content={preview} />
           </div>
 
           <button
