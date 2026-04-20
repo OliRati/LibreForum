@@ -54,6 +54,7 @@ security:
         - { path: ^/api/categories, roles: PUBLIC_ACCESS }
         - { path: ^/api/tags, roles: PUBLIC_ACCESS }
         - { path: ^/api/posts$, methods: [GET], roles: PUBLIC_ACCESS }
+        - { path: ^/api/posts/\d+$, methods: [GET], roles: PUBLIC_ACCESS }
         - { path: ^/api/users/\d+$, methods: [GET], roles: PUBLIC_ACCESS }
 
         - { path: ^/api/reports, roles: IS_AUTHENTICATED_FULLY }

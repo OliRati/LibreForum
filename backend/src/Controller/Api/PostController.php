@@ -45,6 +45,12 @@ class PostController extends AbstractController
         return $this->json(array_map([$this, 'normalizePost'], $posts));
     }
 
+    #[Route('/{id}', name: 'api_posts_show', methods: ['GET'])]
+    public function show(Post $post): JsonResponse
+    {
+        return $this->json($this->normalizePost($post));
+    }
+
     #[Route('', name: 'api_posts_create', methods: ['POST'])]
     public function create(
         Request $request,
@@ -150,6 +156,9 @@ class PostController extends AbstractController
             'content' => $post->getContent(),
             'createdAt' => $post->getCreatedAt()?->format(DATE_ATOM),
             'updatedAt' => $post->getUpdatedAt()?->format(DATE_ATOM),
+            'isDeleted' => $post->isDeleted(),
+            'moderationStatus' => $post->getModerationStatus(),
+            'toxicityScore' => $post->getToxicityScore(),
             'topicId' => $post->getTopic()?->getId(),
             'author' => $post->getAuthor() ? [
                 'id' => $post->getAuthor()->getId(),

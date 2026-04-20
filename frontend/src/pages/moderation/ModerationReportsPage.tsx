@@ -26,7 +26,7 @@ export default function ModerationReportsPage() {
       setLoading(false);
     }
   };
-  
+
   useEffect(() => {
     loadReports();
   }, []);
@@ -78,8 +78,8 @@ export default function ModerationReportsPage() {
               {report.topic && (
                 <>
                   <div className="mb-2 rounded-lg bg-gray-700 p-3 text-sm">
-                    <div className="font-medium pb-2 mb-2 border-b-2 border-gray-600">Topic concerné</div>
-                    <div>#{report.topic.id} — {report.topic.title}</div>
+                    <div className="font-medium pb-2 mb-2 border-b-2 border-gray-600">Topic concerné #{report.topic.id}</div>
+                    <div>{report.topic.title}</div>
                   </div>
 
                   <div className="mb-0 mt-3">
@@ -91,7 +91,7 @@ export default function ModerationReportsPage() {
               {report.post && (
                 <>
                   <div className="rounded-lg bg-gray-700 p-3 text-sm">
-                    <div className="font-medium pb-2 mb-2 border-b-2 border-gray-600">Message concerné</div>
+                    <div className="font-medium pb-2 mb-2 border-b-2 border-gray-600">Message concerné #{report.post!.id}</div>
                     <div>
                       {(() => {
                         const isExpanded = expandedPosts[report.id] || false;

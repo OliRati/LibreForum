@@ -18,6 +18,7 @@ import { isModerator } from '../utils/auth';
 import { getTopicPosts, createPost } from "../services/topics.js";
 import CreatePostForm from "../components/posts/CreatePostForm.js";
 import { subscribeToTopic } from "../lib/mercure";
+import ShowMarkdown from "../components/ui/ShowMarkdown";
 
 export default function TopicPage() {
   const { id } = useParams();
@@ -150,18 +151,20 @@ export default function TopicPage() {
         )}
 
         <div className="mt-6 whitespace-pre-wrap leading-8 text-zinc-300">
-          {topic.content}
+          <ShowMarkdown content={topic.content} />
         </div>
 
-        <div className="text-end">
-          <ReportButton topicId={topic.id} />
-        </div>
 
-        {moderator && (
-          <div className="mb-0 mt-3">
-            <TopicModerationActions topic={topic} onUpdated={loadTopic} />
+        <div className="mb-0 mt-3 flex flex-wrap gap-2 items-center justify-between">
+          {moderator && (
+            <div>
+              <TopicModerationActions topic={topic} onUpdated={loadTopic} />
+            </div>
+          )}
+          <div className="text-end">
+            <ReportButton topicId={topic.id} />
           </div>
-        )}
+        </div>
 
       </article>
 
@@ -175,16 +178,6 @@ export default function TopicPage() {
                 <PostCard key={post.id} post={post} />
                 <div className="mt-3 flex items-center justify-between">
                   <div className="flex gap-3 ml-auto items-center ">
-                    {moderator && (
-                      <>
-                        <div>
-                          <ModerationBadge status={post.moderationStatus} />
-                        </div>
-                        <div>
-                          <PostModerationActions post={post} onUpdated={loadPosts} />
-                        </div>
-                      </>
-                    )}
                   </div>
                 </div>
               </>
