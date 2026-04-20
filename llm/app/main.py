@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 import requests
 import json
@@ -19,6 +20,49 @@ def call_ollama(prompt: str):
         "stream": False
     })
     return response.json()["response"]
+
+
+def stream_ollama(prompt: str):
+    with requests.post(OLLAMA_URL, json={
+        "model": "mistral",
+        "prompt": prompt,
+        "stream": True
+    }, stream=True, timeout=300) as response:
+        for raw_line in response.iter_lines(decode_unicode=True):
+            if raw_line is None:
+                continue
+
+            if isinstance(raw_line, bytes):
+                line = raw_line.decode("utf-8", errors="ignore").strip()
+            else:
+                line = raw_line.strip()
+
+            if not line:
+                continue
+
+            if line.startswith("data:"):
+                line = line[len("data:"):].strip()
+                if not line:
+                    continue
+
+            try:
+                payload = json.loads(line)
+            except json.JSONDecodeError:
+                yield line.encode("utf-8")
+                continue
+
+            if isinstance(payload, dict):
+                response_text = payload.get("response")
+                if response_text is not None:
+                    text = str(response_text)
+                    if text:
+                        yield text.encode("utf-8")
+
+                if payload.get("done"):
+                    return
+                continue
+
+            yield line.encode("utf-8")
 
 def extract_json(text: str):
     match = re.search(r'\{.*\}', text, re.DOTALL)
@@ -138,3 +182,29 @@ Texte :
     return {
         "result": result.strip()
     }
+
+
+@app.post("/assist/stream")
+def assist_stream(req: dict):
+    text = req.get("text", "")
+    action = req.get("action", "improve")
+
+    prompts = {
+        "improve": "Améliore ce message pour le rendre plus clair et structuré.",
+        "correct": "Corrige les fautes d'orthographe et de grammaire.",
+        "summarize": "Résume ce message en version courte.",
+        "simplify": "Simplifie ce texte pour le rendre plus compréhensible."
+    }
+
+    instruction = prompts.get(action, prompts["improve"])
+
+    prompt = f"""
+{instruction}
+
+Réponds uniquement avec le texte final.
+
+Texte :
+{text}
+"""
+
+    return StreamingResponse(stream_ollama(prompt), media_type="text/plain; charset=utf-8")

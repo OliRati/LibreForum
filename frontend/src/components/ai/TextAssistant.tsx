@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { assistText } from '../../services/llm';
+import { assistTextStream } from '../../services/llm';
 import ShowMarkdown from '../ui/ShowMarkdown';
 
 interface Props {
@@ -18,8 +18,12 @@ export default function TextAssistant({ value, onChange }: Props) {
     setPreview('');
 
     try {
-      const result = await assistText(value, action);
-      setPreview(result);
+      let current = '';
+
+      await assistTextStream(value, action, (chunk) => {
+        current += chunk;
+        setPreview(current);
+      });
     } catch (err) {
       console.error(err);
     } finally {
