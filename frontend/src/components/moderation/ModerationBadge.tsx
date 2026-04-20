@@ -1,5 +1,6 @@
 interface ModerationBadgeProps {
   status?: string | null;
+  state?: string | null;
   isPinned?: boolean;
   isLocked?: boolean;
   toxicityScore?: number | null;
@@ -7,6 +8,7 @@ interface ModerationBadgeProps {
 
 export default function ModerationBadge({
   status,
+  state,
   isPinned,
   isLocked,
   toxicityScore
@@ -43,7 +45,13 @@ export default function ModerationBadge({
         </span>
       )}
 
-      {status === 'resolved' && (
+      {state === 'pending' && (
+        <span className="rounded bg-olive-400/20 px-2 py-1 text-xs text-olive-100">
+          En attente
+        </span>
+      )}
+
+      {state === 'resolved' && (
         <span className="rounded bg-cyan-500/20 px-2 py-1 text-xs text-cyan-300">
           Résolue
         </span>

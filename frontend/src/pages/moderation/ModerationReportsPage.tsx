@@ -11,6 +11,7 @@ export default function ModerationReportsPage() {
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [expandedPosts, setExpandedPosts] = useState<Record<number, boolean>>({});
 
   const loadReports = async () => {
     try {
@@ -25,10 +26,17 @@ export default function ModerationReportsPage() {
       setLoading(false);
     }
   };
-
+  
   useEffect(() => {
     loadReports();
   }, []);
+
+  const togglePostExpansion = (reportId: number) => {
+    setExpandedPosts(prev => ({
+      ...prev,
+      [reportId]: !prev[reportId]
+    }));
+  };
 
   if (loading) {
     return <div className="p-6">Chargement des signalements...</div>;
@@ -55,7 +63,7 @@ export default function ModerationReportsPage() {
                   Signalement #{report.id}
                 </div>
                 <div>
-                  <ModerationBadge status={report.status} />
+                  <ModerationBadge state={report.status} />
                 </div>
               </div>
 
@@ -85,7 +93,28 @@ export default function ModerationReportsPage() {
                   <div className="rounded-lg bg-gray-700 p-3 text-sm">
                     <div className="font-medium pb-2 mb-2 border-b-2 border-gray-600">Message concerné</div>
                     <div>
-                      <ShowMarkdown content={report.post.content} />
+                      {(() => {
+                        const isExpanded = expandedPosts[report.id] || false;
+                        const content = report.post!.content;
+                        const shouldTruncate = content.length > 150;
+                        const displayContent = shouldTruncate && !isExpanded
+                          ? content.substring(0, 150) + '...'
+                          : content;
+
+                        return (
+                          <>
+                            <ShowMarkdown content={displayContent} />
+                            {shouldTruncate && (
+                              <button
+                                onClick={() => togglePostExpansion(report.id)}
+                                className="mt-2 text-xs text-blue-400 hover:text-blue-300 underline"
+                              >
+                                {isExpanded ? 'Voir moins' : 'Voir plus'}
+                              </button>
+                            )}
+                          </>
+                        );
+                      })()}
                     </div>
                   </div>
 

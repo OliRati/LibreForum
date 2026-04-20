@@ -103,7 +103,7 @@ class ReportController extends AbstractController
                 ] : null,
                 'post' => $report->getPost() ? [
                     'id' => $report->getPost()?->getId(),
-                    'content' => mb_substr($report->getPost()?->getContent() ?? '', 0, 120),
+                    'content' => $report->getPost()?->getContent(),
                 ] : null,
             ];
         }, $reports);
