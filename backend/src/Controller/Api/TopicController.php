@@ -146,6 +146,7 @@ class TopicController extends AbstractController
         EntityManagerInterface $em,
         CategoryRepository $categoryRepository,
         TagRepository $tagRepository,
+        TopicRepository $topicRepository,
         Security $security,
         SluggerInterface $slugger
     ): JsonResponse {

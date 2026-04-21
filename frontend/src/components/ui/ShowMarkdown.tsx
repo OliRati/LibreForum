@@ -1,6 +1,7 @@
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkBreaks from 'remark-breaks';
+import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
@@ -9,6 +10,20 @@ type Props = {
 }
 
 export default function ShowMarkdown({ content }: Props) {
+
+    function isSafeUrl(url: string | URL) {
+        try {
+            const parsed = new URL(url, window.location.origin);
+
+            // autorise :
+            // - URLs relatives (/image.jpg)
+            // - même domaine
+            return parsed.origin === window.location.origin;
+        } catch {
+            return false;
+        }
+    }
+
     const fixedContent = String(content)
         // force newline after ```
         .replace(/```([^\n]*)[ \t]+/g, "```$1\n\n")
@@ -18,14 +33,39 @@ export default function ShowMarkdown({ content }: Props) {
         .replace(/^(\d+)[\)\-]\s+/gm, "$1. ");
 
     return (
-        <div className="prose lg:prose-xl [&_ol]:list-decimal [&_ol]:pl-6 text-left">
+        <div className="prose lg:prose-xl [&_a]:text-blue-500 [&_a]:underline [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 text-left">
             <ReactMarkdown
                 children={fixedContent}
-                remarkPlugins={[remarkBreaks]}
+                remarkPlugins={[remarkGfm, remarkBreaks]}
                 rehypePlugins={[rehypeRaw]}
                 components={{
                     pre({ children }) {
                         return <>{children}</>
+                    },
+                    a: ({ href, children }) => {
+                        if (!isSafeUrl(href)) return <span className="text-blue-500 underline">{children}</span>;
+
+                        return (
+                            <a
+                                href={href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 underline"
+                            >
+                                {children}
+                            </a>
+                        );
+                    },
+                    img: ({ src, alt }) => {
+                        if (!isSafeUrl(src)) return <span className="border rounded px-1">{alt}</span>;
+
+                        return (
+                            <img
+                                src={src}
+                                alt={alt}
+                                className="rounded max-w-full"
+                            />
+                        );
                     },
                     code(props) {
                         const { children, className, node, ...rest } = props

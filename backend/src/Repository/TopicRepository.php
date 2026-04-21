@@ -59,26 +59,29 @@ class TopicRepository extends ServiceEntityRepository
         $limit = max(1, min(50, $limit));
         $offset = ($page - 1) * $limit;
 
+        // --- Requête de base (sans les jointures one-to-many) ---
         $qb = $this->createQueryBuilder('t')
             ->leftJoin('t.author', 'a')->addSelect('a')
-            ->leftJoin('t.category', 'c')->addSelect('c')
-            ->leftJoin('t.tags', 'tag')->addSelect('tag');
+            ->leftJoin('t.category', 'c')->addSelect('c');
+
+        // Le filtre sur tags nécessite la jointure, mais PAS addSelect
+        if ($tagId) {
+            $qb->leftJoin('t.tags', 'tag')
+                ->andWhere('tag.id = :tagId')
+                ->setParameter('tagId', $tagId);
+        }
 
         if ($categoryId) {
             $qb->andWhere('c.id = :categoryId')
-               ->setParameter('categoryId', $categoryId);
-        }
-
-        if ($tagId) {
-            $qb->andWhere('tag.id = :tagId')
-               ->setParameter('tagId', $tagId);
+                ->setParameter('categoryId', $categoryId);
         }
 
         if ($search) {
             $qb->andWhere('LOWER(t.title) LIKE :search OR LOWER(t.content) LIKE :search')
-               ->setParameter('search', '%' . mb_strtolower($search) . '%');
+                ->setParameter('search', '%' . mb_strtolower($search) . '%');
         }
 
+        // --- COUNT sur les IDs distincts ---
         $countQb = clone $qb;
         $total = (int) $countQb
             ->select('COUNT(DISTINCT t.id)')
@@ -86,12 +89,85 @@ class TopicRepository extends ServiceEntityRepository
             ->getQuery()
             ->getSingleScalarResult();
 
-        $items = $qb
-            ->groupBy('t.id, a.id, c.id, tag.id')
+        // --- Récupération des IDs paginés via SQL natif ---
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = 'SELECT DISTINCT t.id, t.is_pinned, t.created_at FROM topics t';
+        $params = [];
+        $types = [];
+
+        if ($tagId) {
+            $sql .= ' INNER JOIN topic_tags tt ON tt.topic_id = t.id';
+        }
+        if ($categoryId) {
+            $sql .= ' INNER JOIN categories c ON c.id = t.category_id';
+        }
+
+        $conditions = [];
+
+        if ($tagId) {
+            $conditions[] = 'tt.tag_id = :tagId';
+            $params['tagId'] = $tagId;
+            $types['tagId'] = \Doctrine\DBAL\ParameterType::INTEGER;
+        }
+        if ($categoryId) {
+            $conditions[] = 'c.id = :categoryId';
+            $params['categoryId'] = $categoryId;
+            $types['categoryId'] = \Doctrine\DBAL\ParameterType::INTEGER;
+        }
+        if ($search) {
+            $conditions[] = '(LOWER(t.title) LIKE :search OR LOWER(t.content) LIKE :search)';
+            $params['search'] = '%' . mb_strtolower($search) . '%';
+            $types['search'] = \Doctrine\DBAL\ParameterType::STRING;
+        }
+
+        if ($conditions) {
+            $sql .= ' WHERE ' . implode(' AND ', $conditions);
+        }
+
+        $sql .= ' ORDER BY t.is_pinned DESC, t.created_at DESC';
+        $sql .= ' LIMIT :limit OFFSET :offset';
+        $params['limit'] = $limit;
+        $params['offset'] = $offset;
+        $types['limit'] = \Doctrine\DBAL\ParameterType::INTEGER;
+        $types['offset'] = \Doctrine\DBAL\ParameterType::INTEGER;
+
+        $ids = array_column(
+            $conn->executeQuery($sql, $params, $types)->fetchAllAssociative(),
+            'id'
+        );
+
+        if (empty($ids)) {
+            return [
+                'items' => [],
+                'page' => $page,
+                'limit' => $limit,
+                'total' => $total,
+                'totalPages' => max(1, (int) ceil($total / $limit)),
+            ];
+        }
+
+        // --- Hydratation Doctrine sur les IDs exacts ---
+        $items = $this->createQueryBuilder('t')
+            ->leftJoin('t.author', 'a')->addSelect('a')
+            ->leftJoin('t.category', 'c')->addSelect('c')
+            ->leftJoin('t.tags', 'tag')->addSelect('tag')
+            ->where('t.id IN (:ids)')
+            ->setParameter('ids', $ids)
             ->orderBy('t.isPinned', 'DESC')
             ->addOrderBy('t.createdAt', 'DESC')
-            ->setFirstResult($offset)
-            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+
+        // --- Requête finale sur les IDs connus — jointure complète sans limite ---
+        $items = $this->createQueryBuilder('t')
+            ->leftJoin('t.author', 'a')->addSelect('a')
+            ->leftJoin('t.category', 'c')->addSelect('c')
+            ->leftJoin('t.tags', 'tag')->addSelect('tag')
+            ->where('t.id IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->orderBy('t.isPinned', 'DESC')
+            ->addOrderBy('t.createdAt', 'DESC')
             ->getQuery()
             ->getResult();
 
