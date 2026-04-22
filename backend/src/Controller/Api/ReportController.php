@@ -80,6 +80,12 @@ class ReportController extends AbstractController
         ], 201);
     }
 
+    #[Route('/{id}', name: 'api_reports_show', methods: ['GET'])]
+    public function show(Report $report): JsonResponse
+    {
+        return $this->json($this->normalizeReport($report));
+    }
+
     #[Route('', name: 'api_reports_list', methods: ['GET'])]
     public function list(Request $request, ReportRepository $reportRepository): JsonResponse
     {
@@ -93,24 +99,7 @@ class ReportController extends AbstractController
         $reports = $reportRepository->findBy([], ['createdAt' => 'DESC'], $limit, $offset);
 
         $data = array_map(function (Report $report) {
-            return [
-                'id' => $report->getId(),
-                'reason' => $report->getReason(),
-                'status' => $report->getStatus(),
-                'createdAt' => $report->getCreatedAt()?->format(DATE_ATOM),
-                'reporter' => [
-                    'id' => $report->getReporter()?->getId(),
-                    'username' => $report->getReporter()?->getUsername(),
-                ],
-                'topic' => $report->getTopic() ? [
-                    'id' => $report->getTopic()?->getId(),
-                    'title' => $report->getTopic()?->getTitle(),
-                ] : null,
-                'post' => $report->getPost() ? [
-                    'id' => $report->getPost()?->getId(),
-                    'content' => $report->getPost()?->getContent(),
-                ] : null,
-            ];
+            return $this->normalizeReport($report);
         }, $reports);
 
         return $this->json([
@@ -144,5 +133,27 @@ class ReportController extends AbstractController
         }, $reports);
 
         return $this->json($data);
+    }
+
+    private function normalizeReport(Report $report): array
+    {
+        return [
+            'id' => $report->getId(),
+            'reason' => $report->getReason(),
+            'status' => $report->getStatus(),
+            'createdAt' => $report->getCreatedAt()?->format(DATE_ATOM),
+            'reporter' => [
+                'id' => $report->getReporter()?->getId(),
+                'username' => $report->getReporter()?->getUsername(),
+            ],
+            'topic' => $report->getTopic() ? [
+                'id' => $report->getTopic()?->getId(),
+                'title' => $report->getTopic()?->getTitle(),
+            ] : null,
+            'post' => $report->getPost() ? [
+                'id' => $report->getPost()?->getId(),
+                'content' => $report->getPost()?->getContent(),
+            ] : null,
+        ];
     }
 }

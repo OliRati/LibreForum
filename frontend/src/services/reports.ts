@@ -20,6 +20,10 @@ export async function createReport(payload: {
   });
 }
 
+export async function getReport(reportId: number): Promise<Report> {
+  return apiFetch<Report>(`/api/reports/${reportId}`);
+}
+
 export async function getReports(page?: number, limit?: number): Promise<PaginatedReports> {
   const params = new URLSearchParams();
   if (page) params.append('page', page.toString());
