@@ -135,13 +135,18 @@ export default function TopicPage() {
       <article className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
         <h1 className="text-3xl font-bold">{topic.title}</h1>
 
-        <div className="mt-2">
-          <ModerationBadge
-            status={topic.moderationStatus}
-            isPinned={topic.isPinned}
-            isLocked={topic.isLocked}
-            toxicityScore={topic.toxicityScore}
-          />
+        <div className="mt-2 flex flex-wrap gap-2 items-center justify-between">
+          <div>
+            <ModerationBadge
+              status={topic.moderationStatus}
+              isPinned={topic.isPinned}
+              isLocked={topic.isLocked}
+              toxicityScore={topic.toxicityScore}
+            />
+          </div>
+          <div className="text-end">
+            <ReportButton topicId={topic.id} />
+          </div>
         </div>
 
         <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-zinc-500">
@@ -178,9 +183,6 @@ export default function TopicPage() {
               <TopicModerationActions topic={topic} onUpdated={loadTopic} />
             </div>
           )}
-          <div className="text-end">
-            <ReportButton topicId={topic.id} />
-          </div>
         </div>
 
       </article>
@@ -191,13 +193,9 @@ export default function TopicPage() {
         <div className="space-y-4">
           {posts.length > 0 ? (
             posts.map((post) =>
-              <>
+              <div className="mb-6">
                 <PostCard key={post.id} post={post} />
-                <div className="mt-3 flex items-center justify-between">
-                  <div className="flex gap-3 ml-auto items-center ">
-                  </div>
-                </div>
-              </>
+              </div>
             )
           ) : (
             <EmptyState

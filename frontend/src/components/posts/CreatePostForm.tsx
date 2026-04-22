@@ -40,7 +40,7 @@ export default function CreatePostForm({ topicId, onCreated }: Props) {
       <textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        className="min-h-[160px] w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-3 text-zinc-100 outline-none"
+        className="min-h-[160px] w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-3 text-zinc-100 outline-none shadow-lg shadow-black"
         placeholder="Votre réponse..."
       />
 
@@ -52,7 +52,7 @@ export default function CreatePostForm({ topicId, onCreated }: Props) {
       <button
         onClick={handleSubmit}
         disabled={loading}
-        className="cursor-pointer rounded-xl bg-emerald-600 px-5 py-3 mt-6 font-medium hover:bg-emerald-700"
+        className="shadow-lg shadow-black cursor-pointer rounded-xl bg-emerald-600 px-5 py-3 mt-6 font-medium hover:bg-emerald-700"
       >
         {loading ? 'Envoi en cours...' : 'Publier la réponse'}
       </button>

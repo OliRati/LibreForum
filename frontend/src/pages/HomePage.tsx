@@ -58,7 +58,7 @@ export default function HomePage() {
       <section>
         <h2 className="pb-6 text-2xl font-semibold">Catégories</h2>
         {categories.length > 0 ? (
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-2">
             {categories.map((category) => (
               <CategoryCard key={category.id} category={category} />
             ))}
