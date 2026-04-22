@@ -24,6 +24,7 @@ export type Topic = {
   updatedAt?: string | null;
   isPinned?: boolean;
   isLocked?: boolean;
+  moderationStatus?: string | null;
   toxicityScore?: number | null;
   author: TopicAuthor;
   category: TopicCategory;

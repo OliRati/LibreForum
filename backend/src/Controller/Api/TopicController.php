@@ -207,6 +207,7 @@ class TopicController extends AbstractController
             'createdAt' => $topic->getCreatedAt()?->format(DATE_ATOM),
             'updatedAt' => $topic->getUpdatedAt()?->format(DATE_ATOM),
             'isPinned' => $topic->isPinned(),
+            'moderationStatus' => $topic->getModerationStatus(),
             'toxicityScore' => $topic->getToxicityScore(),
             'isLocked' => $topic->isLocked(),
             'author' => $topic->getAuthor() ? [

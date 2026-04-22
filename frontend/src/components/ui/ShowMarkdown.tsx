@@ -33,7 +33,7 @@ export default function ShowMarkdown({ content }: Props) {
         .replace(/^(\d+)[\)\-]\s+/gm, "$1. ");
 
     return (
-        <div className="prose lg:prose-xl [&_a]:text-blue-500 [&_a]:underline [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 text-left">
+        <div className="prose lg:prose-xl [&_a]:text-blue-600 [&_a]:underline [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 text-left">
             <ReactMarkdown
                 children={fixedContent}
                 remarkPlugins={[remarkGfm, remarkBreaks]}
@@ -43,7 +43,7 @@ export default function ShowMarkdown({ content }: Props) {
                         return <>{children}</>
                     },
                     a: ({ href, children }) => {
-                        if (!isSafeUrl(href)) return <span className="text-blue-500 underline">{children}</span>;
+                        if (!isSafeUrl(href)) return <span className="text-gray-400">{children}</span>;
 
                         return (
                             <a
@@ -57,7 +57,7 @@ export default function ShowMarkdown({ content }: Props) {
                         );
                     },
                     img: ({ src, alt }) => {
-                        if (!isSafeUrl(src)) return <span className="border rounded px-1">{alt}</span>;
+                        if (!isSafeUrl(src)) return <span className="bg-gray-100 text-xs p-2 rounded">Image externe bloquée</span>;
 
                         return (
                             <img
