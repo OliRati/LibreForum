@@ -6,7 +6,7 @@ export async function suggestTags(text: string): Promise<string[]> {
     body: JSON.stringify({ text }),
   });
 
-  return res.tags || [];
+  return res.tags.tags || [];
 }
 
 export async function assistText(text: string, action: string): Promise<string> {

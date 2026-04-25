@@ -77,8 +77,17 @@ def extract_json(text: str):
 @app.post("/summarize")
 def summarize(req: TextRequest):
     prompt = f"""
-Résume ce fil de discussion en 5 lignes maximum :
+Tu es un assistant de résumé expert.
 
+Règles strictes :
+- Conserver la langue originale du texte (français reste français, anglais reste anglais)
+- Maximum 5 lignes
+- Style concis et neutre
+- Garde les points clés du débat
+- Ne pas ajouter d'opinion personnelle
+- Utilise des phrases complètes
+
+Texte à résumer :
 {req.text}
 """
     result = call_ollama(prompt)
@@ -89,16 +98,23 @@ Résume ce fil de discussion en 5 lignes maximum :
 @app.post("/moderate")
 def moderate(req: TextRequest):
     prompt = f"""
-Tu es un système de modération.
+Tu es un système de modération de contenu.
 
-Analyse ce texte et réponds UNIQUEMENT en JSON valide :
+Analyse le texte suivant et retourne UNIQUEMENT un JSON valide sans commentaire :
 
 {{
-  "toxicity": float entre 0 et 1,
-  "label": "clean" | "warning" | "toxic"
+  "toxicity": float entre 0.0 et 1.0 (précision 2 décimales),
+  "label": "clean" si toxicity < 0.3,
+          "warning" si toxicity entre 0.3 et 0.7,
+          "toxic" si toxicity > 0.7
 }}
 
-Texte :
+Critères d'analyse :
+- Insultes, menaces, haine
+- Harcèlement, discrimination
+- Contenu violent ou sexuellement explicite
+
+Texte à analyser :
 {req.text}
 """
 
@@ -120,21 +136,27 @@ Texte :
 @app.post("/suggest-tags")
 def suggest_tags(req: TextRequest):
     prompt = f"""
-Tu es un assistant qui génère des tags pour un forum technique.
+Tu es un assistant de catégorisation pour forum technique.
 
-Réponds UNIQUEMENT en JSON valide :
-[
-  "tag1",
-  "tag2",
-  "tag3",
-  "tag4",
-  "tag5"
-]
+Génère 5 tags pertinents UNIQUEMENT en JSON valide :
 
-Contraintes :
-- tags courts (1 ou 2 mots)
-- en minuscules
-- pertinents
+{{
+  "tags": [
+    "tag1",
+    "tag2",
+    "tag3",
+    "tag4",
+    "tag5"
+  ]
+}}
+
+Contraintes strictes :
+- 5 tags maximum
+- 1 à 2 mots par tag
+- minuscules uniquement
+- pas de répétitions
+- pertinents pour le contenu technique
+- variés (pas tous sur le même sujet)
 
 Contenu :
 {req.text}
@@ -153,14 +175,28 @@ Contenu :
         "tags": parsed
     }
 
-
 @app.post("/assist")
 def assist(req: dict):
     text = req.get("text", "")
     action = req.get("action", "improve")
 
     prompts = {
-        "improve": "Améliore ce message pour le rendre plus clair et structuré.",
+        "improve": f"""Tu es un outil de réécriture de texte automatique. Tu ne réponds jamais aux questions, tu ne traduis jamais, tu ne commentes jamais.
+
+RÈGLE ABSOLUE : Tu retournes UNIQUEMENT le texte réécrit, rien d'autre.
+
+Contraintes strictes :
+- Conserver la langue originale du texte (français reste français, anglais reste anglais)
+- Conserver le sens et les idées exactes de l'auteur
+- Améliorer uniquement : la clarté, la structure, la ponctuation, la grammaire
+- Ne pas ajouter d'informations, d'opinions ou de contenu nouveau
+- Ne pas répondre si le texte est une question — la réécrire uniquement
+- Ne pas inclure de phrase d'introduction ou de conclusion
+- Ne pas inclure de guillemets autour du résultat
+
+Si le texte d'entrée est : "comment sa marche ?"
+Tu retournes : "Comment est-ce que cela fonctionne ?"
+Et rien d'autre.""",
         "correct": "Corrige les fautes d'orthographe et de grammaire.",
         "summarize": "Résume ce message en version courte.",
         "simplify": "Simplifie ce texte pour le rendre plus compréhensible."
@@ -173,7 +209,9 @@ def assist(req: dict):
 
 Réponds uniquement avec le texte final.
 
-Texte :
+Texte à traiter :
+
+
 {text}
 """
 
@@ -190,7 +228,22 @@ def assist_stream(req: dict):
     action = req.get("action", "improve")
 
     prompts = {
-        "improve": "Améliore ce message pour le rendre plus clair et structuré.",
+        "improve": f"""Tu es un outil de réécriture de texte automatique. Tu ne réponds jamais aux questions, tu ne traduis jamais, tu ne commentes jamais.
+
+RÈGLE ABSOLUE : Tu retournes UNIQUEMENT le texte réécrit, rien d'autre.
+
+Contraintes strictes :
+- Conserver la langue originale du texte (français reste français, anglais reste anglais)
+- Conserver le sens et les idées exactes de l'auteur
+- Améliorer uniquement : la clarté, la structure, la ponctuation, la grammaire
+- Ne pas ajouter d'informations, d'opinions ou de contenu nouveau
+- Ne pas répondre si le texte est une question — la réécrire uniquement
+- Ne pas inclure de phrase d'introduction ou de conclusion
+- Ne pas inclure de guillemets autour du résultat
+
+Si le texte d'entrée est : "comment sa marche ?"
+Tu retournes : "Comment est-ce que cela fonctionne ?"
+Et rien d'autre.""",
         "correct": "Corrige les fautes d'orthographe et de grammaire.",
         "summarize": "Résume ce message en version courte.",
         "simplify": "Simplifie ce texte pour le rendre plus compréhensible."
@@ -203,7 +256,7 @@ def assist_stream(req: dict):
 
 Réponds uniquement avec le texte final.
 
-Texte :
+Texte à traiter :
 {text}
 """
 
