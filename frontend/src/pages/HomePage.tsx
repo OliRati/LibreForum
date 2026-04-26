@@ -49,8 +49,8 @@ export default function HomePage() {
       )}
 
       <section>
-        <h1 className="mb-4 text-3xl font-bold">Bienvenue sur LibreForum</h1>
-        <p className="text-zinc-400">
+        <h1 className="text-zinc-100 mb-4 text-3xl font-bold text-center">Bienvenue sur LibreForum</h1>
+        <p className="text-zinc-400 text-center">
           LibreForum est un forum communautaire dédiée à l'echange, à l'entraide et au partage de connaissance autour de l'informatique en général, du logiciel libre, de l'open-source et de son écosystèmes.
         </p>
       </section>

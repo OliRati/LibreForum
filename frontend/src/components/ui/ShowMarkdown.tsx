@@ -56,8 +56,11 @@ export default function ShowMarkdown({ content }: Props) {
                             </a>
                         );
                     },
+                    blockquote: ({ children }) => {
+                        return <blockquote className="ml-4 pl-2 py-2 my-2 border-l-3 border-gray-500">{children}</blockquote>
+                    },
                     img: ({ src, alt }) => {
-                        if (!isSafeUrl(src)) return <span className="bg-gray-100 text-xs p-2 rounded">Image externe bloquée</span>;
+                        if (!isSafeUrl(src)) return <span className="bg-gray-600 border border-gray-400 text-xs p-2 inline-block rounded">Image externe bloquée</span>;
 
                         return (
                             <img

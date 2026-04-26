@@ -87,7 +87,7 @@ export default function NewTopicPage() {
 
   return (
     <div className="mx-auto max-w-3xl rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
-      <h1 className="mb-6 text-3xl font-bold">Créer un nouveau sujet</h1>
+      <h1 className="text-zinc-100 mb-6 text-3xl font-bold text-center">Créer un nouveau sujet</h1>
 
       {error && <div className="mb-4"><Alert type="error" message={error} /></div>}
 

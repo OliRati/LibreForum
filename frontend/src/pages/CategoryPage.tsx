@@ -45,7 +45,7 @@ export default function CategoryPage() {
   return (
     <div className="space-y-8">
       <section className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
-        <h1 className="text-3xl font-bold">{category.name}</h1>
+        <h1 className="text-zinc-100 text-3xl font-bold text-center">{category.name}</h1>
         <p className="mt-3 text-zinc-400">
           {category.description || "Aucune description"}
         </p>
