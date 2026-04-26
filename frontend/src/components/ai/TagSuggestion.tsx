@@ -44,7 +44,7 @@ export default function TagSuggestion({ content, onSelect }: Props) {
             <button
               key={tag}
               onClick={() => toggleTag(tag)}
-              className="rounded-full border px-3 py-1 text-sm hover:bg-gray-100"
+              className="cursor-pointer rounded-full border border-cyan-700 hover:border-cyan-600 px-3 py-1 text-sm bg-cyan-900 hover:bg-cyan-800"
             >
               #{tag}
             </button>

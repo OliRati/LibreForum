@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { createTopic } from "../api/topics";
 import { getCategories, type Category } from "../api/categories";
 import { getTags, type Tag } from "../api/tags";
+import { ChevronDownIcon } from '@heroicons/react/16/solid'
 import Alert from "../components/ui/Alert";
 
 import TagSuggestion from '../components/ai/TagSuggestion';
@@ -71,28 +72,35 @@ export default function NewTopicPage() {
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label className="mb-2 block text-sm text-zinc-400">Titre</label>
+          <label htmlFor="title" className="mb-2 block text-sm text-zinc-400">Titre</label>
           <input
-            className="w-full rounded-xl bg-zinc-800 px-4 py-3"
+            id="title"
+            className="w-full rounded-xl bg-zinc-800 px-4 py-3 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Titre du sujet"
           />
         </div>
 
-        <div>
-          <label className="mb-2 block text-sm text-zinc-400">Catégorie</label>
-          <select
-            className="w-full rounded-xl bg-zinc-800 px-4 py-3"
-            value={categoryId}
-            onChange={(e) => setCategoryId(Number(e.target.value))}
-          >
-            {categories.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.name}
-              </option>
-            ))}
-          </select>
+        <div className="sm:col-span-3">
+          <label htmlFor="categories" className="block mb-2 text-sm text-zinc-400">Catégorie</label>
+          <div className="mt-2 grid grid-cols-1">
+            <select
+              className="col-start-1 row-start-1 w-full appearance-none rounded-xl bg-white/5 py-3 pr-8 pl-3 text-base text-white outline-1 -outline-offset-1 outline-white/10 *:bg-gray-800 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
+              value={categoryId}
+              onChange={(e) => setCategoryId(Number(e.target.value))}
+            >
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+            <ChevronDownIcon
+              aria-hidden="true"
+              className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-400 sm:size-4"
+            />
+          </div>
         </div>
 
         <div>
@@ -122,24 +130,13 @@ export default function NewTopicPage() {
         <div>
           <label className="mb-2 block text-sm text-zinc-400">Contenu</label>
           <textarea
-            className="min-h-[220px] w-full rounded-xl bg-zinc-800 px-4 py-3"
+            className="min-h-[220px] w-full rounded-xl bg-zinc-800 px-4 py-3 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500"
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder="Décris ton sujet…"
           />
         </div>
 
-        {/* Assistant IA */}
-        <TextAssistant value={content} onChange={setContent} />
-
-        {/* Tags IA */}
-        <TagSuggestion
-          content={content}
-          onSelect={(newTags) =>
-            setTags((prev) => [...new Set([...prev, ...newTags])])
-          }
-        />
-        
         <button
           type="submit"
           className="rounded-xl bg-emerald-600 px-5 py-3 font-medium hover:bg-emerald-500"
@@ -147,6 +144,19 @@ export default function NewTopicPage() {
           Publier le sujet
         </button>
       </form>
+
+      {/* Assistant IA */}
+      <TextAssistant value={content} onChange={setContent} />
+
+      {/* Tags IA */}
+      <TagSuggestion
+        content={content}
+        onSelect={(newTags) => {
+          setTags((prev) => [...new Set([...prev, ...newTags])]);
+        }
+        }
+      />
+      
     </div>
   );
 }
