@@ -144,22 +144,22 @@ export default function ProfilePage() {
 
             <div className="mt-4 grid gap-3 sm:grid-cols-3">
               <div className="rounded-2xl border border-zinc-800 bg-zinc-950/50 p-4">
-                <p className="text-3xl font-semibold text-zinc-100">
+                <p className="text-3xl font-semibold text-zinc-100 text-center">
                   {user.postsCount ?? 0}
                 </p>
-                <p className="mt-1 text-sm text-zinc-500">Posts écrits</p>
+                <p className="mt-1 text-sm text-zinc-500 text-center">Posts écrits</p>
               </div>
               <div className="rounded-2xl border border-zinc-800 bg-zinc-950/50 p-4">
-                <p className="text-3xl font-semibold text-zinc-100">
+                <p className="text-3xl font-semibold text-zinc-100 text-center">
                   {user.topicsCreatedCount ?? 0}
                 </p>
-                <p className="mt-1 text-sm text-zinc-500">Sujets créés</p>
+                <p className="mt-1 text-sm text-zinc-500 text-center">Sujets créés</p>
               </div>
               <div className="rounded-2xl border border-zinc-800 bg-zinc-950/50 p-4">
-                <p className="text-3xl font-semibold text-zinc-100">
+                <p className="text-3xl font-semibold text-zinc-100 text-center">
                   {user.topicsParticipatedCount ?? 0}
                 </p>
-                <p className="mt-1 text-sm text-zinc-500">Sujets participés</p>
+                <p className="mt-1 text-sm text-zinc-500 text-center">Sujets participés</p>
               </div>
             </div>
           </div>
@@ -256,7 +256,7 @@ export default function ProfilePage() {
             </div>
 
             <div className="space-y-2">
-              <p className="text-sm text-zinc-400">Avatar</p>
+              <p className="text-2xl text-zinc-400">Avatar</p>
               <div className="flex items-center gap-4">
                 <div className="relative h-20 w-20 overflow-hidden rounded-full bg-zinc-800 text-3xl text-zinc-300">
                   {avatarUrl ? (
@@ -276,7 +276,7 @@ export default function ProfilePage() {
                   type="file"
                   accept="image/*"
                   onChange={handleAvatarChange}
-                  className="text-sm text-zinc-400 file:mr-4 file:rounded-full file:border-0 file:bg-emerald-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white"
+                  className="text-sm text-zinc-400 file:mr-4 file:rounded-full file:border-0 file:bg-emerald-600 hover:file:bg-emerald-500 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white file:cursor-pointer"
                 />
               </div>
             </div>
@@ -284,7 +284,7 @@ export default function ProfilePage() {
             <button
               type="submit"
               disabled={saving}
-              className="rounded-xl bg-emerald-600 px-5 py-3 text-white hover:bg-emerald-500 disabled:opacity-60"
+              className="rounded-xl bg-emerald-600 px-5 py-3 text-white hover:bg-emerald-500 disabled:opacity-60 cursor-pointer"
             >
               {saving ? 'Enregistrement...' : 'Enregistrer les modifications'}
             </button>
