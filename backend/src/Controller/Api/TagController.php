@@ -4,11 +4,11 @@ namespace App\Controller\Api;
 
 use App\Entity\Tag;
 use App\Repository\TagRepository;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\BrowserKit\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -29,12 +29,12 @@ class TagController extends AbstractController
         return $this->json($this->normalizeTag($tag));
     }
 
-    #[Route('/{id]', name: 'api_tags_create', methods: ['POST'])]
+    #[Route('', name: 'api_tags_create', methods: ['POST'])]
     public function create(
         Request $request,
         TagRepository $tagRepository,
         Security $security,
-        EntityManager $em
+        EntityManagerInterface $em
     ): JsonResponse
     {
         $user = $security->getUser();
@@ -50,6 +50,11 @@ class TagController extends AbstractController
             return $this->json([
                 'message' => 'tag est requis'
             ], Response::HTTP_BAD_REQUEST);
+        }
+
+        $existingTag = $tagRepository->findOneBy(['name' => $tag]);
+        if ($existingTag) {
+            return $this->json($this->normalizeTag($existingTag), Response::HTTP_OK);
         }
 
         $newTag = new Tag();

@@ -3,7 +3,7 @@ import { suggestTags } from '../../services/llm';
 
 interface Props {
   content: string;
-  onSelect: (tags: string[]) => void;
+  onSelect: (tags: string) => void;
 }
 
 export default function TagSuggestion({ content, onSelect }: Props) {
@@ -24,7 +24,7 @@ export default function TagSuggestion({ content, onSelect }: Props) {
   };
 
   const toggleTag = (tag: string) => {
-    onSelect([tag]);
+    onSelect(tag);
   };
 
   return (

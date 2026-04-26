@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createTopic } from "../api/topics";
 import { getCategories, type Category } from "../api/categories";
-import { getTags, type Tag } from "../api/tags";
+import { getTags, createTag, type Tag } from "../api/tags";
 import { ChevronDownIcon } from '@heroicons/react/16/solid'
 import Alert from "../components/ui/Alert";
 
@@ -44,6 +44,27 @@ export default function NewTopicPage() {
         ? prev.filter((id) => id !== tagId)
         : [...prev, tagId]
     );
+  }
+
+  async function newTag(tagName: string) {
+    // Vérifier si le tag existe déjà dans la liste
+    const existingTag = tags.find(tag => tag.name.toLowerCase() === tagName.toLowerCase());
+
+    if (existingTag) {
+      // Le tag existe, l'ajouter aux tags sélectionnés s'il n'y est pas déjà
+      setSelectedTags((prev) =>
+        prev.includes(existingTag.id) ? prev : [...prev, existingTag.id]
+      );
+    } else {
+      // Le tag n'existe pas, le créer via l'API
+      const newTag = await createTag({ name: tagName });
+
+      // Ajouter le nouveau tag à la liste
+      setTags((prev) => [...prev, newTag]);
+
+      // L'ajouter aux tags sélectionnés
+      setSelectedTags((prev) => [...prev, newTag.id]);
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -114,11 +135,10 @@ export default function NewTopicPage() {
                   key={tag.id}
                   type="button"
                   onClick={() => toggleTag(tag.id)}
-                  className={`rounded-full px-3 py-2 text-sm transition ${
-                    active
-                      ? "bg-emerald-600 text-white"
-                      : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
-                  }`}
+                  className={`rounded-full px-3 py-2 text-sm transition ${active
+                    ? "bg-emerald-600 text-white border border-emerald-500"
+                    : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700 border border-zinc-600"
+                    }`}
                 >
                   #{tag.name}
                 </button>
@@ -151,12 +171,10 @@ export default function NewTopicPage() {
       {/* Tags IA */}
       <TagSuggestion
         content={content}
-        onSelect={(newTags) => {
-          setTags((prev) => [...new Set([...prev, ...newTags])]);
-        }
+        onSelect={(tagName) => newTag(tagName)
         }
       />
-      
+
     </div>
   );
 }

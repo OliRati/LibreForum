@@ -61,7 +61,7 @@ export default function TextAssistant({ value, onChange }: Props) {
               onChange(preview);
               setPreview('');
             }}
-            className="mt-5 rounded-xl px-4 py-2 text-sm cursor-pointer bg-cyan-700 hover:bg-cyan-800 text-cyan-50"
+            className="shadow-lg shadow-black mt-5 rounded-xl px-4 py-2 text-sm cursor-pointer bg-cyan-700 hover:bg-cyan-800 text-cyan-50"
           >
             Remplacer mon texte
           </button>
