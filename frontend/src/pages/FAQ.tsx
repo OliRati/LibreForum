@@ -1,7 +1,7 @@
 export default function FAQ() {
   return (
     <div className="space-y-8">
-      <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
+      <div className="rounded-2xl border border-zinc-800 bg-zinc-900 text-zinc-200 p-6">
         <h1 className="text-3xl font-bold mb-6">Foire Aux Questions</h1>
 
         <div className="prose prose-invert max-w-none">
