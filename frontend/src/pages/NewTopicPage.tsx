@@ -96,7 +96,7 @@ export default function NewTopicPage() {
           <label htmlFor="title" className="mb-2 block text-sm text-zinc-400">Titre</label>
           <input
             id="title"
-            className="w-full rounded-xl bg-zinc-800 px-4 py-3 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500"
+            className="w-full rounded-xl text-zinc-200 bg-zinc-800 px-4 py-3 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Titre du sujet"
@@ -150,7 +150,7 @@ export default function NewTopicPage() {
         <div>
           <label className="mb-2 block text-sm text-zinc-400">Contenu</label>
           <textarea
-            className="min-h-[220px] w-full rounded-xl bg-zinc-800 px-4 py-3 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500"
+            className="min-h-[220px] w-full rounded-xl text-zinc-200 bg-zinc-800 px-4 py-3 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500"
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder="Décris ton sujet…"
@@ -159,7 +159,7 @@ export default function NewTopicPage() {
 
         <button
           type="submit"
-          className="rounded-xl bg-emerald-600 px-5 py-3 font-medium hover:bg-emerald-500"
+          className="rounded-xl text-zinc-200 bg-emerald-600 px-5 py-3 font-medium hover:bg-emerald-500"
         >
           Publier le sujet
         </button>

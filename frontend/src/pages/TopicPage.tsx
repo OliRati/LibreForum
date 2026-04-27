@@ -133,7 +133,7 @@ export default function TopicPage() {
       {error && <Alert type="error" message={error} />}
 
       <article className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
-        <h1 className="text-3xl font-bold">{topic.title}</h1>
+        <h1 className="text-3xl font-bold text-zinc-100">{topic.title}</h1>
 
         <div className="mt-2 flex flex-wrap gap-2 items-center justify-between">
           <div>
@@ -220,7 +220,7 @@ export default function TopicPage() {
 
       {token && !topic.isLocked && (
         <section className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
-          <h3 className="mb-4 text-xl font-semibold">Répondre</h3>
+          <h3 className="mb-4 text-xl font-semibold text-zinc-200">Répondre</h3>
 
           <CreatePostForm topicId={topic.id} onCreated={loadData} />
 

@@ -6,7 +6,6 @@ type Props = {
   itemsPerPage?: number;
   showPageNumbers?: boolean;
   showInfo?: boolean;
-  variant?: 'light' | 'dark';
 };
 
 export default function Pagination({
@@ -17,23 +16,13 @@ export default function Pagination({
   itemsPerPage = 10,
   showPageNumbers = false,
   showInfo = false,
-  variant = 'light',
 }: Props) {
   if (totalPages <= 1) return null;
 
-  const isLight = variant === 'light';
-  const btnClass = isLight
-    ? 'rounded-xl bg-zinc-800 px-4 py-2 disabled:opacity-40'
-    : 'rounded-lg bg-gray-700 px-4 py-2 text-white disabled:opacity-50 hover:bg-gray-600';
+  const btnClass = 'rounded-xl bg-zinc-200 dark:bg-zinc-800 px-4 py-2 disabled:opacity-40'
   
   const pageClass = (isCurrentPage: boolean) =>
-    isLight
-      ? `rounded-lg px-3 py-2 ${isCurrentPage ? 'bg-blue-600 text-white' : 'bg-zinc-800'}`
-      : `rounded-lg px-3 py-2 ${
-          isCurrentPage
-            ? 'bg-blue-600 text-white'
-            : 'bg-gray-700 text-white hover:bg-gray-600'
-        }`;
+      `rounded-lg px-3 py-2 ${isCurrentPage ? 'bg-blue-600 text-white' : 'bg-zinc-800'}`;
 
   const start = (page - 1) * itemsPerPage + 1;
   const end = Math.min(page * itemsPerPage, total || page * itemsPerPage);
@@ -45,7 +34,7 @@ export default function Pagination({
       }`}
     >
       {showInfo && total && (
-        <div className={isLight ? 'text-sm text-zinc-400' : 'text-sm text-gray-300'}>
+        <div className="text-sm text-zinc-800 dark:text-zinc-400">
           Affichage {start}-{end} sur {total}
         </div>
       )}
@@ -72,7 +61,7 @@ export default function Pagination({
             ))}
           </div>
         ) : (
-          <span className={isLight ? 'text-sm text-zinc-400' : 'text-sm text-gray-300'}>
+          <span className='text-sm text-zinc-900 dark:text-zinc-400'>
             Page {page} / {totalPages}
           </span>
         )}

@@ -41,16 +41,16 @@ export default function HomePage() {
     <div className="space-y-10">
 
       {isModerator() && (
-        <section className="text-left p-3 bg-amber-950 border border-amber-800 rounded-xl">
-          <Link to={'/moderation/reports'} className="hover:text-zinc-300">
+        <section className="text-left p-3 bg-amber-100 border-amber-200 dark:bg-amber-950 border dark:border-amber-800 rounded-xl">
+          <Link to={'/moderation/reports'} className="hover:text-zinc-500 hover:dark:text-zinc-300">
             Gérer les signalements
           </Link>
         </section>
       )}
 
       <section>
-        <h1 className="text-zinc-100 mb-4 text-3xl font-bold text-center">Bienvenue sur LibreForum</h1>
-        <p className="text-zinc-400 text-center">
+        <h1 className="text-zinc-900 dark:text-zinc-100 mb-4 text-3xl font-bold text-center">Bienvenue sur LibreForum</h1>
+        <p className="text-zinc-700 dark:text-zinc-400 text-center">
           LibreForum est un forum communautaire dédiée à l'echange, à l'entraide et au partage de connaissance autour de l'informatique en général, du logiciel libre, de l'open-source et de son écosystèmes.
         </p>
       </section>

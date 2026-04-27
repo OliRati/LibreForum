@@ -56,7 +56,7 @@ export default function ReportButton({
     <>
       <button
         onClick={() => setOpen(true)}
-        className="rounded border px-3 py-1 text-sm hover:bg-gray-500"
+        className="rounded border px-3 py-1 text-sm text-zinc-200 hover:bg-gray-500"
       >
         {label}
       </button>

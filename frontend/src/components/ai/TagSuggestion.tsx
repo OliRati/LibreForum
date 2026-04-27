@@ -29,12 +29,12 @@ export default function TagSuggestion({ content, onSelect }: Props) {
 
   return (
     <div className="rounded-xl border bg-cyan-950 border-cyan-800 p-4 mt-4">
-      <div className="mb-2 font-semibold">Suggestions IA</div>
+      <div className="mb-2 font-semibold text-zinc-200">Suggestions IA</div>
 
       {tags.length === 0 ? (
         <button
           onClick={generate}
-          className="cursor-pointer rounded-xl px-3 py-2 bg-cyan-700 hover:bg-cyan-800 mr-2"
+          className="cursor-pointer rounded-xl px-3 py-2 text-zinc-200 bg-cyan-700 hover:bg-cyan-800 mr-2"
         >
           {loading ? 'Analyse en cours...' : 'Suggérer des tags'}
         </button>
@@ -44,7 +44,7 @@ export default function TagSuggestion({ content, onSelect }: Props) {
             <button
               key={tag}
               onClick={() => toggleTag(tag)}
-              className="cursor-pointer rounded-full border border-cyan-700 hover:border-cyan-600 px-3 py-1 text-sm bg-cyan-900 hover:bg-cyan-800"
+              className="cursor-pointer rounded-full border text-zinc-200 border-cyan-700 hover:border-cyan-600 px-3 py-1 text-sm bg-cyan-900 hover:bg-cyan-800"
             >
               #{tag}
             </button>

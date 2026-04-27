@@ -75,7 +75,7 @@ export default function PostCard({ post }: Props) {
         </span>
       </div>
 
-      <div className="mb-3 p-2 rounded border border-zinc-600 bg-zinc-800 items-left text-left">
+      <div className="mb-3 p-2 rounded border text-zinc-200 border-zinc-600 bg-zinc-800 items-left text-left">
         {curPost.moderationStatus === 'blocked' ? (
           <p className="italic text-red-500">
             Ce message a été bloqué pour non-respect des règles.
