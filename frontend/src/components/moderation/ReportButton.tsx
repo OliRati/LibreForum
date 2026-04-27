@@ -63,7 +63,7 @@ export default function ReportButton({
 
       <Modal open={open} onClose={() => setOpen(false)} title="Signaler ce contenu">
         <div className="space-y-4">
-          <p className="text-sm text-gray-300 pb-2">
+          <p className="text-sm text-left text-gray-300 pb-2">
             Explique brièvement pourquoi ce contenu doit être signalé.
           </p>
 
@@ -80,7 +80,7 @@ export default function ReportButton({
           <div className="flex justify-end gap-2">
             <button
               onClick={() => setOpen(false)}
-              className="rounded border px-4 py-2 text-sm"
+              className="rounded border border-gray-300 px-4 py-2 text-sm hover:bg-gray-500"
             >
               Annuler
             </button>
@@ -88,7 +88,7 @@ export default function ReportButton({
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="rounded bg-black px-4 py-2 text-sm text-white"
+              className="rounded border border-gray-300 bg-black px-4 py-2 text-sm hover:bg-gray-800 text-white"
             >
               {loading ? 'Envoi...' : 'Envoyer'}
             </button>

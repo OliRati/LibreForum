@@ -52,7 +52,7 @@ export default function CreatePostForm({ topicId, onCreated }: Props) {
       <button
         onClick={handleSubmit}
         disabled={loading}
-        className="shadow-lg shadow-black cursor-pointer rounded-xl bg-emerald-600 px-5 py-3 mt-6 font-medium hover:bg-emerald-700"
+        className="shadow-lg shadow-black cursor-pointer rounded-xl text-zinc-200 bg-emerald-600 px-5 py-3 mt-6 font-medium hover:bg-emerald-700"
       >
         {loading ? 'Envoi en cours...' : 'Publier la réponse'}
       </button>

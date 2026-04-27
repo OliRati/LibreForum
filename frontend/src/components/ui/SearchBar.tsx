@@ -15,7 +15,7 @@ export default function SearchBar() {
   return (
     <form onSubmit={handleSubmit} className="flex gap-2">
       <input
-        className="w-full rounded-xl bg-zinc-800 px-4 py-3 text-zinc-100 outline-none"
+        className="w-full rounded-xl bg-zinc-800 px-4 py-3 text-zinc-200 outline-none"
         type="text"
         placeholder="Rechercher un sujet…"
         value={query}

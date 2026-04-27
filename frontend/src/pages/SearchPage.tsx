@@ -54,7 +54,7 @@ export default function SearchPage() {
 
   return (
     <div className="space-y-8">
-      <section className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
+      <section className="rounded-2xl border border-zinc-800 text-zinc-200 bg-zinc-900 p-6">
         <h1 className="mb-4 text-3xl font-bold">Recherche</h1>
 
         <form onSubmit={handleSubmit} className="flex gap-3">
