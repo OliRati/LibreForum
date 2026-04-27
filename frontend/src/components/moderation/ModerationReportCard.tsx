@@ -39,7 +39,7 @@ export default function ModerationReportCard({ report }: Props) {
 
     return (
         <>
-            <div key={curentReport.id} className="rounded-2xl border border-gray-400 bg-gray-600 p-5 shadow-sm">
+            <div key={curentReport.id} className="rounded-2xl border border-gray-400 bg-gray-600 text-gray-200 p-5 shadow-sm">
                 <div className="mb-2 flex items-center justify-between">
                     <div className="font-semibold">
                         Signalement #{curentReport.id}
