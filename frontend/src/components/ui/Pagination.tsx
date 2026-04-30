@@ -19,7 +19,8 @@ export default function Pagination({
 }: Props) {
   if (totalPages <= 1) return null;
 
-  const btnClass = 'rounded-xl bg-zinc-200 dark:bg-zinc-800 px-4 py-2 disabled:opacity-40'
+  const btnClass = 'rounded-xl bg-zinc-200 dark:bg-zinc-800 px-4 py-2 disabled:opacity-40';
+  const btnClassActive = ' transition hover:bg-zinc-300 dark:hover:bg-zinc-700 cursor-pointer';
   
   const pageClass = (isCurrentPage: boolean) =>
       `rounded-lg px-3 py-2 ${isCurrentPage ? 'bg-blue-600 text-white' : 'bg-zinc-800'}`;
@@ -43,7 +44,7 @@ export default function Pagination({
         <button
           disabled={page <= 1}
           onClick={() => onPageChange(page - 1)}
-          className={btnClass}
+          className={btnClass + (page > 1 ? btnClassActive : "")}
         >
           Précédent
         </button>
@@ -69,7 +70,7 @@ export default function Pagination({
         <button
           disabled={page >= totalPages}
           onClick={() => onPageChange(page + 1)}
-          className={btnClass}
+          className={btnClass + (page < totalPages ? btnClassActive : "")}
         >
           Suivant
         </button>
