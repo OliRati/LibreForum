@@ -36,7 +36,7 @@ export default function AppLayout() {
             </Link>
 
             <nav className="flex items-center gap-4 text-sm">
-              <Link to="/" className="text-sm hover:text-zinc-500 hover:dark:text-zinc-400">Accueil</Link>
+              <Link to="/" className="hover:text-zinc-500 hover:dark:text-zinc-400">Accueil</Link>
               <Link to="/new-topic" className="text-sm hover:text-zinc-500 hover:dark:text-zinc-400">Nouveau sujet</Link>
             </nav>
           </div>
@@ -82,8 +82,8 @@ export default function AppLayout() {
               </div>
             ) : (
               <div className="flex items-center gap-4 text-sm">
-                <Link to="/login" className="hover:text-zinc-300">Connexion</Link>
-                <Link to="/register" className="hover:text-zinc-300">Inscription</Link>
+                <Link to="/login" className="hover:text-zinc-500 hover:dark:text-zinc-400">Connexion</Link>
+                <Link to="/register" className="hover:text-zinc-500 hover:dark:text-zinc-400">Inscription</Link>
               </div>
             )}
 
