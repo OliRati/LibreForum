@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../features/auth/useAuth";
 
 export default function RegisterPage() {
@@ -11,10 +11,16 @@ export default function RegisterPage() {
   const [displayName, setDisplayName] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [accepted, setAccepted] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
+
+    if (!accepted) {
+      setError("Vous devez accepter les CGU pour vous inscrire sur ce site");
+      return;
+    }
 
     try {
       await register({
@@ -31,7 +37,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="mx-auto max-w-md rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
+    <div className="mx-auto max-w-md rounded-2xl border border-zinc-800 bg-zinc-900 text-zinc-100 p-6">
       <h1 className="mb-6 text-2xl font-bold">Inscription</h1>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -64,6 +70,16 @@ export default function RegisterPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+
+          <label className="flex items-start gap-3">
+            <input
+              type="checkbox"
+              checked={accepted}
+              onChange={(e) => setAccepted(e.target.checked)}
+              className="mt-1 h-4 w-4 rounded border-zinc-700 bg-zinc-800"
+            />
+            <span className="text-sm text-zinc-300">J'accepte les <Link to="/cgu" className="text-blue-400 hover:underline">Conditions Générales d'Utilisation</Link></span>
+          </label>
 
         {error && <p className="text-sm text-red-400">{error}</p>}
 

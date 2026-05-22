@@ -158,8 +158,8 @@ export default function Moderation() {
               </div>
 
               <p>
-                Vous pouvez également consulter la page dédiée au <a href="/app/signalement" className="text-blue-400 hover:underline"> signalement</a>
-                pour plus d'informations.
+                Vous pouvez également consulter la page dédiée au <a href="/app/signalement" className="text-blue-400 hover:underline">signalement</a>
+                {" "}pour plus d'informations.
               </p>
             </div>
           </section>

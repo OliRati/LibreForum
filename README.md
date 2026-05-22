@@ -66,14 +66,26 @@ install a llm model in the container
 use of mistral as a good and fast model
 
 ```bash
+docker-compose up ollama -d
 docker-compose exec ollama ollama pull mistral
+```
+
+
+## Setup Symfony backend
+```bash
+docker-compose run php composer update
+```
+
+## Setup React / Vite frontend
+```bash
+docker-compose run frontend npm update
 ```
 
 ## Access to all services
 
 As a regular tester, you'll only need the fist two ones.
 [http://localhost:8080](http://localhost:8080) Will redirect you to the https link below ( Thanks to nginx config )  
-[http://localhost:8443](http://localhost:8443) Is the main system entry.  
+[https://localhost:8443](https://localhost:8443) Is the main system entry.  
 
 And the webmail to see interractions with users by mailling  
 [http://localhost:8025](http://localhost:8025)
