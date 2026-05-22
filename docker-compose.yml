@@ -28,6 +28,7 @@ services:
     depends_on:
       - php
       - frontend
+      - llm
 
   # MySQL
   mysql:
