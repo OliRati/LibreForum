@@ -88,7 +88,7 @@ Règles strictes :
 - Utilise des phrases complètes
 
 Texte à résumer :
-{req.text}
+"{req.text}"
 """
     result = call_ollama(prompt)
     return {"summary": result}
@@ -115,7 +115,7 @@ Critères d'analyse :
 - Contenu violent ou sexuellement explicite
 
 Texte à analyser :
-{req.text}
+"{req.text}"
 """
 
     raw = call_ollama(prompt)
@@ -159,7 +159,7 @@ Contraintes strictes :
 - variés (pas tous sur le même sujet)
 
 Contenu :
-{req.text}
+"{req.text}"
 """
 
     raw = call_ollama(prompt)
@@ -308,7 +308,7 @@ def assist(req: dict):
 
     prompt = f"""
 {instruction}
-{text}
+"{text}"
 """
 
     result = call_ollama(prompt)
@@ -327,7 +327,7 @@ def assist_stream(req: dict):
 
     prompt = f"""
 {instruction}
-{text}
+"{text}"
 """
 
     return StreamingResponse(stream_ollama(prompt), media_type="text/plain; charset=utf-8")

@@ -1,2 +1,4 @@
 /docker/nginx/certs/*
 /.env
+# backend uploads
+/backend/public/uploads/

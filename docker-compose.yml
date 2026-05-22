@@ -77,9 +77,16 @@ services:
 
   # Ollama (LLM local)
   ollama:
-    image: ollama/ollama
+    image: ollama/ollama:latest
     volumes:
       - ollama_data:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
 
   # API Python (LLM)
   llm:
