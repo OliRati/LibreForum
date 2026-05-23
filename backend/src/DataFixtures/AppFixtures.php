@@ -34,7 +34,6 @@ class AppFixtures extends Fixture
             ->setRoles(['ROLE_ADMIN'])
             ->setForumRank('Administrateur')
             ->setBio('Administrateur principal de LibreForum.')
-            ->setAvatarUrl('/uploads/avatars/admin.png')
             ->setPassword($this->passwordHasher->hashPassword(new User(), 'password'));
 
         $alice = (new User())
@@ -43,7 +42,6 @@ class AppFixtures extends Fixture
             ->setDisplayName('Alice')
             ->setForumRank('Contributrice')
             ->setBio('Passionnée de Linux, Docker et PHP.')
-            ->setAvatarUrl('/uploads/avatars/alice.png')
             ->setPassword($this->passwordHasher->hashPassword(new User(), 'password'));
 
         $bob = (new User())
@@ -52,7 +50,6 @@ class AppFixtures extends Fixture
             ->setDisplayName('Bob')
             ->setForumRank('Membre')
             ->setBio('Bidouilleur open source et amateur de self-hosting.')
-            ->setAvatarUrl('/uploads/avatars/bob.png')
             ->setPassword($this->passwordHasher->hashPassword(new User(), 'password'));
 
         $charlie = (new User())
@@ -62,7 +59,6 @@ class AppFixtures extends Fixture
             ->setForumRank('Modérateur')
             ->setRoles(['ROLE_MODERATOR'])
             ->setBio('Modération, UX et bonnes pratiques communautaires.')
-            ->setAvatarUrl('/uploads/avatars/charlie.png')
             ->setPassword($this->passwordHasher->hashPassword(new User(), 'password'));
 
         foreach ([$admin, $alice, $bob, $charlie] as $user) {
