@@ -162,6 +162,15 @@ docker-compose exec ollama ollama pull mistral
 
 This downloads the Mistral LLM model (~5 GB) for use by the Python LLM API service. The process may take several minutes depending on your internet connection.
 
+### Keeping the model in memory for demonstrations
+
+By default, `docker-compose.yml` sets `OLLAMA_KEEP_ALIVE: 10h` to keep the Mistral model loaded in memory for 10 hours. This ensures fast response times during live demonstrations without model reload delays.
+
+To adjust this value for your use case:
+- Edit `docker-compose.yml` and change the `OLLAMA_KEEP_ALIVE` value under the `ollama` service
+- Use duration strings like `5m` (5 minutes), `1h` (1 hour), or `0` (infinite)
+- Restart the container: `docker-compose restart ollama`
+
 ## Frontend setup
 
 Install frontend dependencies and keep the Vite dev server running:
