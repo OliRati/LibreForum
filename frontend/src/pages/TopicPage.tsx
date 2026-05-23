@@ -187,6 +187,13 @@ export default function TopicPage() {
 
       </article>
 
+      {!token && (
+        <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-4">
+          <p className="text-zinc-300">
+            Vous n'êtes pas connecté. <Link to="/login" className="text-indigo-400 hover:underline">Connectez-vous</Link> ou <Link to="/register" className="text-indigo-400 hover:underline">inscrivez-vous</Link> pour participer.
+          </p>
+        </div>
+      )}
       <section>
         <h2 className="mb-4 pb-4 text-2xl font-semibold">Réponses</h2>
 
