@@ -72,8 +72,19 @@ docker-compose exec ollama ollama pull mistral
 
 
 ## Setup Symfony backend
+### Setup system
 ```bash
 docker-compose run php composer update
+```
+
+### Create databases for Symfony
+```
+docker-compose run php bin/console doctrine:database:create
+```
+
+### Setup test datanase with Fixture
+```
+docker-compose run php bin/console make:fixture
 ```
 
 ## Setup React / Vite frontend
