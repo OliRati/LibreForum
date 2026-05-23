@@ -1,5 +1,7 @@
+import type { ReactElement } from "react";
+
 type Props = {
-  message: string;
+  message: ReactElement;
   type?: "error" | "success" | "info";
 };
 

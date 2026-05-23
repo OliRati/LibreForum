@@ -1,6 +1,9 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import Modal from '../ui/Modal';
+import Alert from '../ui/Alert';
 import { createReport } from '../../services/reports';
+import { useAuthStore } from '../../features/auth/authStore';
 
 interface ReportButtonProps {
   topicId?: number;
@@ -13,7 +16,9 @@ export default function ReportButton({
   postId,
   label = 'Signaler',
 }: ReportButtonProps) {
+  const token = useAuthStore((state) => state.token);
   const [open, setOpen] = useState(false);
+  const [showLoginAlert, setShowLoginAlert] = useState(false);
   const [reason, setReason] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState('');
@@ -55,15 +60,41 @@ export default function ReportButton({
   return (
     <>
       <button
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          if (!token) {
+            setShowLoginAlert(true);
+          } else {
+            setOpen(true);
+          }
+        }}
         className="rounded border px-3 py-1 text-sm text-zinc-200 hover:bg-gray-500"
       >
         {label}
       </button>
 
+      {showLoginAlert && (
+        <Alert
+          type="info"
+          message={
+            <div>
+              Vous devez être connecté pour signaler un contenu.{' '}
+              <Link to="/login" className="text-indigo-400 hover:underline">
+                Connectez-vous
+              </Link>{' '}
+              ou{' '}
+              <Link to="/register" className="text-indigo-400 hover:underline">
+                inscrivez-vous
+              </Link>
+              .
+            </div>
+          }
+          onClose={() => setShowLoginAlert(false)}
+        />
+      )}
+
       <Modal open={open} onClose={() => setOpen(false)} title="Signaler ce contenu">
         <div className="space-y-4">
-          <p className="text-sm text-left text-gray-300 pb-2">
+          <p className="text-sm text-left text-gray-200 pb-2">
             Explique brièvement pourquoi ce contenu doit être signalé.
           </p>
 
@@ -74,13 +105,13 @@ export default function ReportButton({
             placeholder="Ex: spam, insultes, hors-sujet, contenu offensant..."
           />
 
-          {error && <div className="text-sm text-red-600">{error}</div>}
-          {success && <div className="text-sm text-green-600">{success}</div>}
+          {error && <div className="text-sm text-orange-400">{error}</div>}
+          {success && <div className="text-sm text-green-400">{success}</div>}
 
           <div className="flex justify-end gap-2">
             <button
               onClick={() => setOpen(false)}
-              className="rounded border border-gray-300 px-4 py-2 text-sm hover:bg-gray-500"
+              className="rounded border transition border-gray-300 px-4 py-2 text-sm hover:bg-gray-500"
             >
               Annuler
             </button>
@@ -88,7 +119,7 @@ export default function ReportButton({
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="rounded border border-gray-300 bg-black px-4 py-2 text-sm hover:bg-gray-800 text-white"
+              className="rounded border transition border-emerald-300 bg-emerald-600 px-4 py-2 text-sm hover:bg-emerald-500 text-white font-semibold"
             >
               {loading ? 'Envoi...' : 'Envoyer'}
             </button>
