@@ -187,7 +187,7 @@ export default function TopicPage() {
 
       </article>
 
-      {!token && (
+      {!token && !topic.isLocked && (
         <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-4">
           <p className="text-zinc-300">
             Vous n'êtes pas connecté. <Link to="/login" className="text-indigo-400 hover:underline">Connectez-vous</Link> ou <Link to="/register" className="text-indigo-400 hover:underline">inscrivez-vous</Link> pour participer.
