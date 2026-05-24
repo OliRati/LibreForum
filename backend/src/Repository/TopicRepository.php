@@ -53,7 +53,8 @@ class TopicRepository extends ServiceEntityRepository
         int $limit = 10,
         ?int $categoryId = null,
         ?string $search = null,
-        ?int $tagId = null
+        ?int $tagId = null,
+        bool $includeBlocked = false
     ): array {
         $page = max(1, $page);
         $limit = max(1, min(50, $limit));
@@ -79,6 +80,11 @@ class TopicRepository extends ServiceEntityRepository
         if ($search) {
             $qb->andWhere('LOWER(t.title) LIKE :search OR LOWER(t.content) LIKE :search')
                 ->setParameter('search', '%' . mb_strtolower($search) . '%');
+        }
+
+        if (!$includeBlocked) {
+            $qb->andWhere('t.moderationStatus != :blocked OR t.moderationStatus IS NULL')
+                ->setParameter('blocked', 'blocked');
         }
 
         // --- COUNT sur les IDs distincts ---
@@ -119,6 +125,12 @@ class TopicRepository extends ServiceEntityRepository
             $conditions[] = '(LOWER(t.title) LIKE :search OR LOWER(t.content) LIKE :search)';
             $params['search'] = '%' . mb_strtolower($search) . '%';
             $types['search'] = \Doctrine\DBAL\ParameterType::STRING;
+        }
+
+        if (!$includeBlocked) {
+            $conditions[] = '(t.moderation_status != :blocked OR t.moderation_status IS NULL)';
+            $params['blocked'] = 'blocked';
+            $types['blocked'] = \Doctrine\DBAL\ParameterType::STRING;
         }
 
         if ($conditions) {

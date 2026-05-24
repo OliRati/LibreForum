@@ -28,7 +28,7 @@ class TopicController extends AbstractController
     ) {}
 
     #[Route('', name: 'api_topics_index', methods: ['GET'])]
-    public function index(Request $request, TopicRepository $topicRepository): JsonResponse
+    public function index(Request $request, TopicRepository $topicRepository, Security $security): JsonResponse
     {
         $page = max(1, (int) $request->query->get('page', 1));
         $limit = max(1, min(50, (int) $request->query->get('limit', 10)));
@@ -42,12 +42,15 @@ class TopicController extends AbstractController
         $search = trim((string) $request->query->get('search', ''));
         $search = $search !== '' ? $search : null;
 
+        $isModerator = $security->isGranted('ROLE_MODERATOR') || $security->isGranted('ROLE_ADMIN');
+
         $result = $topicRepository->findPaginatedFiltered(
             page: $page,
             limit: $limit,
             categoryId: $categoryId,
             search: $search,
-            tagId: $tagId
+            tagId: $tagId,
+            includeBlocked: $isModerator
         );
 
         return $this->json([
@@ -59,8 +62,14 @@ class TopicController extends AbstractController
     }
 
     #[Route('/{id}', name: 'api_topics_show', methods: ['GET'])]
-    public function show(Topic $topic, TopicRepository $topicRepository): JsonResponse
+    public function show(Topic $topic, TopicRepository $topicRepository, Security $security): JsonResponse
     {
+        $isModerator = $security->isGranted('ROLE_MODERATOR') || $security->isGranted('ROLE_ADMIN');
+
+        if (!$isModerator && $topic->getModerationStatus() === 'blocked') {
+            return $this->json(['message' => 'Topic introuvable'], Response::HTTP_NOT_FOUND);
+        }
+
         return $this->json($this->normalizeTopic($topic, $topicRepository));
     }
 

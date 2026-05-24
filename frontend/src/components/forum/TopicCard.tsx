@@ -14,9 +14,10 @@ export default function TopicCard({ topic }: Props) {
       <Link to={`/topic/${topic.id}`} className="block">
         <div className="mb-2 flex items-center gap-2">
           <ModerationBadge
+            status={topic.moderationStatus}
             isPinned={topic.isPinned}
             isLocked={topic.isLocked}
-            toxicityScore={topic.toxicityScore}/>
+            toxicityScore={topic.toxicityScore} />
         </div>
 
         <h3 className="text-xl font-semibold text-zinc-100">{topic.title}</h3>
