@@ -1,6 +1,11 @@
 export function parseJwt(token: string) {
+  const [, payload] = token.split('.');
+
+  if (!payload)
+    return null;
+
   try {
-    return JSON.parse(atob(token.split('.')[1]));
+    return JSON.parse(atob(payload));
   } catch {
     return null;
   }

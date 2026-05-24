@@ -19,6 +19,8 @@ export default function NewTopicPage() {
   const [categoryId, setCategoryId] = useState<number | "">("");
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
   const [error, setError] = useState("");
+  const [tagLimit, setTagLimit] = useState<number>(6);
+  const [tagError, setTagError] = useState("");
 
   useEffect(() => {
     async function loadData() {
@@ -39,24 +41,42 @@ export default function NewTopicPage() {
   }, []);
 
   function toggleTag(tagId: number) {
-    setSelectedTags((prev) =>
-      prev.includes(tagId)
-        ? prev.filter((id) => id !== tagId)
-        : [...prev, tagId]
-    );
+    setTagError("");
+    setSelectedTags((prev) => {
+      if (prev.includes(tagId)) {
+        return prev.filter((id) => id !== tagId);
+      }
+
+      if (prev.length >= tagLimit) {
+        setTagError(`Limite de ${tagLimit} tags atteinte.`);
+        return prev;
+      }
+
+      return [...prev, tagId];
+    });
   }
 
-  async function newTag(tagName: string) {
+  async function newTag(tagName: string): Promise<boolean> {
     // Vérifier si le tag existe déjà dans la liste
     const existingTag = tags.find(tag => tag.name.toLowerCase() === tagName.toLowerCase());
 
     if (existingTag) {
-      // Le tag existe, l'ajouter aux tags sélectionnés s'il n'y est pas déjà
-      setSelectedTags((prev) =>
-        prev.includes(existingTag.id) ? prev : [...prev, existingTag.id]
-      );
+      if (selectedTags.includes(existingTag.id)) return false;
+      if (selectedTags.length >= tagLimit) {
+        setTagError(`Limite de ${tagLimit} tags atteinte.`);
+        return false;
+      }
+
+      setTagError("");
+      setSelectedTags((prev) => [...prev, existingTag.id]);
+      return true;
     } else {
       // Le tag n'existe pas, le créer via l'API
+      if (selectedTags.length >= tagLimit) {
+        setTagError(`Limite de ${tagLimit} tags atteinte.`);
+        return false;
+      }
+
       const newTag = await createTag({ name: tagName });
 
       // Ajouter le nouveau tag à la liste
@@ -64,6 +84,8 @@ export default function NewTopicPage() {
 
       // L'ajouter aux tags sélectionnés
       setSelectedTags((prev) => [...prev, newTag.id]);
+      setTagError("");
+      return true;
     }
   }
 
@@ -145,6 +167,11 @@ export default function NewTopicPage() {
               );
             })}
           </div>
+          {tagError && (
+            <div className="mt-3">
+              <Alert type="error" message={<>{tagError}</>} />
+            </div>
+          )}
         </div>
 
         <div>
@@ -171,8 +198,8 @@ export default function NewTopicPage() {
       {/* Tags IA */}
       <TagSuggestion
         content={content}
-        onSelect={(tagName) => newTag(tagName)
-        }
+        onSelect={(tagName) => newTag(tagName)}
+        excludedTagNames={tags.map((t) => t.name)}
       />
 
     </div>

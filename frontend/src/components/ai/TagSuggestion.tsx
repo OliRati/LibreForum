@@ -3,10 +3,11 @@ import { suggestTags } from '../../services/llm';
 
 interface Props {
   content: string;
-  onSelect: (tags: string) => void;
+  onSelect: (tag: string) => Promise<boolean> | boolean;
+  excludedTagNames?: string[];
 }
 
-export default function TagSuggestion({ content, onSelect }: Props) {
+export default function TagSuggestion({ content, onSelect, excludedTagNames }: Props) {
   const [loading, setLoading] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
 
@@ -23,8 +24,15 @@ export default function TagSuggestion({ content, onSelect }: Props) {
     }
   };
 
-  const toggleTag = (tag: string) => {
-    onSelect(tag);
+  const toggleTag = async (tag: string) => {
+    try {
+      const result = await onSelect(tag);
+      if (result) {
+        setTags((prev) => prev.filter((t) => t.toLowerCase() !== tag.toLowerCase()));
+      }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
@@ -40,15 +48,17 @@ export default function TagSuggestion({ content, onSelect }: Props) {
         </button>
       ) : (
         <div className="flex flex-wrap gap-2">
-          {tags.map((tag) => (
-            <button
-              key={tag}
-              onClick={() => toggleTag(tag)}
-              className="cursor-pointer rounded-full border text-zinc-200 border-cyan-700 hover:border-cyan-600 px-3 py-1 text-sm bg-cyan-900 hover:bg-cyan-800"
-            >
-              #{tag}
-            </button>
-          ))}
+          {tags
+            .filter((t) => !excludedTagNames?.some((e) => e.toLowerCase() === t.toLowerCase()))
+            .map((tag) => (
+              <button
+                key={tag}
+                onClick={() => toggleTag(tag)}
+                className="cursor-pointer rounded-full border text-zinc-200 border-cyan-700 hover:border-cyan-600 px-3 py-1 text-sm bg-cyan-900 hover:bg-cyan-800"
+              >
+                #{tag}
+              </button>
+            ))}
         </div>
       )}
     </div>
