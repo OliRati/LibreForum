@@ -2,3 +2,5 @@
 /.env
 # backend uploads
 /backend/public/uploads/
+# python compilations
+/llm/app/__pycache__/
