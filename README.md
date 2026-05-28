@@ -97,6 +97,8 @@ cp .env.example .env
 - `MERCURE_JWT_SECRET` is required for Mercure real-time messages
 - `VITE_API_URL` and `VITE_API_BASE_URL` are the frontend API URLs
 
+If you are on Windows, don't forget to disable the two lines `UID` and `GID`.
+
 4. Generate local TLS certificates:
 
 ```bash
