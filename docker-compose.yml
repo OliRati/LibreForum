@@ -7,7 +7,7 @@ services:
       - .env
     build:
       context: ./docker/php
-    user: "${UID:-1000}:${GID:-1000}"
+    user: "${UID:-root}:${GID:-root}"
     volumes:
       - ./backend:/var/www/html
     extra_hosts:
@@ -67,7 +67,7 @@ services:
     build:
       context: ./frontend
     working_dir: /app
-    user: "${UID:-1000}:${GID:-1000}"
+    user: "${UID:-root}:${GID:-root}"
     volumes:
       - ./frontend:/app
     ports:
