@@ -4,6 +4,7 @@ import remarkBreaks from 'remark-breaks';
 import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { Children } from "react";
 
 type Props = {
     content: string;
@@ -42,6 +43,12 @@ export default function ShowMarkdown({ content }: Props) {
                     pre({ children }) {
                         return <>{children}</>
                     },
+                    h1: ({ children }) => <div className="text-4xl font-extrabold tracking-tight text-zinc-300 mt-10 mb-5">{children}</div>,
+                    h2: ({ children }) => <div className="text-3xl font-bold tracking-tight text-zinc-300 mt-8 mb-4">{children}</div>,
+                    h3: ({ children }) => <div className="text-2xl font-semibold text-zinc-300 mt-7 mb-3">{children}</div>,
+                    h4: ({ children }) => <div className="text-xl font-semibold text-zinc-300 mt-6 mb-3">{children}</div>,
+                    h5: ({ children }) => <div className="text-lg font-medium text-zinc-300 mt-5 mb-2">{children}</div>,
+                    h6: ({ children }) => <div className="text-xs font-medium text-zinc-300 tracking-wide mt-4 mb-2">{children}</div>,
                     a: ({ href, children }) => {
                         if (!isSafeUrl(href)) return <span className="text-gray-400">{children}</span>;
 
