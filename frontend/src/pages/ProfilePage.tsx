@@ -131,7 +131,7 @@ export default function ProfilePage() {
           </div>
 
           <div>
-            <h1 className="text-3xl font-bold">
+            <h1 className="text-3xl font-bold text-zinc-100">
               {user.displayName || user.username}
             </h1>
             <p className="mt-1 text-zinc-400">@{user.username}</p>
@@ -189,7 +189,7 @@ export default function ProfilePage() {
         <section className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
           <div className="mb-6 flex items-center justify-between gap-4">
             <div>
-              <h2 className="text-2xl font-semibold">Modifier mon profil</h2>
+              <h2 className="text-2xl font-semibold text-zinc-100">Modifier mon profil</h2>
               <p className="mt-1 text-sm text-zinc-500">
                 Changez votre nom affiché, votre bio, votre mot de passe ou votre avatar.
               </p>
