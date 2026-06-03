@@ -6,6 +6,7 @@ import Loader from "../components/ui/Loader";
 import EmptyState from "../components/ui/EmptyState";
 import { formatDate } from "../lib/formatDate";
 import { isOnline } from '../utils/auth.js';
+import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/solid";
 
 export default function ProfilePage() {
   const { id } = useParams();
@@ -23,6 +24,13 @@ export default function ProfilePage() {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const [saving, setSaving] = useState(false);
+
+  const hasPasswordMinLength = newPassword.length >= 12;
+  const hasPasswordUppercase = /[A-Z]/.test(newPassword);
+  const hasPasswordLowercase = /[a-z]/.test(newPassword);
+  const hasPasswordDigit = /[0-9]/.test(newPassword);
+  const hasPasswordSpecialChar = /[!@#$%^&*()_+\-=\[\]{};:'",.<>?\\|`~]/.test(newPassword);
+  const newPasswordIsValid = newPassword === "" || (hasPasswordMinLength && hasPasswordUppercase && hasPasswordLowercase && hasPasswordDigit && hasPasswordSpecialChar);
 
   useEffect(() => {
     async function load() {
@@ -72,6 +80,23 @@ export default function ProfilePage() {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setStatus(null);
+
+    if (!newPassword && confirmPassword) {
+      setStatus({ type: "error", message: "Veuillez renseigner le nouveau mot de passe." });
+      return;
+    }
+
+    if (newPassword && !newPasswordIsValid) {
+      const missing: string[] = [];
+      if (!hasPasswordMinLength) missing.push("12 caractères minimum");
+      if (!hasPasswordUppercase) missing.push("au moins une majuscule");
+      if (!hasPasswordLowercase) missing.push("au moins une minuscule");
+      if (!hasPasswordDigit) missing.push("au moins un chiffre");
+      if (!hasPasswordSpecialChar) missing.push("au moins un caractère spécial");
+
+      setStatus({ type: "error", message: `Le mot de passe doit contenir : ${missing.join(", ")}.` });
+      return;
+    }
 
     if (newPassword && newPassword !== confirmPassword) {
       setStatus({ type: "error", message: "La confirmation du mot de passe ne correspond pas." });
@@ -240,18 +265,86 @@ export default function ProfilePage() {
                   onChange={(event) => setNewPassword(event.target.value)}
                   className="mt-2 w-full rounded-xl bg-zinc-800 px-4 py-3 text-zinc-100 outline-none"
                   placeholder="Laisser vide pour ne pas changer"
+                  aria-invalid={newPassword !== "" && !newPasswordIsValid}
                 />
+
+                {newPassword !== "" && (
+                  <div className="mt-3 space-y-2 text-sm">
+                    <div className="flex items-center gap-2">
+                      {hasPasswordMinLength ? (
+                        <CheckCircleIcon className="h-4 w-4 text-green-500" />
+                      ) : (
+                        <XCircleIcon className="h-4 w-4 text-red-500" />
+                      )}
+                      <span className={hasPasswordMinLength ? "text-green-400" : "text-red-400"}>
+                        12 caractères minimum
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {hasPasswordUppercase ? (
+                        <CheckCircleIcon className="h-4 w-4 text-green-500" />
+                      ) : (
+                        <XCircleIcon className="h-4 w-4 text-red-500" />
+                      )}
+                      <span className={hasPasswordUppercase ? "text-green-400" : "text-red-400"}>
+                        Au moins une majuscule
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {hasPasswordLowercase ? (
+                        <CheckCircleIcon className="h-4 w-4 text-green-500" />
+                      ) : (
+                        <XCircleIcon className="h-4 w-4 text-red-500" />
+                      )}
+                      <span className={hasPasswordLowercase ? "text-green-400" : "text-red-400"}>
+                        Au moins une minuscule
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {hasPasswordDigit ? (
+                        <CheckCircleIcon className="h-4 w-4 text-green-500" />
+                      ) : (
+                        <XCircleIcon className="h-4 w-4 text-red-500" />
+                      )}
+                      <span className={hasPasswordDigit ? "text-green-400" : "text-red-400"}>
+                        Au moins un chiffre
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {hasPasswordSpecialChar ? (
+                        <CheckCircleIcon className="h-4 w-4 text-green-500" />
+                      ) : (
+                        <XCircleIcon className="h-4 w-4 text-red-500" />
+                      )}
+                      <span className={hasPasswordSpecialChar ? "text-green-400" : "text-red-400"}>
+                        Au moins un caractère spécial
+                      </span>
+                    </div>
+                  </div>
+                )}
               </label>
 
               <label className="block text-sm text-zinc-400">
                 Confirmation du mot de passe
-                <input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(event) => setConfirmPassword(event.target.value)}
-                  className="mt-2 w-full rounded-xl bg-zinc-800 px-4 py-3 text-zinc-100 outline-none"
-                  placeholder="Confirmez le nouveau mot de passe"
-                />
+                <div className="relative">
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(event) => setConfirmPassword(event.target.value)}
+                    className="mt-2 w-full rounded-xl bg-zinc-800 px-4 py-3 pr-12 text-zinc-100 outline-none"
+                    placeholder="Confirmez le nouveau mot de passe"
+                    aria-invalid={confirmPassword !== "" && newPassword !== confirmPassword}
+                  />
+                  {confirmPassword !== "" && (
+                    <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                      {newPassword === confirmPassword ? (
+                        <CheckCircleIcon className="h-6 w-6 text-green-500" />
+                      ) : (
+                        <XCircleIcon className="h-6 w-6 text-red-500" />
+                      )}
+                    </div>
+                  )}
+                </div>
               </label>
             </div>
 
