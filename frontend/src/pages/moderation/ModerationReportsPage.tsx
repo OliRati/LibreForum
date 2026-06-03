@@ -3,6 +3,7 @@ import { getReports } from '../../services/reports';
 import type { Report } from '../../types/report';
 import Pagination from '../../components/ui/Pagination';
 import ModerationReportCard from '../../components/moderation/ModerationReportCard';
+import EmptyState from '../../components/ui/EmptyState';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -51,12 +52,13 @@ export default function ModerationReportsPage() {
 
   return (
     <div className="mx-auto max-w-5xl p-6">
-      <h1 className="mb-6 text-2xl font-bold">Modération — Signalements</h1>
+      <h1 className="mb-6 text-2xl font-bold">Modération - Signalements</h1>
 
       {reports.length === 0 ? (
-        <div className="rounded-xl border bg-white p-6 text-gray-600">
-          Aucun signalement pour le moment.
-        </div>
+        <EmptyState
+          title="Aucun signalement"
+          description="Pas de signalement pour le moment"
+          />
       ) : (
         <>
           <div className="space-y-4">
