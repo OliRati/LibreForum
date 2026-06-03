@@ -6,7 +6,7 @@ import Loader from "../components/ui/Loader";
 import EmptyState from "../components/ui/EmptyState";
 import { formatDate } from "../lib/formatDate";
 import { isOnline } from '../utils/auth.js';
-import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/solid";
+import PasswordInputGroup, { isPasswordValid, passwordsMatch } from "../components/ui/PasswordInputGroup";
 
 export default function ProfilePage() {
   const { id } = useParams();
@@ -25,12 +25,8 @@ export default function ProfilePage() {
   const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const [saving, setSaving] = useState(false);
 
-  const hasPasswordMinLength = newPassword.length >= 12;
-  const hasPasswordUppercase = /[A-Z]/.test(newPassword);
-  const hasPasswordLowercase = /[a-z]/.test(newPassword);
-  const hasPasswordDigit = /[0-9]/.test(newPassword);
-  const hasPasswordSpecialChar = /[!@#$%^&*()_+\-=\[\]{};:'",.<>?\\|`~]/.test(newPassword);
-  const newPasswordIsValid = newPassword === "" || (hasPasswordMinLength && hasPasswordUppercase && hasPasswordLowercase && hasPasswordDigit && hasPasswordSpecialChar);
+  const newPasswordIsValid = newPassword === "" || isPasswordValid(newPassword);
+  const newPasswordMatch = !newPassword || passwordsMatch(newPassword, confirmPassword);
 
   useEffect(() => {
     async function load() {
@@ -87,18 +83,11 @@ export default function ProfilePage() {
     }
 
     if (newPassword && !newPasswordIsValid) {
-      const missing: string[] = [];
-      if (!hasPasswordMinLength) missing.push("12 caractères minimum");
-      if (!hasPasswordUppercase) missing.push("au moins une majuscule");
-      if (!hasPasswordLowercase) missing.push("au moins une minuscule");
-      if (!hasPasswordDigit) missing.push("au moins un chiffre");
-      if (!hasPasswordSpecialChar) missing.push("au moins un caractère spécial");
-
-      setStatus({ type: "error", message: `Le mot de passe doit contenir : ${missing.join(", ")}.` });
+      setStatus({ type: "error", message: "Le mot de passe doit contenir : 12 caractères minimum, une majuscule, une minuscule, un chiffre et un caractère spécial." });
       return;
     }
 
-    if (newPassword && newPassword !== confirmPassword) {
+    if (newPassword && !newPasswordMatch) {
       setStatus({ type: "error", message: "La confirmation du mot de passe ne correspond pas." });
       return;
     }
@@ -109,15 +98,49 @@ export default function ProfilePage() {
 
     try {
       setSaving(true);
-      const updated = await updateUser(id, {
+      const payload: Parameters<typeof updateUser>[1] = {
         displayName,
         bio,
-        password: newPassword || undefined,
         avatarFile,
-      });
+      };
+
+      if (newPassword) {
+        payload.password = newPassword;
+      }
+
+      const updated = await updateUser(id, payload);
 
       setUser(updated);
-      setCurrentUser(updated);
+      const authUser = {
+        id: updated.id,
+        email: updated.email ?? "",
+        username: updated.username,
+        roles: updated.roles ?? [],
+      } as {
+        id: number;
+        email: string;
+        username: string;
+        roles: string[];
+        displayName?: string;
+        bio?: string;
+        avatar?: string;
+        forumRank?: string;
+      };
+
+      if (updated.displayName != null) {
+        authUser.displayName = updated.displayName;
+      }
+      if (updated.bio != null) {
+        authUser.bio = updated.bio;
+      }
+      if (updated.avatar != null) {
+        authUser.avatar = updated.avatar;
+      }
+      if (updated.forumRank != null) {
+        authUser.forumRank = updated.forumRank;
+      }
+
+      setCurrentUser(authUser);
       setStatus({ type: "success", message: "Profil mis à jour." });
       setNewPassword("");
       setConfirmPassword("");
@@ -203,10 +226,10 @@ export default function ProfilePage() {
         )}
 
         <div className="mt-3 flex items-center gap-2 text-sm text-zinc-400">
-          <span className={isOnline(user.lastSeenAt) ? "text-emerald-400" : "text-zinc-500"}>
+          <span className={isOnline(user.lastSeenAt ?? "") ? "text-emerald-400" : "text-zinc-500"}>
             ●
           </span>
-          <span>{isOnline(user.lastSeenAt) ? "En ligne" : "Hors ligne"}</span>
+          <span>{isOnline(user.lastSeenAt ?? "") ? "En ligne" : "Hors ligne"}</span>
         </div>
       </section>
 
@@ -239,7 +262,7 @@ export default function ProfilePage() {
                   type="text"
                   value={displayName}
                   onChange={(event) => setDisplayName(event.target.value)}
-                  className="mt-2 w-full rounded-xl bg-zinc-800 px-4 py-3 text-zinc-100 outline-none"
+                  className="mt-2 w-full rounded bg-zinc-800 px-4 py-3 text-zinc-100 outline-none"
                   placeholder="Nom affiché"
                 />
               </label>
@@ -250,102 +273,23 @@ export default function ProfilePage() {
                   type="text"
                   value={bio}
                   onChange={(event) => setBio(event.target.value)}
-                  className="mt-2 w-full rounded-xl bg-zinc-800 px-4 py-3 text-zinc-100 outline-none"
+                  className="mt-2 w-full rounded bg-zinc-800 px-4 py-3 text-zinc-100 outline-none"
                   placeholder="Quelques mots sur vous"
                 />
               </label>
             </div>
 
             <div className="grid gap-5 sm:grid-cols-2">
-              <label className="block text-sm text-zinc-400">
-                Nouveau mot de passe
-                <input
-                  type="password"
-                  value={newPassword}
-                  onChange={(event) => setNewPassword(event.target.value)}
-                  className="mt-2 w-full rounded-xl bg-zinc-800 px-4 py-3 text-zinc-100 outline-none"
-                  placeholder="Laisser vide pour ne pas changer"
-                  aria-invalid={newPassword !== "" && !newPasswordIsValid}
-                />
-
-                {newPassword !== "" && (
-                  <div className="mt-3 space-y-2 text-sm">
-                    <div className="flex items-center gap-2">
-                      {hasPasswordMinLength ? (
-                        <CheckCircleIcon className="h-4 w-4 text-green-500" />
-                      ) : (
-                        <XCircleIcon className="h-4 w-4 text-red-500" />
-                      )}
-                      <span className={hasPasswordMinLength ? "text-green-400" : "text-red-400"}>
-                        12 caractères minimum
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {hasPasswordUppercase ? (
-                        <CheckCircleIcon className="h-4 w-4 text-green-500" />
-                      ) : (
-                        <XCircleIcon className="h-4 w-4 text-red-500" />
-                      )}
-                      <span className={hasPasswordUppercase ? "text-green-400" : "text-red-400"}>
-                        Au moins une majuscule
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {hasPasswordLowercase ? (
-                        <CheckCircleIcon className="h-4 w-4 text-green-500" />
-                      ) : (
-                        <XCircleIcon className="h-4 w-4 text-red-500" />
-                      )}
-                      <span className={hasPasswordLowercase ? "text-green-400" : "text-red-400"}>
-                        Au moins une minuscule
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {hasPasswordDigit ? (
-                        <CheckCircleIcon className="h-4 w-4 text-green-500" />
-                      ) : (
-                        <XCircleIcon className="h-4 w-4 text-red-500" />
-                      )}
-                      <span className={hasPasswordDigit ? "text-green-400" : "text-red-400"}>
-                        Au moins un chiffre
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {hasPasswordSpecialChar ? (
-                        <CheckCircleIcon className="h-4 w-4 text-green-500" />
-                      ) : (
-                        <XCircleIcon className="h-4 w-4 text-red-500" />
-                      )}
-                      <span className={hasPasswordSpecialChar ? "text-green-400" : "text-red-400"}>
-                        Au moins un caractère spécial
-                      </span>
-                    </div>
-                  </div>
-                )}
-              </label>
-
-              <label className="block text-sm text-zinc-400">
-                Confirmation du mot de passe
-                <div className="relative">
-                  <input
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(event) => setConfirmPassword(event.target.value)}
-                    className="mt-2 w-full rounded-xl bg-zinc-800 px-4 py-3 pr-12 text-zinc-100 outline-none"
-                    placeholder="Confirmez le nouveau mot de passe"
-                    aria-invalid={confirmPassword !== "" && newPassword !== confirmPassword}
-                  />
-                  {confirmPassword !== "" && (
-                    <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                      {newPassword === confirmPassword ? (
-                        <CheckCircleIcon className="h-6 w-6 text-green-500" />
-                      ) : (
-                        <XCircleIcon className="h-6 w-6 text-red-500" />
-                      )}
-                    </div>
-                  )}
-                </div>
-              </label>
+              <PasswordInputGroup
+                password={newPassword}
+                confirmPassword={confirmPassword}
+                onPasswordChange={setNewPassword}
+                onConfirmPasswordChange={setConfirmPassword}
+                passwordLabel="Nouveau mot de passe"
+                confirmLabel="Confirmation du mot de passe"
+                passwordPlaceholder="Laisser vide pour ne pas changer"
+                confirmPlaceholder="Confirmer le nouveau mot de passe"
+              />
             </div>
 
             <div className="space-y-2">

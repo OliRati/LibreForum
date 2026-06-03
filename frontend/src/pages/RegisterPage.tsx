@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../features/auth/useAuth";
-import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/solid";
+import PasswordInputGroup, { isPasswordValid, passwordsMatch } from "../components/ui/PasswordInputGroup";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -19,17 +19,9 @@ export default function RegisterPage() {
   const emailIsValid = email.trim().length > 0 && emailRegex.test(email) && email.length <= 180;
   const usernameIsValid = username.trim().length >= 3 && username.trim().length <= 50;
   const displayNameIsValid = displayName.trim().length >= 3 && displayName.trim().length <= 50;
-  
-  // Password validation
-  const hasMinLength = password.length >= 12;
-  const hasUppercase = /[A-Z]/.test(password);
-  const hasLowercase = /[a-z]/.test(password);
-  const hasDigit = /[0-9]/.test(password);
-  const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};:'",./<>?\\|`~]/.test(password);
-  const passwordIsValid = hasMinLength && hasUppercase && hasLowercase && hasDigit && hasSpecialChar;
-  
-  const passwordsMatch = password && passwordConfirm && password === passwordConfirm && passwordIsValid;
-  const formIsValid = emailIsValid && usernameIsValid && displayNameIsValid && passwordsMatch && accepted;
+  const passwordIsValid = isPasswordValid(password);
+  const passwordMatch = passwordsMatch(password, passwordConfirm);
+  const formIsValid = emailIsValid && usernameIsValid && displayNameIsValid && passwordIsValid && passwordMatch && accepted;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -46,17 +38,11 @@ export default function RegisterPage() {
     }
 
     if (!passwordIsValid) {
-      const missing = [];
-      if (!hasMinLength) missing.push("12 caractères minimum");
-      if (!hasUppercase) missing.push("une majuscule");
-      if (!hasLowercase) missing.push("une minuscule");
-      if (!hasDigit) missing.push("un chiffre");
-      if (!hasSpecialChar) missing.push("un caractère spécial");
-      setError("Le mot de passe doit contenir: " + missing.join(", "));
+      setError("Le mot de passe doit contenir : 12 caractères minimum, une majuscule, une minuscule, un chiffre et un caractère spécial.");
       return;
     }
 
-    if (!passwordsMatch) {
+    if (!passwordMatch) {
       setError("Les mots de passe ne correspondent pas.");
       return;
     }
@@ -119,80 +105,14 @@ export default function RegisterPage() {
           <p className="text-sm text-red-400">Nom affiché invalide (3-50 caractères).</p>
         )}
 
-        <div>
-          <input
-            className="w-full rounded bg-zinc-800 px-4 py-3"
-            type="password"
-            placeholder="Mot de passe"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            aria-invalid={!passwordIsValid && password.length > 0}
-          />
-          {password && (
-            <div className="mt-3 space-y-2">
-              <div className="flex items-center gap-2 text-sm">
-                {hasMinLength ? (
-                  <CheckCircleIcon className="h-4 w-4 text-green-500" />
-                ) : (
-                  <XCircleIcon className="h-4 w-4 text-red-500" />
-                )}
-                <span className={hasMinLength ? "text-green-400" : "text-red-400"}>12 caractères minimum</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                {hasUppercase ? (
-                  <CheckCircleIcon className="h-4 w-4 text-green-500" />
-                ) : (
-                  <XCircleIcon className="h-4 w-4 text-red-500" />
-                )}
-                <span className={hasUppercase ? "text-green-400" : "text-red-400"}>Au moins une majuscule</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                {hasLowercase ? (
-                  <CheckCircleIcon className="h-4 w-4 text-green-500" />
-                ) : (
-                  <XCircleIcon className="h-4 w-4 text-red-500" />
-                )}
-                <span className={hasLowercase ? "text-green-400" : "text-red-400"}>Au moins une minuscule</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                {hasDigit ? (
-                  <CheckCircleIcon className="h-4 w-4 text-green-500" />
-                ) : (
-                  <XCircleIcon className="h-4 w-4 text-red-500" />
-                )}
-                <span className={hasDigit ? "text-green-400" : "text-red-400"}>Au moins un chiffre</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                {hasSpecialChar ? (
-                  <CheckCircleIcon className="h-4 w-4 text-green-500" />
-                ) : (
-                  <XCircleIcon className="h-4 w-4 text-red-500" />
-                )}
-                <span className={hasSpecialChar ? "text-green-400" : "text-red-400"}>Au moins un caractère spécial</span>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div className="relative">
-          <input
-            className="w-full rounded bg-zinc-800 px-4 py-3 pr-12"
-            type="password"
-            placeholder="Confirmer le mot de passe"
-            value={passwordConfirm}
-            onChange={(e) => setPasswordConfirm(e.target.value)}
-          />
-
-          {passwordConfirm && (
-            <div className="absolute inset-y-0 right-3 flex items-center">
-              {password !== passwordConfirm ? (
-                <XCircleIcon className="h-7 w-7 text-red-500" />
-              ) : (
-                <CheckCircleIcon className="h-7 w-7 text-green-500" />
-              )}
-            </div>
-          )}
-        </div>
+        <PasswordInputGroup
+          password={password}
+          confirmPassword={passwordConfirm}
+          onPasswordChange={setPassword}
+          onConfirmPasswordChange={setPasswordConfirm}
+          passwordLabel=""
+          confirmLabel=""
+        />
 
         <label className="flex items-start gap-3">
           <input
