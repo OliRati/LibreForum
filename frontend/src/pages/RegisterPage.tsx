@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../features/auth/useAuth";
+import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/solid";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -10,6 +11,7 @@ export default function RegisterPage() {
   const [username, setUsername] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
   const [error, setError] = useState("");
   const [accepted, setAccepted] = useState(false);
 
@@ -19,6 +21,11 @@ export default function RegisterPage() {
 
     if (!accepted) {
       setError("Vous devez accepter les CGU pour vous inscrire sur ce site");
+      return;
+    }
+
+    if (password !== passwordConfirm) {
+      setError("Les mots de passe ne correspondent pas.");
       return;
     }
 
@@ -71,15 +78,35 @@ export default function RegisterPage() {
           onChange={(e) => setPassword(e.target.value)}
         />
 
-          <label className="flex items-start gap-3">
-            <input
-              type="checkbox"
-              checked={accepted}
-              onChange={(e) => setAccepted(e.target.checked)}
-              className="mt-1 h-4 w-4 rounded border-zinc-700 bg-zinc-800"
-            />
-            <span className="text-sm text-zinc-300">J'accepte les <Link to="/cgu" className="text-blue-400 hover:underline">Conditions Générales d'Utilisation</Link></span>
-          </label>
+        <div className="relative">
+          <input
+            className="w-full rounded bg-zinc-800 px-4 py-3 pr-12"
+            type="password"
+            placeholder="Confirmer le mot de passe"
+            value={passwordConfirm}
+            onChange={(e) => setPasswordConfirm(e.target.value)}
+          />
+
+          {passwordConfirm && (
+            <div className="absolute inset-y-0 right-3 flex items-center">
+              {password !== passwordConfirm ? (
+                <XCircleIcon className="h-7 w-7 text-red-500" />
+              ) : (
+                <CheckCircleIcon className="h-7 w-7 text-green-500" />
+              )}
+            </div>
+          )}
+        </div>
+
+        <label className="flex items-start gap-3">
+          <input
+            type="checkbox"
+            checked={accepted}
+            onChange={(e) => setAccepted(e.target.checked)}
+            className="mt-1 h-4 w-4 rounded border-zinc-700 bg-zinc-800"
+          />
+          <span className="text-sm text-zinc-300">J'accepte les <Link to="/cgu" className="text-blue-400 hover:underline">Conditions Générales d'Utilisation</Link></span>
+        </label>
 
         {error && <p className="text-sm text-red-400">{error}</p>}
 
