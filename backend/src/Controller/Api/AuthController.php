@@ -42,7 +42,36 @@ final class AuthController extends AbstractController
         if ($existingUsername) {
             return $this->json(['error' => 'Nom d’utilisateur déjà utilisé'], 409);
         }
+        // Validation du mot de passe
+        $password = $payload['password'];
+        $passwordErrors = [];
 
+        if (strlen($password) < 12) {
+            $passwordErrors[] = 'minimum 12 caractères';
+        }
+
+        if (!preg_match('/[A-Z]/', $password)) {
+            $passwordErrors[] = 'au moins une majuscule';
+        }
+
+        if (!preg_match('/[a-z]/', $password)) {
+            $passwordErrors[] = 'au moins une minuscule';
+        }
+
+        if (!preg_match('/[0-9]/', $password)) {
+            $passwordErrors[] = 'au moins un chiffre';
+        }
+
+        if (!preg_match('/[!@#$%^&*()_+\-=\[\]{};:\'",.<>?\\/\\\\|`~]/', $password)) {
+            $passwordErrors[] = 'au moins un caractère spécial';
+        }
+
+        if (!empty($passwordErrors)) {
+            return $this->json([
+                'error' => 'Le mot de passe ne respecte pas les critères: ' . implode(', ', $passwordErrors)
+            ], 400);
+        }
+        
         $user = new User();
         $user
             ->setEmail($payload['email'])
