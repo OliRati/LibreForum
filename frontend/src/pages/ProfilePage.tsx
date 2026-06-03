@@ -156,7 +156,7 @@ export default function ProfilePage() {
 
   if (loading) return <Loader />;
   if (!user) return <EmptyState title="Utilisateur introuvable" />;
-  
+
   const avatarUrl = avatarPreview ?? user.avatar;
   const initials = (user.displayName || user.username).charAt(0).toUpperCase();
 
@@ -313,7 +313,7 @@ export default function ProfilePage() {
                   type="file"
                   accept="image/*"
                   onChange={handleAvatarChange}
-                  className="text-sm text-zinc-400 file:mr-4 file:rounded-full file:border-0 file:bg-emerald-600 hover:file:bg-emerald-500 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white file:cursor-pointer"
+                  className="flex-1 text-sm text-zinc-400 file:mr-4 file:rounded-xl file:border-0 file:bg-emerald-600 hover:file:bg-emerald-500 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white file:cursor-pointer"
                 />
               </div>
             </div>
