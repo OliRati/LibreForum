@@ -31,7 +31,7 @@ class AppFixtures extends Fixture
             ->setEmail('admin@libreforum.local')
             ->setUsername('admin')
             ->setDisplayName('Admin LibreForum')
-            ->setRoles(['ROLE_ADMIN'])
+            ->setRoles(['ROLE_ADMIN','ROLE_MODERATOR'])
             ->setForumRank('Administrateur')
             ->setBio('Administrateur principal de LibreForum.')
             ->setPassword($this->passwordHasher->hashPassword(new User(), 'password'));
