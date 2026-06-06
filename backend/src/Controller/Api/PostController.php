@@ -3,9 +3,9 @@
 namespace App\Controller\Api;
 
 use App\Entity\Post;
-use App\Entity\Topic;
 use App\Repository\PostRepository;
 use App\Repository\TopicRepository;
+use App\Security\Voter\PostVoter;
 use App\Service\LlmService;
 use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -38,7 +38,7 @@ class PostController extends AbstractController
         }
 
         $posts = $postRepository->findBy(
-            ['topic' => $topicId],
+            ['topic' => $topicId, 'isDeleted' => false],
             ['createdAt' => 'ASC']
         );
 
@@ -48,6 +48,10 @@ class PostController extends AbstractController
     #[Route('/{id}', name: 'api_posts_show', methods: ['GET'])]
     public function show(Post $post): JsonResponse
     {
+        if ($post->isDeleted()) {
+            return $this->json(['message' => 'Message introuvable'], Response::HTTP_NOT_FOUND);
+        }
+
         return $this->json($this->normalizePost($post));
     }
 
@@ -147,6 +151,29 @@ class PostController extends AbstractController
             );
 
         return $this->json($this->normalizePost($post), Response::HTTP_CREATED);
+    }
+
+    #[Route('/{id}', name: 'api_posts_delete', methods: ['DELETE'])]
+    public function delete(Post $post, Security $security, EntityManagerInterface $em): JsonResponse
+    {
+        $user = $security->getUser();
+        if (!$user) {
+            return $this->json(['message' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        $this->denyAccessUnlessGranted(PostVoter::DELETE, $post);
+
+        if ($post->isDeleted()) {
+            return $this->json(['message' => 'Post déjà supprimé'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $post->setIsDeleted(true);
+        $em->flush();
+
+        return $this->json([
+            'message' => 'Post supprimé',
+            'post' => $this->normalizePost($post),
+        ]);
     }
 
     private function normalizePost(Post $post): array

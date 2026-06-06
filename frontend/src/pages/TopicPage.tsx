@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { getTopic, type Topic } from "../api/topics";
 
 import { type Post } from "../api/posts";
@@ -15,7 +15,7 @@ import ReportButton from '../components/moderation/ReportButton';
 import TopicModerationActions from '../components/moderation/TopicModerationActions';
 import PostModerationActions from '../components/moderation/PostModerationActions';
 import { isModerator } from '../utils/auth';
-import { getTopicPosts, createPost } from "../services/topics.js";
+import { getTopicPosts, createPost, deleteTopic } from "../services/topics.js";
 import CreatePostForm from "../components/posts/CreatePostForm.js";
 import { subscribeToTopic } from "../lib/mercure";
 import ShowMarkdown from "../components/ui/ShowMarkdown";
@@ -26,6 +26,8 @@ const ITEMS_PER_PAGE = 10;
 export default function TopicPage() {
   const { id } = useParams();
   const token = useAuthStore((state) => state.token);
+  const currentUser = useAuthStore((state) => state.user);
+  const navigate = useNavigate();
 
   const [topic, setTopic] = useState<Topic | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
@@ -117,6 +119,18 @@ export default function TopicPage() {
     }
   };
 
+  const handleTopicDelete = async () => {
+    if (!topic || !window.confirm('Supprimer ce sujet ?')) return;
+
+    try {
+      await deleteTopic(topic.id);
+      navigate('/');
+    } catch (err) {
+      console.error(err);
+      setError("Impossible de supprimer le sujet.");
+    }
+  };
+
   const handlePageChange = (page: number) => {
     loadPosts(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -127,6 +141,7 @@ export default function TopicPage() {
   if (!topic) return <EmptyState title="Sujet introuvable" />;
 
   const moderator = isModerator();
+  const canDeleteTopic = currentUser && (currentUser.id === topic.author?.id || currentUser.roles.includes('ROLE_ADMIN'));
 
   return (
     <div className="space-y-8">
@@ -183,6 +198,15 @@ export default function TopicPage() {
               <TopicModerationActions topic={topic} onUpdated={loadTopic} />
             </div>
           )}
+          {canDeleteTopic && (
+            <button
+              type="button"
+              onClick={handleTopicDelete}
+              className="rounded border border-red-500 bg-red-600 px-3 py-1 text-sm text-white hover:bg-red-700"
+            >
+              Supprimer le sujet
+            </button>
+          )}
         </div>
 
       </article>
@@ -200,8 +224,8 @@ export default function TopicPage() {
         <div className="space-y-4">
           {posts.length > 0 ? (
             posts.map((post) =>
-              <div className="mb-6">
-                <PostCard key={post.id} post={post} />
+              <div className="mb-6" key={post.id}>
+                <PostCard post={post} onDeleted={() => loadPosts(currentPage)} />
               </div>
             )
           ) : (

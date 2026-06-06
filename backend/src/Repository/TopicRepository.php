@@ -82,6 +82,8 @@ class TopicRepository extends ServiceEntityRepository
                 ->setParameter('search', '%' . mb_strtolower($search) . '%');
         }
 
+        $qb->andWhere('t.isDeleted = false');
+
         if (!$includeBlocked) {
             $qb->andWhere('t.moderationStatus != :blocked OR t.moderationStatus IS NULL')
                 ->setParameter('blocked', 'blocked');
@@ -126,6 +128,8 @@ class TopicRepository extends ServiceEntityRepository
             $params['search'] = '%' . mb_strtolower($search) . '%';
             $types['search'] = \Doctrine\DBAL\ParameterType::STRING;
         }
+
+        $conditions[] = 't.is_deleted = 0';
 
         if (!$includeBlocked) {
             $conditions[] = '(t.moderation_status != :blocked OR t.moderation_status IS NULL)';

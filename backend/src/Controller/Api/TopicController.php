@@ -8,6 +8,7 @@ use App\Entity\Topic;
 use App\Repository\CategoryRepository;
 use App\Repository\TagRepository;
 use App\Repository\TopicRepository;
+use App\Security\Voter\TopicVoter;
 use App\Service\LlmService;
 use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -66,7 +67,7 @@ class TopicController extends AbstractController
     {
         $isModerator = $security->isGranted('ROLE_MODERATOR') || $security->isGranted('ROLE_ADMIN');
 
-        if (!$isModerator && $topic->getModerationStatus() === 'blocked') {
+        if ((!$isModerator && $topic->getModerationStatus() === 'blocked') || $topic->isDeleted()) {
             return $this->json(['message' => 'Topic introuvable'], Response::HTTP_NOT_FOUND);
         }
 
@@ -80,9 +81,13 @@ class TopicController extends AbstractController
         $limit = max(1, min(50, (int) $request->query->get('limit', 10)));
         $offset = ($page - 1) * $limit;
 
-        $allPosts = $topic->getPosts()->toArray();
-        $total = count($allPosts);
-        $posts = array_slice($allPosts, $offset, $limit);
+        $visiblePosts = array_values(array_filter(
+            $topic->getPosts()->toArray(),
+            fn(Post $post) => !$post->isDeleted()
+        ));
+
+        $total = count($visiblePosts);
+        $posts = array_slice($visiblePosts, $offset, $limit);
 
         $data = array_map([$this, 'normalizePost'], $posts);
 
@@ -108,7 +113,7 @@ class TopicController extends AbstractController
             return $this->json(['message' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
         }
 
-        if ($topic->isLocked()) {
+        if ($topic->isLocked() || $topic->isDeleted()) {
             return $this->json(['message' => 'Topic verrouillé'], Response::HTTP_FORBIDDEN);
         }
 
@@ -204,6 +209,29 @@ class TopicController extends AbstractController
         $em->flush();
 
         return $this->json($this->normalizeTopic($topic, $topicRepository), Response::HTTP_CREATED);
+    }
+
+    #[Route('/{id}', name: 'api_topics_delete', methods: ['DELETE'])]
+    public function delete(Topic $topic, Security $security, EntityManagerInterface $em, TopicRepository $topicRepository): JsonResponse
+    {
+        $user = $security->getUser();
+        if (!$user) {
+            return $this->json(['message' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        $this->denyAccessUnlessGranted(TopicVoter::DELETE, $topic);
+
+        if ($topic->isDeleted()) {
+            return $this->json(['message' => 'Topic déjà supprimé'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $topic->setIsDeleted(true);
+        $em->flush();
+
+        return $this->json([
+            'message' => 'Topic supprimé',
+            'topic' => $this->normalizeTopic($topic, $topicRepository),
+        ]);
     }
 
     private function normalizeTopic(Topic $topic, TopicRepository $topicRepository): array

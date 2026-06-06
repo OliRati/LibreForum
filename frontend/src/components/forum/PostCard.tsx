@@ -10,15 +10,19 @@ import ShowMarkdown from "../ui/ShowMarkdown";
 import ModerationBadge from '../../components/moderation/ModerationBadge';
 import PostModerationActions from '../../components/moderation/PostModerationActions';
 import { isModerator } from '../../utils/auth';
-import { getPost } from "../../services/posts";
+import { getPost, deletePost } from "../../services/posts";
+import { useAuthStore } from '../../features/auth/authStore';
 
 type Props = {
   post: Post;
+  onDeleted?: () => void;
 };
 
-export default function PostCard({ post }: Props) {
+export default function PostCard({ post, onDeleted }: Props) {
   const [curPost, setCurPost] = useState<Post>(post);
   const moderator = isModerator();
+  const user = useAuthStore((state) => state.user);
+  const canDelete = user && (user.id === curPost.author?.id || user.roles.includes('ROLE_ADMIN'));
 
   // Charge le post unique pour rafraîchir l'affichage
   const loadPosts = async () => {
@@ -88,19 +92,36 @@ export default function PostCard({ post }: Props) {
       <div className="flex flex-wrap gap-2 items-center justify-between">
         <div>
           <ModerationBadge
-            status={curPost.moderationStatus}
-            toxicityScore={curPost.toxicityScore} />
+            status={curPost.moderationStatus ?? null}
+            toxicityScore={curPost.toxicityScore ?? null} />
         </div>
-        {moderator && (
-          <div>
+        <div className="flex flex-wrap gap-2 items-center">
+          {moderator && (
             <PostModerationActions post={curPost} onUpdated={loadPosts} />
-          </div>
-        )}
+          )}
+          {canDelete && (
+            <button
+              type="button"
+              onClick={async () => {
+                if (!window.confirm('Supprimer ce message ?')) return;
+                try {
+                  await deletePost(Number(curPost.id));
+                  onDeleted?.();
+                } catch (err) {
+                  console.error(err);
+                  alert('Impossible de supprimer ce message.');
+                }
+              }}
+              className="rounded border px-3 py-1 text-sm text-red-200 hover:bg-red-600"
+            >
+              Supprimer
+            </button>
+          )}
+        </div>
         <div className="text-end">
           <ReportButton postId={curPost.id} />
         </div>
       </div>
-
     </div>
   );
 }

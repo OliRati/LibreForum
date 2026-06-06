@@ -40,3 +40,9 @@ export async function createPost(topicId: number, content: string) {
     body: JSON.stringify({ content }),
   });
 }
+
+export async function deleteTopic(topicId: number) {
+  return apiFetch(`/api/topics/${topicId}`, {
+    method: 'DELETE',
+  });
+}
