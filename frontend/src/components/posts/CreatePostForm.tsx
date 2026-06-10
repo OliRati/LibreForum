@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { createPost } from '../../services/topics';
 import TextAssistant from '../ai/TextAssistant';
+import MarkdownEditor from '../ui/MarkdownEditor';
 
 interface Props {
   topicId: number;
@@ -37,10 +38,10 @@ export default function CreatePostForm({ topicId, onCreated }: Props) {
 
   return (
     <>
-      <textarea
+      <MarkdownEditor
+        label="Votre réponse"
         value={content}
-        onChange={(e) => setContent(e.target.value)}
-        className="min-h-[160px] w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-3 text-zinc-100 outline-none shadow-lg shadow-black"
+        onChange={setContent}
         placeholder="Votre réponse..."
       />
 

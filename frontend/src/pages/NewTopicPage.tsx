@@ -8,6 +8,7 @@ import Alert from "../components/ui/Alert";
 
 import TagSuggestion from '../components/ai/TagSuggestion';
 import TextAssistant from '../components/ai/TextAssistant';
+import MarkdownEditor from '../components/ui/MarkdownEditor';
 
 export default function NewTopicPage() {
   const navigate = useNavigate();
@@ -175,11 +176,10 @@ export default function NewTopicPage() {
         </div>
 
         <div>
-          <label className="mb-2 block text-sm text-zinc-400">Contenu</label>
-          <textarea
-            className="min-h-[220px] w-full rounded-xl text-zinc-200 bg-zinc-800 px-4 py-3 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500"
+          <MarkdownEditor
+            label="Contenu"
             value={content}
-            onChange={(e) => setContent(e.target.value)}
+            onChange={setContent}
             placeholder="Décris ton sujet…"
           />
         </div>
