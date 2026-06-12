@@ -39,7 +39,7 @@ export default function CreatePostForm({ topicId, onCreated }: Props) {
   return (
     <>
       <MarkdownEditor
-        label="Votre réponse"
+        title="Répondre"
         value={content}
         onChange={setContent}
         placeholder="Votre réponse..."

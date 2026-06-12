@@ -177,7 +177,7 @@ export default function NewTopicPage() {
 
         <div>
           <MarkdownEditor
-            label="Contenu"
+            label="Description"
             value={content}
             onChange={setContent}
             placeholder="Décris ton sujet…"

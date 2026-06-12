@@ -244,17 +244,13 @@ export default function TopicPage() {
             total={total}
             itemsPerPage={ITEMS_PER_PAGE}
             showInfo
-            variant="light"
           />
         )}
       </section>
 
       {token && !topic.isLocked && (
         <section className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
-          <h3 className="mb-4 text-xl font-semibold text-zinc-200">Répondre</h3>
-
           <CreatePostForm topicId={topic.id} onCreated={loadData} />
-
         </section>
       )}
     </div>
