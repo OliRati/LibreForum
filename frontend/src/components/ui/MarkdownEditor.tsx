@@ -53,18 +53,19 @@ export default function MarkdownEditor({
       </div>
 
       <div className={`w-full grid gap-4 ${previewOpen ? "lg:grid-cols-[1fr_1fr]" : ""}`}>
-        <textarea
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-          placeholder={placeholder}
-          className="min-h-[220px] w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-3 text-zinc-100 outline-none shadow-lg shadow-black"
-          style={{ minHeight }}
-        />
+        <div className="rounded-xl border border-zinc-700 bg-zinc-800 p-4 shadow-lg shadow-black w-full overflow-hidden max-h-[220px]">
+          <textarea
+            value={value}
+            onChange={(event) => onChange(event.target.value)}
+            placeholder={placeholder}
+            className="w-full h-full text-zinc-100 outline-none"
+            style={{ minHeight }}
+          />
+        </div>
 
         {previewOpen && (
-          <div className="rounded-xl border border-zinc-700 bg-zinc-800 p-4 shadow-lg shadow-black w-full overflow-hidden">
-            <div className="mb-3 text-sm font-semibold text-zinc-200">Aperçu Markdown</div>
-            <div className="max-h-[520px] w-full overflow-auto">
+          <div className="rounded-xl border border-zinc-700 bg-zinc-800 p-4 shadow-lg shadow-black w-full overflow-hidden max-h-[220px]">
+            <div className="w-full h-full whitespace-pre-wrap break-words overflow-y-auto">
               <ShowMarkdown content={value || '*Rien à prévisualiser pour le moment*'} />
             </div>
           </div>
