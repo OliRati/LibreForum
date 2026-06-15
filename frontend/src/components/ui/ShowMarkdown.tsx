@@ -1,10 +1,9 @@
 import ReactMarkdown from "react-markdown";
-import rehypeRaw from "rehype-raw";
 import remarkBreaks from 'remark-breaks';
 import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { Children } from "react";
+
 
 type Props = {
     content: string;
@@ -38,7 +37,7 @@ export default function ShowMarkdown({ content }: Props) {
             <ReactMarkdown
                 children={fixedContent}
                 remarkPlugins={[remarkGfm, remarkBreaks]}
-                rehypePlugins={[rehypeRaw]}
+                
                 components={{
                     pre({ children }) {
                         return <>{children}</>
