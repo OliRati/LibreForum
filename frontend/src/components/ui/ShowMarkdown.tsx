@@ -37,8 +37,23 @@ export default function ShowMarkdown({ content }: Props) {
             <ReactMarkdown
                 children={fixedContent}
                 remarkPlugins={[remarkGfm, remarkBreaks]}
-                
+
                 components={{
+                    table: ({ children }) => (
+                        <table className="min-w-full border-collapse border border-slate-700">
+                            {children}
+                        </table>
+                    ),
+                    th: ({ children }) => (
+                        <th className="border border-slate-700 bg-slate-900 px-3 py-2 text-left">
+                            {children}
+                        </th>
+                    ),
+                    td: ({ children }) => (
+                        <td className="border border-slate-700 px-3 py-2">
+                            {children}
+                        </td>
+                    ),
                     pre({ children }) {
                         return <>{children}</>
                     },
