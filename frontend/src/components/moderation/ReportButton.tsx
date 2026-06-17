@@ -62,17 +62,18 @@ export default function ReportButton({
       <button
         onClick={() => {
           if (!token) {
-            setShowLoginAlert(true);
+            setShowLoginAlert(!showLoginAlert);
           } else {
             setOpen(true);
           }
         }}
-        className="rounded border px-3 py-1 text-sm text-zinc-200 hover:bg-gray-500"
+        className="rounded border px-3 py-1 text-sm text-zinc-200 hover:bg-gray-500 cursor-pointer transition-all"
       >
         {label}
       </button>
 
       {showLoginAlert && (
+        <div className='mt-4'>
         <Alert
           type="info"
           message={
@@ -90,6 +91,7 @@ export default function ReportButton({
           }
           onClose={() => setShowLoginAlert(false)}
         />
+        </div>
       )}
 
       <Modal open={open} onClose={() => setOpen(false)} title="Signaler ce contenu">
