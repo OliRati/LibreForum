@@ -36,7 +36,7 @@ export default function AppLayout() {
             </Link>
 
             <nav className="flex items-center gap-4 text-sm">
-              <Link to="/" className="hover:text-zinc-500 hover:dark:text-zinc-400">Accueil</Link>
+              <Link to="/" className="hover:text-zinc-500 hover:dark:text-zinc-400 hidden lg:block">Accueil</Link>
               <Link to="/new-topic" className="text-sm hover:text-zinc-500 hover:dark:text-zinc-400">Nouveau sujet</Link>
             </nav>
           </div>
@@ -53,41 +53,43 @@ export default function AppLayout() {
                 type="submit"
                 className="rounded-tr-xl rounded-br-xl dark:bg-zinc-800 px-4 py-2 text-sm hover:bg-zinc-400 border dark:border-gray-500 hover:dark:bg-zinc-700"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" 
-                  fill="none" 
-                  viewBox="0 0 24 24" 
-                  stroke-width="1.5" 
-                  stroke="currentColor" 
+                <svg xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
                   className="w-5 h-5 text-gray-800 dark:text-gray-400">
-                  <path stroke-linecap="round" stroke-linejoin="round" 
-                        d="m21 21-4.35-4.35m1.85-5.15a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="m21 21-4.35-4.35m1.85-5.15a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
                 </svg>
               </button>
             </form>
 
-            {user ? (
-              <div className="flex items-center gap-4">
-                <Link
-                  to={`/profile/${user.id}`}
-                  className="text-sm hover:text-zinc-500 hover:dark:text-zinc-400"
-                >
-                  {user.displayName || user.username}
-                </Link>
-                <button
-                  onClick={logout}
-                  className="rounded px-3 py-2 text-sm text-gray-900 bg-zinc-400 hover:bg-zinc-400/50 dark:text-gray-300 dark:bg-zinc-800 dark:hover:bg-zinc-700"
-                >
-                  Déconnexion
-                </button>
-              </div>
-            ) : (
-              <div className="flex items-center gap-4 text-sm">
-                <Link to="/login" className="hover:text-zinc-500 hover:dark:text-zinc-400">Connexion</Link>
-                <Link to="/register" className="hover:text-zinc-500 hover:dark:text-zinc-400">Inscription</Link>
-              </div>
-            )}
+            <div className="flex items-center gap-4 text-sm">
+              {user ? (
+                <>
+                  <Link
+                    to={`/profile/${user.id}`}
+                    className="text-sm hover:text-zinc-500 hover:dark:text-zinc-400"
+                  >
+                    {user.displayName || user.username}
+                  </Link>
+                  <button
+                    onClick={logout}
+                    className="rounded px-3 py-2 text-sm text-gray-900 bg-zinc-400 hover:bg-zinc-400/50 dark:text-gray-300 dark:bg-zinc-800 dark:hover:bg-zinc-700 border border-zinc-500 dark:border-zinc-700 transition-all cursor-pointer"
+                  >
+                    Déconnexion
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link to="/login" className="hover:text-zinc-500 hover:dark:text-zinc-400">Connexion</Link>
+                  <Link to="/register" className="hover:text-zinc-500 hover:dark:text-zinc-400 hidden lg:block">Inscription</Link>
+                </>
+              )}
 
-            <ThemeToggle />
+              <ThemeToggle />
+            </div>
 
           </div>
         </div>

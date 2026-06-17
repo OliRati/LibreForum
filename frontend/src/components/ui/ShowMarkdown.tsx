@@ -11,9 +11,9 @@ type Props = {
 
 export default function ShowMarkdown({ content }: Props) {
 
-    function isSafeUrl(url: string | URL) {
+    function isSafeUrl(url: string | URL | undefined) {
         try {
-            const parsed = new URL(url, window.location.origin);
+            const parsed = new URL(url ?? "", window.location.origin);
 
             // autorise :
             // - URLs relatives (/image.jpg)
