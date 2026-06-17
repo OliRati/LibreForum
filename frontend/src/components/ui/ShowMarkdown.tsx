@@ -116,7 +116,7 @@ export default function ShowMarkdown({ content }: Props) {
                                         wordBreak: "break-word"
                                     }
                                 }}>
-                                {String(children).replace(/\n$/, '')}
+                                {String(children ?? "").replace(/\n$/, '')}
                             </SyntaxHighlighter>
                         )
                     }
