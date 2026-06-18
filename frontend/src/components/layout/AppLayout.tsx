@@ -41,10 +41,10 @@ export default function AppLayout() {
             </nav>
           </div>
 
-          <div className="flex flex-col gap-3 md:flex-row md:items-center">
-            <form onSubmit={handleSearch} className="flex">
+          <div className="flex items-center">
+            <form onSubmit={handleSearch} className="flex w-full md:w-fit">
               <input
-                className="rounded-tl-xl rounded-bl-xl dark:bg-zinc-800 px-4 py-2 text-sm outline-none border dark:border-gray-500"
+                className="flex-1 rounded-tl-xl rounded-bl-xl dark:bg-zinc-800 px-4 py-2 text-sm outline-none border dark:border-gray-500"
                 placeholder="Rechercher..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -64,34 +64,34 @@ export default function AppLayout() {
                 </svg>
               </button>
             </form>
-
-            <div className="flex items-center gap-4 text-sm">
-              {user ? (
-                <>
-                  <Link
-                    to={`/profile/${user.id}`}
-                    className="text-sm hover:text-zinc-500 hover:dark:text-zinc-400"
-                  >
-                    {user.displayName || user.username}
-                  </Link>
-                  <button
-                    onClick={logout}
-                    className="rounded px-3 py-2 text-sm text-gray-900 bg-zinc-400 hover:bg-zinc-400/50 dark:text-gray-300 dark:bg-zinc-800 dark:hover:bg-zinc-700 border border-zinc-500 dark:border-zinc-700 transition-all cursor-pointer"
-                  >
-                    Déconnexion
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Link to="/login" className="hover:text-zinc-500 hover:dark:text-zinc-400">Connexion</Link>
-                  <Link to="/register" className="hover:text-zinc-500 hover:dark:text-zinc-400 hidden lg:block">Inscription</Link>
-                </>
-              )}
-
-              <ThemeToggle />
-            </div>
-
           </div>
+
+          <div className="flex items-center gap-4 text-sm">
+            {user ? (
+              <>
+                <Link
+                  to={`/profile/${user.id}`}
+                  className="text-sm hover:text-zinc-500 hover:dark:text-zinc-400"
+                >
+                  {user.displayName || user.username}
+                </Link>
+                <button
+                  onClick={logout}
+                  className="rounded px-3 py-2 text-sm text-gray-900 bg-zinc-400 hover:bg-zinc-400/50 dark:text-gray-300 dark:bg-zinc-800 dark:hover:bg-zinc-700 border border-zinc-500 dark:border-zinc-700 transition-all cursor-pointer"
+                >
+                  Déconnexion
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="hover:text-zinc-500 hover:dark:text-zinc-400">Connexion</Link>
+                <Link to="/register" className="hover:text-zinc-500 hover:dark:text-zinc-400 hidden lg:block">Inscription</Link>
+              </>
+            )}
+
+            <ThemeToggle />
+          </div>
+
         </div>
       </header>
 
