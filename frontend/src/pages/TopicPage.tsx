@@ -160,7 +160,7 @@ export default function TopicPage() {
             />
           </div>
           <div className="text-end">
-            <ReportButton topicId={topic.id} />
+            <ReportButton topicId={topic.id} onReported={loadTopic} />
           </div>
         </div>
 

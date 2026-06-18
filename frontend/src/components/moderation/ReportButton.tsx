@@ -9,12 +9,14 @@ interface ReportButtonProps {
   topicId?: number;
   postId?: number;
   label?: string;
+  onReported?: () => void;
 }
 
 export default function ReportButton({
   topicId,
   postId,
   label = 'Signaler',
+  onReported,
 }: ReportButtonProps) {
   const token = useAuthStore((state) => state.token);
   const [open, setOpen] = useState(false);
@@ -44,6 +46,7 @@ export default function ReportButton({
 
       setSuccess('Signalement envoyé.');
       setReason('');
+      onReported?.();
 
       setTimeout(() => {
         setOpen(false);

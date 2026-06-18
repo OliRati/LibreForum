@@ -119,7 +119,7 @@ export default function PostCard({ post, onDeleted }: Props) {
           )}
         </div>
         <div className="text-end">
-          <ReportButton postId={curPost.id} />
+          <ReportButton postId={curPost.id} onReported={loadPosts} />
         </div>
       </div>
     </div>
