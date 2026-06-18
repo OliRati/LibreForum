@@ -63,7 +63,7 @@ class Topic
     private ?string $summary = null;
 
     #[ORM\Column(length: 30, nullable: true)]
-    private ?string $moderationStatus = null; // approved / flagged / blocked
+    private ?string $moderationStatus = null; // approved / reported / blocked
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $lastActivityAt = null;

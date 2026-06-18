@@ -84,7 +84,7 @@ export default function TopicModerationActions({
 
       <button
         disabled={loading}
-        onClick={() => handleModerate('flagged')}
+        onClick={() => handleModerate('reported')}
         className="rounded border px-3 py-1 text-sm hover:bg-gray-500"
       >
         Signaler

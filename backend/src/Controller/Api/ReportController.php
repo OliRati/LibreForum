@@ -56,6 +56,7 @@ class ReportController extends AbstractController
                 return $this->json(['message' => 'Topic not found'], 404);
             }
             $report->setTopic($topic);
+            $topic->setModerationStatus('reported');
         }
 
         if ($postId) {
@@ -64,6 +65,7 @@ class ReportController extends AbstractController
                 return $this->json(['message' => 'Post not found'], 404);
             }
             $report->setPost($post);
+            $post->setModerationStatus('reported');
         }
 
         $em->persist($report);

@@ -102,7 +102,7 @@ class PostController extends AbstractController
 
         $status = match ($analysis['label'] ?? 'clean') {
             'toxic' => 'blocked',
-            'warning' => 'flagged',
+            'warning' => 'reported',
             default => 'approved'
         };
 

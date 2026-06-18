@@ -27,7 +27,7 @@ export default function ModerationBadge({
         </span>
       )}
 
-      {status === 'flagged' && (
+      {status === 'reported' && (
         <span className="rounded bg-orange-500/20 px-2 py-1 text-xs text-orange-300">
           Signalé
         </span>
