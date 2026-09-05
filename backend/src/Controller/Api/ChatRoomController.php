@@ -3,6 +3,7 @@
 namespace App\Controller\Api;
 
 use App\Entity\ChatRoom;
+use App\Entity\User;
 use App\Repository\ChatRoomRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -43,6 +44,12 @@ final class ChatRoomController extends AbstractController
     #[Route('', methods: ['POST'])]
     public function store(Request $request, EntityManagerInterface $em): JsonResponse
     {
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            return $this->json(['error' => 'Non authentifié'], 401);
+        }
+
         $payload = json_decode($request->getContent(), true);
         $slugger = new AsciiSlugger();
 
@@ -54,7 +61,8 @@ final class ChatRoomController extends AbstractController
         $room
             ->setName($payload['name'])
             ->setSlug(strtolower((string) $slugger->slug($payload['name'])))
-            ->setDescription($payload['description'] ?? null);
+            ->setDescription($payload['description'] ?? null)
+            ->setOwner($user);
 
         $em->persist($room);
         $em->flush();
@@ -71,7 +79,7 @@ final class ChatRoomController extends AbstractController
             return $this->json(['error' => 'Non authentifié'], 401);
         }
 
-        $isOwner = $post->getAuthor()?->getId() === $user->getId();
+        $isOwner = $room->getOwner()?->getId() === $user->getId();
         $isModerator = in_array('ROLE_MODERATOR', $user->getRoles(), true) || in_array('ROLE_ADMIN', $user->getRoles(), true);
 
         if (!$isOwner && !$isModerator) {
@@ -98,6 +106,20 @@ final class ChatRoomController extends AbstractController
     #[Route('/{id}', methods: ['DELETE'])]
     public function delete(ChatRoom $room, EntityManagerInterface $em): JsonResponse
     {
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            return $this->json(['error' => 'Non authentifié'], 401);
+        }
+
+        $isOwner = $room->getOwner()?->getId() === $user->getId();
+        $isModerator = in_array('ROLE_MODERATOR', $user->getRoles(), true)
+            || in_array('ROLE_ADMIN', $user->getRoles(), true);
+
+        if (!$isOwner && !$isModerator) {
+            return $this->json(['error' => 'Accès refusé'], 403);
+        }
+
         $em->remove($room);
         $em->flush();
 

@@ -29,6 +29,10 @@ class ChatRoom
     #[ORM\Column]
     private \DateTimeImmutable $createdAt;
 
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?User $owner = null;
+
     #[ORM\OneToMany(mappedBy: 'chatRoom', targetEntity: ChatMessage::class, orphanRemoval: true)]
     #[ORM\OrderBy(['createdAt' => 'ASC'])]
     private Collection $messages;
@@ -77,6 +81,19 @@ class ChatRoom
     {
         return $this->createdAt;
     }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): static
+    {
+        $this->owner = $owner;
+
+        return $this;
+    }
+
     public function getMessages(): Collection
     {
         return $this->messages;
