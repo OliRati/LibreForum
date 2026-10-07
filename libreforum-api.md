@@ -143,7 +143,7 @@ Lors de la création d'un post par l'une ou l'autre route POST, son contenu est 
 | `PATCH /api/topics/{id}/moderate` | Modérateur | `status` (défaut `approved`), `reason` (facultatif). Modifie l'état de modération du sujet et clôt les signalements en attente associés. |
 | `PATCH /api/posts/{id}/moderate` | Modérateur | `status` (défaut `approved`), `reason` (facultatif). Modifie l'état du post et clôt les signalements en attente associés. |
 
-Les actions sont consignées dans le journal de modération avec l'auteur de l'action et le motif fourni.
+Les actions sont consignées dans le journal de modération avec l'auteur de l'action et le motif fourni. 
 
 ### Signalements
 
@@ -202,7 +202,7 @@ Ces publications complètent les réponses REST ; elles ne remplacent pas les ro
 
 Les points suivants sont importants pour les clients et intégrateurs :
 
-- `PUT/PATCH /api/chat/messages/{id}` référence une variable `$post` inexistante lors de la vérification de propriété. L'appel peut donc échouer avant la modification du message.
+- `PUT/PATCH /api/chat/messages/{id}` vérifie que le message appartient à l'utilisateur courant ou que celui-ci est modérateur ; les utilisateurs non authentifiés et ceux sans autorisation ne peuvent pas le modifier.
 - `DELETE /api/chat/messages/{id}` exige un utilisateur authentifié via le firewall, mais le contrôleur ne vérifie pas que cet utilisateur est propriétaire du message ou modérateur.
 - La route publique `GET /api/users/{id}` expose des données de profil et des compteurs ; la route `GET /api/users` exige pour sa part un JWT et renvoie aussi l'adresse e-mail et les rôles.
 - La création de compte applique des critères de complexité du mot de passe ; la mise à jour de mot de passe via le profil ne réutilise pas cette validation.

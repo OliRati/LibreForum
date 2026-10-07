@@ -108,7 +108,7 @@ final class ChatMessageController extends AbstractController
             return $this->json(['error' => 'Non authentifié'], 401);
         }
 
-        $isOwner = $post->getAuthor()?->getId() === $user->getId();
+        $isOwner = $message->getAuthor()?->getId() === $user->getId();
         $isModerator = in_array('ROLE_MODERATOR', $user->getRoles(), true) || in_array('ROLE_ADMIN', $user->getRoles(), true);
 
         if (!$isOwner && !$isModerator) {
