@@ -85,6 +85,10 @@ class ReportController extends AbstractController
     #[Route('/{id}', name: 'api_reports_show', methods: ['GET'])]
     public function show(Report $report): JsonResponse
     {
+        if (!$this->isGranted('ROLE_MODERATOR') && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException();
+        }
+
         return $this->json($this->normalizeReport($report));
     }
 
