@@ -16,13 +16,6 @@ export default function PolitiqueConfidentialite() {
                 <li>Données techniques : adresse IP, User-Agent et journaux de connexion et d'activité</li>
                 <li>Contenu publié : messages, commentaires, sujets de discussion</li>
               </ul>
-              <p>
-                Les journaux enregistrent les connexions réussies ou échouées et certaines actions qui modifient des données
-                (création, modification ou suppression). Ils peuvent contenir l'identifiant interne du compte lorsqu'il est
-                connu, l'action et la route concernées, la méthode et le statut de la réponse, l'adresse IP, le User-Agent
-                ainsi que la date et l'heure. Les lectures et le contenu des requêtes ne sont pas consignés dans ces journaux.
-                Les mots de passe et les jetons d'authentification n'y sont pas enregistrés.
-              </p>
             </div>
           </section>
 
@@ -69,12 +62,6 @@ export default function PolitiqueConfidentialite() {
             <div className="space-y-4 text-zinc-300">
               <p>
                 Les données sont conservées pendant la durée nécessaire à la réalisation des finalités pour lesquelles elles ont été collectées, et en conformité avec les obligations légales.
-              </p>
-              <p>
-                Les journaux de connexion et d'audit sont conservés pendant un an, puis supprimés lors d'une purge manuelle.
-                Cette durée concerne les traces techniques et les actions consignées ; elle ne détermine pas la durée de
-                conservation des contenus publiés ni celle des données d'identification qui peuvent être soumises à des
-                obligations légales distinctes.
               </p>
             </div>
           </section>
