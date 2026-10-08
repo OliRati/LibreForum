@@ -40,7 +40,7 @@ Les règles de sécurité rendent publiques :
 - `GET /api/posts` et `GET /api/posts/{id}` ;
 - `GET /api/users/{id}`.
 
-Attention : `GET /api/users` (la collection) n'est pas dans cette liste et nécessite un JWT.
+Attention : `GET /api/users` (la collection) est réservé aux administrateurs.
 
 ### Autorisations des routes protégées
 
@@ -76,7 +76,7 @@ Les corps d'erreur contiennent généralement un champ `message` ou `error`, sel
 |---|---|---|
 | `POST /api/register` | Public | Crée un compte. Champs requis : `email`, `username`, `password`. Champs optionnels : `displayName`, `bio`. Le mot de passe doit contenir au moins 12 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial. Retourne `201` et un objet utilisateur sans mot de passe. |
 | `GET /api/me` | JWT | Retourne le profil de l'utilisateur authentifié, ses rôles, dates d'activité et compteurs de sujets/posts. |
-| `GET /api/users` | JWT | Retourne la collection des profils, triée par date de création décroissante. La réponse inclut notamment les e-mails et rôles. |
+| `GET /api/users` | JWT, administrateur | Retourne la collection des profils, triée par date de création décroissante. La réponse inclut notamment les e-mails et rôles. |
 | `GET /api/users/{id}` | Public | Retourne le profil public et les compteurs d'activité d'un utilisateur. |
 | `PUT /api/users/{id}` ou `PATCH /api/users/{id}` | JWT, propriétaire ou modérateur/administrateur | Modifie `displayName`, `bio` et éventuellement `avatar`. Le champ `password` remplace le mot de passe après hachage. Un modérateur/administrateur peut aussi modifier `forumRank`. |
 
@@ -204,7 +204,7 @@ Les points suivants sont importants pour les clients et intégrateurs :
 
 - `PUT/PATCH /api/chat/messages/{id}` vérifie que le message appartient à l'utilisateur courant ou que celui-ci est modérateur ; les utilisateurs non authentifiés et ceux sans autorisation ne peuvent pas le modifier.
 - `DELETE /api/chat/messages/{id}` exige un utilisateur authentifié via le firewall, mais le contrôleur ne vérifie pas que cet utilisateur est propriétaire du message ou modérateur.
-- La route publique `GET /api/users/{id}` expose des données de profil et des compteurs ; la route `GET /api/users` exige pour sa part un JWT et renvoie aussi l'adresse e-mail et les rôles.
+- `GET /api/users` est réservé aux administrateurs et renvoie notamment l'adresse e-mail et les rôles ; `GET /api/users/{id}` reste public et expose les données du profil ainsi que ses compteurs.
 - La création de compte applique des critères de complexité du mot de passe ; la mise à jour de mot de passe via le profil ne réutilise pas cette validation.
 
 Les clients ne devraient pas dépendre d'une autorisation plus stricte que celle explicitement indiquée dans les tableaux ci-dessus.
