@@ -209,6 +209,12 @@ Les points suivants sont importants pour les clients et intégrateurs :
 
 Les clients ne devraient pas dépendre d'une autorisation plus stricte que celle explicitement indiquée dans les tableaux ci-dessus.
 
+### Journal d'audit
+
+Le backend enregistre dans la table `audit_log` les connexions réussies ou échouées ainsi que les requêtes réussies qui créent, modifient ou suppriment des données via les routes d'écriture de l'API. Les événements contiennent l'identifiant interne du compte lorsqu'il est connu, l'action/la route, le chemin, la méthode HTTP, le statut de réponse, l'adresse IP, le User-Agent et la date UTC. Les lectures et les contenus des requêtes ne sont pas journalisés ; les mots de passe, jetons et e-mails saisis lors d'une connexion échouée ne sont pas enregistrés.
+
+Les événements sont conservés dans la base principale. La purge est manuelle : les entrées de plus d'un an doivent être supprimées conformément à la durée de conservation retenue et validée pour le service (par exemple avec `DELETE FROM audit_log WHERE created_at < UTC_TIMESTAMP() - INTERVAL 1 YEAR;` sur MySQL). L'identifiant interne reste dans le journal jusqu'à cette purge même si le compte est supprimé. Cette journalisation ne remplace pas les obligations distinctes de conservation des données d'identification liées aux contenus hébergés.
+
 ## 12. Exemples
 
 Créer un sujet avec un JWT :
