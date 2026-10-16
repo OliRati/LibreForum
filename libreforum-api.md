@@ -78,7 +78,7 @@ Les corps d'erreur contiennent généralement un champ `message` ou `error`, sel
 | `GET /api/me` | JWT | Retourne le profil de l'utilisateur authentifié, ses rôles, dates d'activité et compteurs de sujets/posts. |
 | `GET /api/users` | JWT, administrateur | Retourne la collection des profils, triée par date de création décroissante. La réponse inclut notamment les e-mails et rôles. |
 | `GET /api/users/{id}` | Public | Retourne le profil public et les compteurs d'activité d'un utilisateur. |
-| `PUT /api/users/{id}` ou `PATCH /api/users/{id}` | JWT, propriétaire ou modérateur/administrateur | Modifie `displayName`, `bio` et éventuellement `avatar`. Le champ `password` remplace le mot de passe après hachage. Un modérateur/administrateur peut aussi modifier `forumRank`. |
+| `PUT /api/users/{id}` ou `PATCH /api/users/{id}` | JWT, propriétaire ou modérateur/administrateur | Modifie `displayName`, `bio` et éventuellement `avatar`. Le champ `password`, s'il est fourni et non vide, remplace le mot de passe après hachage et doit respecter les mêmes critères que lors de l'inscription : au moins 12 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial. Un modérateur/administrateur peut aussi modifier `forumRank`. |
 
 Pour mettre à jour un avatar par fichier, envoyer une requête `multipart/form-data` contenant `avatarFile`. Les formats acceptés sont JPEG, PNG, WebP et GIF, avec une taille maximale de 2 Mo. Le fichier est enregistré sous `public/uploads/avatars`.
 
@@ -205,7 +205,7 @@ Les points suivants sont importants pour les clients et intégrateurs :
 - `PUT/PATCH /api/chat/messages/{id}` vérifie que le message appartient à l'utilisateur courant ou que celui-ci est modérateur ; les utilisateurs non authentifiés et ceux sans autorisation ne peuvent pas le modifier.
 - `DELETE /api/chat/messages/{id}` exige un utilisateur authentifié via le firewall, mais le contrôleur ne vérifie pas que cet utilisateur est propriétaire du message ou modérateur.
 - `GET /api/users` est réservé aux administrateurs et renvoie notamment l'adresse e-mail et les rôles ; `GET /api/users/{id}` reste public et expose les données du profil ainsi que ses compteurs.
-- La création de compte applique des critères de complexité du mot de passe ; la mise à jour de mot de passe via le profil ne réutilise pas cette validation.
+- La création de compte et la mise à jour du mot de passe via le profil appliquent les mêmes critères de complexité.
 
 Les clients ne devraient pas dépendre d'une autorisation plus stricte que celle explicitement indiquée dans les tableaux ci-dessus.
 

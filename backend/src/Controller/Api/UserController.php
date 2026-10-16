@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Repository\PostRepository;
 use App\Repository\TopicRepository;
 use App\Repository\UserRepository;
+use App\Service\PasswordPolicy;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -63,7 +64,8 @@ final class UserController extends AbstractController
         EntityManagerInterface $em,
         UserPasswordHasherInterface $passwordHasher,
         PostRepository $postRepository,
-        TopicRepository $topicRepository
+        TopicRepository $topicRepository,
+        PasswordPolicy $passwordPolicy,
     ): JsonResponse
     {
         $currentUser = $this->getUser();
@@ -88,6 +90,22 @@ final class UserController extends AbstractController
 
         if (!is_array($payload)) {
             $payload = [];
+        }
+
+        $newPassword = null;
+        if (array_key_exists('password', $payload) && $payload['password'] !== '') {
+            if (!is_string($payload['password'])) {
+                return $this->json(['error' => 'Le mot de passe doit être une chaîne de caractères'], 400);
+            }
+
+            $passwordErrors = $passwordPolicy->getViolations($payload['password']);
+            if ($passwordErrors !== []) {
+                return $this->json([
+                    'error' => 'Le mot de passe ne respecte pas les critères: ' . implode(', ', $passwordErrors)
+                ], 400);
+            }
+
+            $newPassword = $payload['password'];
         }
 
         /** @var UploadedFile|null $avatarFile */
@@ -129,8 +147,8 @@ final class UserController extends AbstractController
             $user->setBio($payload['bio'] ?: null);
         }
 
-        if (!empty($payload['password'])) {
-            $hashedPassword = $passwordHasher->hashPassword($user, $payload['password']);
+        if ($newPassword !== null) {
+            $hashedPassword = $passwordHasher->hashPassword($user, $newPassword);
             $user->setPassword($hashedPassword);
         }
 

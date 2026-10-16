@@ -5,6 +5,7 @@ namespace App\Controller\Api;
 use App\Entity\User;
 use App\Repository\PostRepository;
 use App\Repository\TopicRepository;
+use App\Service\PasswordPolicy;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -19,9 +20,13 @@ final class AuthController extends AbstractController
     public function register(
         Request $request,
         EntityManagerInterface $em,
-        UserPasswordHasherInterface $passwordHasher
+        UserPasswordHasherInterface $passwordHasher,
+        PasswordPolicy $passwordPolicy,
     ): JsonResponse {
         $payload = json_decode($request->getContent(), true);
+        if (!is_array($payload)) {
+            $payload = [];
+        }
 
         if (
             empty($payload['email']) ||
@@ -42,30 +47,13 @@ final class AuthController extends AbstractController
         if ($existingUsername) {
             return $this->json(['error' => 'Nom d’utilisateur déjà utilisé'], 409);
         }
-        // Validation du mot de passe
+
         $password = $payload['password'];
-        $passwordErrors = [];
-
-        if (strlen($password) < 12) {
-            $passwordErrors[] = 'minimum 12 caractères';
+        if (!is_string($password)) {
+            return $this->json(['error' => 'Le mot de passe doit être une chaîne de caractères'], 400);
         }
 
-        if (!preg_match('/[A-Z]/', $password)) {
-            $passwordErrors[] = 'au moins une majuscule';
-        }
-
-        if (!preg_match('/[a-z]/', $password)) {
-            $passwordErrors[] = 'au moins une minuscule';
-        }
-
-        if (!preg_match('/[0-9]/', $password)) {
-            $passwordErrors[] = 'au moins un chiffre';
-        }
-
-        if (!preg_match('/[!@#$%^&*()_+\-=\[\]{};:\'",.<>?\\/\\\\|`~]/', $password)) {
-            $passwordErrors[] = 'au moins un caractère spécial';
-        }
-
+        $passwordErrors = $passwordPolicy->getViolations($password);
         if (!empty($passwordErrors)) {
             return $this->json([
                 'error' => 'Le mot de passe ne respecte pas les critères: ' . implode(', ', $passwordErrors)
@@ -81,7 +69,7 @@ final class AuthController extends AbstractController
             ->setForumRank('Membre')
             ->setRoles(['ROLE_USER']);
 
-        $hashedPassword = $passwordHasher->hashPassword($user, $payload['password']);
+        $hashedPassword = $passwordHasher->hashPassword($user, $password);
         $user->setPassword($hashedPassword);
 
         $em->persist($user);
