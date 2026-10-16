@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { apiFetch } from '../../lib/api';
+import { useAppFeatures } from '../../features/appFeatures/AppFeaturesProvider';
 
 export default function TopicSummaryCard({ topicId, summary }: any) {
+  const { aiEnabled } = useAppFeatures();
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(summary);
 
@@ -15,6 +17,10 @@ export default function TopicSummaryCard({ topicId, summary }: any) {
     setData(res.summary);
     setLoading(false);
   };
+
+  if (!aiEnabled) {
+    return null;
+  }
 
   return (
     <div className="rounded-xl border bg-white p-4">

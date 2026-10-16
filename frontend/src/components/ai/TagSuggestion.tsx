@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { suggestTags } from '../../services/llm';
+import { useAppFeatures } from '../../features/appFeatures/AppFeaturesProvider';
 
 interface Props {
   content: string;
@@ -8,6 +9,7 @@ interface Props {
 }
 
 export default function TagSuggestion({ content, onSelect, excludedTagNames }: Props) {
+  const { aiEnabled } = useAppFeatures();
   const [loading, setLoading] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
 
@@ -34,6 +36,10 @@ export default function TagSuggestion({ content, onSelect, excludedTagNames }: P
       console.error(err);
     }
   };
+
+  if (!aiEnabled) {
+    return null;
+  }
 
   return (
     <div className="rounded-xl border bg-cyan-950 border-cyan-800 p-4 mt-4">

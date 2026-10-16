@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { assistTextStream } from '../../services/llm';
+import { useAppFeatures } from '../../features/appFeatures/AppFeaturesProvider';
 import ShowMarkdown from '../ui/ShowMarkdown';
 
 interface Props {
@@ -8,6 +9,7 @@ interface Props {
 }
 
 export default function TextAssistant({ value, onChange }: Props) {
+  const { aiEnabled } = useAppFeatures();
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState('');
 
@@ -30,6 +32,10 @@ export default function TextAssistant({ value, onChange }: Props) {
       setLoading(false);
     }
   };
+
+  if (!aiEnabled) {
+    return null;
+  }
 
   return (
     <div className="shadow-lg shadow-black rounded-xl border bg-cyan-950 border-cyan-800 p-4 mt-4">
