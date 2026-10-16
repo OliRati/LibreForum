@@ -5,6 +5,7 @@ namespace App\Controller\Api;
 use App\Entity\Post;
 use App\Entity\Topic;
 use App\Repository\TopicRepository;
+use App\Service\AiFeatureToggle;
 use App\Service\LlmService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -14,11 +15,19 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api/llm')]
 class LlmController extends AbstractController
 {
+    public function __construct(private AiFeatureToggle $aiFeatureToggle)
+    {
+    }
+
     #[Route('/topics/{id}/summary', methods: ['POST'])]
     public function summarizeTopic(
         Topic $topic,
         LlmService $llm
     ): JsonResponse {
+        if (!$this->aiFeatureToggle->isEnabled()) {
+            return $this->aiUnavailableResponse();
+        }
+
         $content = $topic->getTitle() . "\n\n";
 
         foreach ($topic->getPosts() as $post) {
@@ -41,6 +50,10 @@ class LlmController extends AbstractController
         Post $post,
         LlmService $llm
     ): JsonResponse {
+        if (!$this->aiFeatureToggle->isEnabled()) {
+            return $this->aiUnavailableResponse();
+        }
+
         $analysis = $llm->moderate($post->getContent());
 
         return $this->json($analysis);
@@ -51,6 +64,10 @@ class LlmController extends AbstractController
         Request $request,
         LlmService $llm
     ): JsonResponse {
+        if (!$this->aiFeatureToggle->isEnabled()) {
+            return $this->aiUnavailableResponse();
+        }
+
         $data = json_decode($request->getContent(), true);
 
         $text = $data['text'] ?? '';
@@ -71,6 +88,10 @@ class LlmController extends AbstractController
         Request $request,
         LlmService $llm
     ): JsonResponse {
+        if (!$this->aiFeatureToggle->isEnabled()) {
+            return $this->aiUnavailableResponse();
+        }
+
         $data = json_decode($request->getContent(), true);
 
         $text = $data['text'] ?? '';
@@ -85,5 +106,13 @@ class LlmController extends AbstractController
         return $this->json([
             'result' => $result
         ]);
+    }
+
+    private function aiUnavailableResponse(): JsonResponse
+    {
+        return $this->json([
+            'code' => 'FEATURE_DISABLED',
+            'message' => 'Les fonctionnalités d’intelligence artificielle sont désactivées.',
+        ], JsonResponse::HTTP_SERVICE_UNAVAILABLE);
     }
 }

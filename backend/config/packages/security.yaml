@@ -47,6 +47,7 @@ security:
     access_control:
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/register, roles: PUBLIC_ACCESS }
+        - { path: ^/api/features$, methods: [GET], roles: PUBLIC_ACCESS }
 
         - { path: ^/api/topics$, methods: [GET], roles: PUBLIC_ACCESS }
         - { path: ^/api/topics/\d+$, methods: [GET], roles: PUBLIC_ACCESS }

@@ -8,6 +8,7 @@ use App\Repository\TopicRepository;
 use App\Security\Voter\PostVoter;
 use App\Service\LlmService;
 use App\Service\NotificationService;
+use App\Service\AiFeatureToggle;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -61,6 +62,7 @@ class PostController extends AbstractController
         TopicRepository $topicRepository,
         NotificationService $notificationService,
         LlmService $llm,
+        AiFeatureToggle $aiFeatureToggle,
         EntityManagerInterface $em,
         Security $security
     ): JsonResponse {
@@ -95,18 +97,19 @@ class PostController extends AbstractController
         $post->setAuthor($user);
         $post->setCreatedAt(new \DateTimeImmutable());
 
-        // LLM Automatic moderation on post
-        $analysis = $llm->moderate($post->getContent());
+        if ($aiFeatureToggle->isEnabled()) {
+            $analysis = $llm->moderate($post->getContent());
 
-        $post->setToxicityScore($analysis['toxicity'] ?? 0);
+            $post->setToxicityScore($analysis['toxicity'] ?? 0);
 
-        $status = match ($analysis['label'] ?? 'clean') {
-            'toxic' => 'blocked',
-            'warning' => 'reported',
-            default => 'approved'
-        };
+            $status = match ($analysis['label'] ?? 'clean') {
+                'toxic' => 'blocked',
+                'warning' => 'reported',
+                default => 'approved'
+            };
 
-        $post->setModerationStatus($status);
+            $post->setModerationStatus($status);
+        }
 
         // Store to Database
         $em->persist($post);

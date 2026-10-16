@@ -9,6 +9,7 @@ use App\Repository\CategoryRepository;
 use App\Repository\TagRepository;
 use App\Repository\TopicRepository;
 use App\Security\Voter\TopicVoter;
+use App\Service\AiFeatureToggle;
 use App\Service\LlmService;
 use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -25,7 +26,8 @@ class TopicController extends AbstractController
 {
     public function __construct(
         private LlmService $llm,
-        private NotificationService $notificationService
+        private NotificationService $notificationService,
+        private AiFeatureToggle $aiFeatureToggle,
     ) {}
 
     #[Route('', name: 'api_topics_index', methods: ['GET'])]
@@ -130,18 +132,19 @@ class TopicController extends AbstractController
         $post->setAuthor($user);
         $post->setCreatedAt(new \DateTimeImmutable());
 
-        // LLM Automatic moderation on post
-        $analysis = $this->llm->moderate($post->getContent());
+        if ($this->aiFeatureToggle->isEnabled()) {
+            $analysis = $this->llm->moderate($post->getContent());
 
-        $post->setToxicityScore($analysis['toxicity'] ?? 0);
+            $post->setToxicityScore($analysis['toxicity'] ?? 0);
 
-        $status = match ($analysis['label'] ?? 'clean') {
-            'toxic' => 'blocked',
-            'warning' => 'reported',
-            default => 'approved'
-        };
+            $status = match ($analysis['label'] ?? 'clean') {
+                'toxic' => 'blocked',
+                'warning' => 'reported',
+                default => 'approved'
+            };
 
-        $post->setModerationStatus($status);
+            $post->setModerationStatus($status);
+        }
 
         $em->persist($post);
         $em->flush();

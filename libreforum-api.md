@@ -10,6 +10,12 @@ L'API ne déclare pas de version dans ses URL. Les identifiants de ressources so
 
 ## 2. Authentification et autorisations
 
+### État des fonctionnalités IA
+
+`GET /api/features` est public et retourne `{"aiEnabled": true}` ou `{"aiEnabled": false}`. Le frontend peut consulter cet état pour adapter l'interface. Le backend reste l'autorité : si l'IA est désactivée, les routes `/api/llm/*` répondent `503` avec le code `FEATURE_DISABLED`. La modération automatique IA des nouveaux posts est alors ignorée, mais la création du post reste disponible.
+
+Le réglage backend se fait avec la variable d'environnement `AI_FEATURES_ENABLED` (`true` par défaut). La définir à `false` désactive les appels IA ; le changement s'applique au redémarrage du backend.
+
 ### Connexion et jeton
 
 `POST /api/login` est traité par le firewall JSON Login de Symfony (et non par un contrôleur). Il attend les identifiants suivants :
