@@ -4,6 +4,7 @@ import Modal from '../ui/Modal';
 import Alert from '../ui/Alert';
 import { createReport } from '../../services/reports';
 import { useAuthStore } from '../../features/auth/authStore';
+import { ApiError } from '../../lib/api';
 
 interface ReportButtonProps {
   topicId?: number;
@@ -39,8 +40,8 @@ export default function ReportButton({
       setLoading(true);
 
       await createReport({
-        topicId,
-        postId,
+        ...(topicId !== undefined ? { topicId } : {}),
+        ...(postId !== undefined ? { postId } : {}),
         reason,
       });
 
@@ -53,6 +54,11 @@ export default function ReportButton({
         setSuccess('');
       }, 1000);
     } catch (err) {
+      if (err instanceof ApiError && err.status === 409) {
+        setError('Vous avez déjà signalé ce contenu.');
+        return;
+      }
+
       console.error(err);
       setError('Impossible d’envoyer le signalement.');
     } finally {
