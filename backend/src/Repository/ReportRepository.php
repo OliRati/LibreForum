@@ -2,7 +2,10 @@
 
 namespace App\Repository;
 
+use App\Entity\Post;
 use App\Entity\Report;
+use App\Entity\Topic;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,28 +19,29 @@ class ReportRepository extends ServiceEntityRepository
         parent::__construct($registry, Report::class);
     }
 
-    //    /**
-    //     * @return Report[] Returns an array of Report objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('r')
-    //            ->andWhere('r.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('r.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function existsForReporterAndTopic(User $reporter, Topic $topic): bool
+    {
+        return $this->createQueryBuilder('report')
+            ->select('report.id')
+            ->andWhere('report.reporter = :reporter')
+            ->andWhere('report.topic = :topic')
+            ->setParameter('reporter', $reporter)
+            ->setParameter('topic', $topic)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult() !== null;
+    }
 
-    //    public function findOneBySomeField($value): ?Report
-    //    {
-    //        return $this->createQueryBuilder('r')
-    //            ->andWhere('r.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    public function existsForReporterAndPost(User $reporter, Post $post): bool
+    {
+        return $this->createQueryBuilder('report')
+            ->select('report.id')
+            ->andWhere('report.reporter = :reporter')
+            ->andWhere('report.post = :post')
+            ->setParameter('reporter', $reporter)
+            ->setParameter('post', $post)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult() !== null;
+    }
 }

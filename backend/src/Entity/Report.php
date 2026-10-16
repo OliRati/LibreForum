@@ -6,6 +6,8 @@ use App\Repository\ReportRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ReportRepository::class)]
+#[ORM\UniqueConstraint(name: 'UNIQ_REPORTER_TOPIC', columns: ['reporter_id', 'topic_id'])]
+#[ORM\UniqueConstraint(name: 'UNIQ_REPORTER_POST', columns: ['reporter_id', 'post_id'])]
 class Report
 {
     #[ORM\Id]

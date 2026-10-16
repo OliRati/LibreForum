@@ -23,6 +23,7 @@ class ReportController extends AbstractController
         Request $request,
         TopicRepository $topicRepository,
         PostRepository $postRepository,
+        ReportRepository $reportRepository,
         EntityManagerInterface $em
     ): JsonResponse {
         /** @var User|null $user */
@@ -55,6 +56,9 @@ class ReportController extends AbstractController
             if (!$topic instanceof Topic) {
                 return $this->json(['message' => 'Topic not found'], 404);
             }
+            if ($reportRepository->existsForReporterAndTopic($user, $topic)) {
+                return $this->json(['message' => 'You have already reported this topic'], 409);
+            }
             $report->setTopic($topic);
             $topic->setModerationStatus('reported');
         }
@@ -64,12 +68,19 @@ class ReportController extends AbstractController
             if (!$post instanceof Post) {
                 return $this->json(['message' => 'Post not found'], 404);
             }
+            if ($reportRepository->existsForReporterAndPost($user, $post)) {
+                return $this->json(['message' => 'You have already reported this post'], 409);
+            }
             $report->setPost($post);
             $post->setModerationStatus('reported');
         }
 
         $em->persist($report);
-        $em->flush();
+        try {
+            $em->flush();
+        } catch (\Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
+            return $this->json(['message' => 'You have already reported this target'], 409);
+        }
 
         return $this->json([
             'message' => 'Report submitted successfully',
