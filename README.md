@@ -138,20 +138,20 @@ docker-compose run --rm php composer install
 Generate the JWT key pair for the Symfony backend:
 
 ```bash
-docker-compose run --rm php bin/console lexik:jwt:generate-keypair --overwrite --no-interaction
+docker-compose run --rm php php bin/console lexik:jwt:generate-keypair --overwrite --no-interaction
 ```
 
 Create the database and apply migrations:
 
 ```bash
-docker-compose run --rm php bin/console doctrine:database:create --if-not-exists
-docker-compose run --rm php bin/console doctrine:migrations:migrate --no-interaction
+docker-compose run --rm php php bin/console doctrine:database:create --if-not-exists
+docker-compose run --rm php php bin/console doctrine:migrations:migrate --no-interaction
 ```
 
 Load demo data with Doctrine fixtures:
 
 ```bash
-docker-compose run --rm php bin/console doctrine:fixtures:load --no-interaction
+docker-compose run --rm php php bin/console doctrine:fixtures:load --no-interaction
 ```
 
 ## LLM setup (Ollama)
