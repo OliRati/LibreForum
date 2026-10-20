@@ -92,14 +92,26 @@ cp .env.example .env
 
 3. Review `.env` and update secrets if needed:
 
+- `DOMAIN`, `HTTP_PORT`, `HTTPS_PORT`, and `PUBLIC_URL` configure the Nginx host and public URL
 - `DATABASE_URL` connects Symfony to the MySQL container
 - `JWT_PASSPHRASE` is required for Symfony JWT signing and JWT token generation
 - `MERCURE_JWT_SECRET` is required for Mercure real-time messages
 - `VITE_API_URL` and `VITE_API_BASE_URL` are the frontend API URLs
 
+For a deployment on a qualified domain, set these values in `.env` :
+
+```dotenv
+DOMAIN=forum.example.com
+HTTP_PORT=80
+HTTPS_PORT=443
+PUBLIC_URL=https://${DOMAIN}
+```
+
+Provide TLS certificate and key files for that domain as `docker/nginx/certs/selfsigned.crt` and `docker/nginx/certs/selfsigned.key`. The included certificate-generation script creates a local self-signed certificate and is not suitable for a public deployment.
+
 If you are on Windows, don't forget to disable the two lines `UID` and `GID`.
 
-4. Generate local TLS certificates:
+1. Generate local TLS certificates:
 
 ```bash
 sh ./make_certs.sh
@@ -200,8 +212,8 @@ docker-compose up -d
 
 Open the browser and use the following addresses:
 
-- `https://localhost:8443` - Main application entry point via Nginx HTTPS
-- `http://localhost:8080` - HTTP redirect proxy to HTTPS
+- `${PUBLIC_URL}` - Main application entry point via Nginx HTTPS
+- HTTP on `${HTTP_PORT}` - Redirects to the HTTPS URL configured by `PUBLIC_URL`
 - `http://localhost:5173` - Frontend Vite development server
 - `http://localhost:8081` - phpMyAdmin database administration
 - `http://localhost:8025` - Mailhog web interface
@@ -223,8 +235,8 @@ The sample fixtures load a few users with the following credentials:
 
 | Service | URL | Purpose |
 | --- | --- | --- |
-| Symfony backend | `https://localhost:8443` | Main web app and API |
-| Nginx HTTP | `http://localhost:8080` | Redirect to HTTPS |
+| Symfony backend | `${PUBLIC_URL}` | Main web app and API |
+| Nginx HTTP | `http://localhost:${HTTP_PORT}` | Redirect to HTTPS |
 | Frontend Vite | `http://localhost:5173` | React development server |
 | phpMyAdmin | `http://localhost:8081` | Database admin UI |
 | Mailhog UI | `http://localhost:8025` | Inspect outgoing email |
