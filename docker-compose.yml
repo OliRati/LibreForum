@@ -17,6 +17,8 @@ services:
 
   # Nginx
   nginx:
+    env_file:
+      - .env
     image: nginx:latest
     ports:
       - "${HTTP_PORT:-8080}:80"
@@ -30,9 +32,14 @@ services:
       - ./docker/nginx/default.conf.template:/etc/nginx/templates/default.conf.template:ro
       - ./docker/nginx/certs:/etc/nginx/certs:ro
     depends_on:
-      - php
-      - frontend
-      - llm
+      php:
+        condition: service_started
+      frontend:
+        condition: service_started
+      llm:
+        condition: service_started
+      mercure:
+        condition: service_healthy
 
   # MySQL
   mysql:
@@ -109,7 +116,7 @@ services:
       - "8000:8000"
 
   mercure:
-    image: dunglas/mercure
+    image: dunglas/mercure:v1.1.4
     restart: unless-stopped
     env_file:
       - .env
@@ -122,6 +129,16 @@ services:
       MERCURE_EXTRA_DIRECTIVES: |
         cors_origins *
         anonymous
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "test \"$$(curl --silent --output /dev/null --write-out '%{http_code}' http://localhost/.well-known/mercure)\" = 400",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
 
 volumes:
   db_data:
