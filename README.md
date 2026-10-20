@@ -97,6 +97,7 @@ cp .env.example .env
 - `JWT_PASSPHRASE` is required for Symfony JWT signing and JWT token generation
 - `MERCURE_JWT_SECRET` is required for Mercure real-time messages
 - `VITE_API_URL` and `VITE_API_BASE_URL` are the frontend API URLs
+- `UID` and `GID` to adjust local user and group to local system
 
 For a deployment on a qualified domain, set these values in `.env` :
 
@@ -109,9 +110,15 @@ PUBLIC_URL=https://${DOMAIN}
 
 Provide TLS certificate and key files for that domain as `docker/nginx/certs/selfsigned.crt` and `docker/nginx/certs/selfsigned.key`. The included certificate-generation script creates a local self-signed certificate and is not suitable for a public deployment.
 
+If you are on Linux or macOS, using the terminal command
+```bash
+id
+```
+will show you the required values for `UID` and `GID`.
+
 If you are on Windows, don't forget to disable the two lines `UID` and `GID`.
 
-1. Generate local TLS certificates:
+4. Generate local TLS certificates:
 
 ```bash
 sh ./make_certs.sh
