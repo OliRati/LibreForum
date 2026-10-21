@@ -71,7 +71,7 @@ services:
       - "1025:1025"
       - "8025:8025"
 
-  # Frontend React + Vite (dev)
+  # Frontend React + Vite
   frontend:
     env_file:
       - .env
@@ -83,7 +83,12 @@ services:
       - ./frontend:/app
     ports:
       - "5173:5173"
-    command: ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+    command: >-
+      sh -c 'if [ "$$APP_ENV" = "prod" ]; then
+        npm run build && npm run preview -- --host 0.0.0.0 --port 5173;
+      else
+        npm run dev -- --host 0.0.0.0;
+      fi'
     stdin_open: true
     tty: true
 
