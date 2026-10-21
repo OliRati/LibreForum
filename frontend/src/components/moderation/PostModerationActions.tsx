@@ -3,12 +3,12 @@ import { moderatePost } from '../../services/moderation';
 import type { Post } from '../../types/post';
 
 interface PostModerationActionsProps {
-  post: Post;
+  postId: number;
   onUpdated?: () => void;
 }
 
 export default function PostModerationActions({
-  post,
+  postId,
   onUpdated,
 }: PostModerationActionsProps) {
   const [loading, setLoading] = useState(false);
@@ -16,7 +16,7 @@ export default function PostModerationActions({
   const handleModerate = async (status: string) => {
     try {
       setLoading(true);
-      await moderatePost(post.id, status, 'Action modérateur');
+      await moderatePost(postId, status, 'Action modérateur');
       onUpdated?.();
     } catch (err) {
       console.error(err);

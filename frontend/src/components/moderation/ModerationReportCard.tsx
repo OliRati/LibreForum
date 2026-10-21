@@ -101,7 +101,7 @@ export default function ModerationReportCard({ report }: Props) {
                         </div>
 
                         <div className="mb-0 mt-3">
-                            <PostModerationActions post={curentReport.post} onUpdated={() => loadReport()} />
+                            <PostModerationActions postId={curentReport.post.id} onUpdated={() => loadReport()} />
                         </div>
                     </>
                 )}
