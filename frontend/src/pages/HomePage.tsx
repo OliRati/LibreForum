@@ -7,7 +7,7 @@ import Loader from "../components/ui/Loader";
 import Pagination from "../components/ui/Pagination";
 import EmptyState from "../components/ui/EmptyState";
 import { Link } from "react-router-dom";
-import { isModerator } from '../utils/auth';
+import { isAdmin, isModerator } from '../utils/auth';
 
 export default function HomePage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -39,6 +39,14 @@ export default function HomePage() {
 
   return (
     <div className="space-y-10">
+
+      {isAdmin() && (
+        <section className="text-left p-3 bg-red-100 border-red-200 dark:bg-red-950 border dark:border-red-800 rounded-xl">
+          <Link to={'/admin/dashboard'} className="hover:text-zinc-500 hover:dark:text-zinc-300">
+            Administration du système
+          </Link>
+        </section>
+      )}
 
       {isModerator() && (
         <section className="text-left p-3 bg-amber-100 border-amber-200 dark:bg-amber-950 border dark:border-amber-800 rounded-xl">

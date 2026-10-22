@@ -18,6 +18,7 @@ import Contact from '../pages/legal/Contact';
 import FAQ from '../pages/FAQ';
 import Moderation from '../pages/Moderation';
 import Signalement from '../pages/Signalement';
+import AdminDashboardPage from '../pages/admin/AdminDashboardPage';
 
 export const router = createBrowserRouter(
     [
@@ -56,6 +57,14 @@ export const router = createBrowserRouter(
                         </ProtectedRoute>
                     ),
                 },
+                {
+                    path: "admin/dashboard",
+                    element: (
+                        <ProtectedRoute requiredRole="ROLE_ADMIN">
+                            <AdminDashboardPage />
+                        </ProtectedRoute>
+                    ),
+                }
             ],
         },
     ],
