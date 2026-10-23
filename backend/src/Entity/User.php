@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\UserState;
 use App\Repository\UserRepository;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -76,6 +77,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $lastSeenAt = null;
+
+    #[ORM\Column(enumType: UserState::class)]
+    private ?UserState $state = null;
 
     public function __construct()
     {
@@ -346,5 +350,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getLastSeenAt(): ?DateTimeImmutable
     {
         return $this->lastSeenAt;
+    }
+
+    public function getState(): ?UserState
+    {
+        return $this->state;
+    }
+
+    public function setState(UserState $state): static
+    {
+        $this->state = $state;
+
+        return $this;
     }
 }

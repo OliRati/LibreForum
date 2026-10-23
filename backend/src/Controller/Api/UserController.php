@@ -35,6 +35,7 @@ final class UserController extends AbstractController
             'lastSeenAt' => $user->getLastSeenAt()?->format('c'),
             'createdAt' => $user->getCreatedAt()?->format('c'),
             'roles' => $user->getRoles(),
+            'state' => $user->getState(),
         ], $users));
     }
 

@@ -9,6 +9,7 @@ use App\Entity\Post;
 use App\Entity\Tag;
 use App\Entity\Topic;
 use App\Entity\User;
+use App\Enum\UserState;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -34,7 +35,8 @@ class AppFixtures extends Fixture
             ->setRoles(['ROLE_ADMIN','ROLE_MODERATOR'])
             ->setForumRank('Administrateur')
             ->setBio('Administrateur principal de LibreForum.')
-            ->setPassword($this->passwordHasher->hashPassword(new User(), 'password'));
+            ->setPassword($this->passwordHasher->hashPassword(new User(), 'password'))
+            ->setState(UserState::ACTIVE);
 
         $alice = (new User())
             ->setEmail('alice@libreforum.local')
@@ -42,7 +44,8 @@ class AppFixtures extends Fixture
             ->setDisplayName('Alice')
             ->setForumRank('Contributrice')
             ->setBio('Passionnée de Linux, Docker et PHP.')
-            ->setPassword($this->passwordHasher->hashPassword(new User(), 'password'));
+            ->setPassword($this->passwordHasher->hashPassword(new User(), 'password'))
+            ->setState(UserState::ACTIVE);
 
         $bob = (new User())
             ->setEmail('bob@libreforum.local')
@@ -50,7 +53,8 @@ class AppFixtures extends Fixture
             ->setDisplayName('Bob')
             ->setForumRank('Membre')
             ->setBio('Bidouilleur open source et amateur de self-hosting.')
-            ->setPassword($this->passwordHasher->hashPassword(new User(), 'password'));
+            ->setPassword($this->passwordHasher->hashPassword(new User(), 'password'))
+            ->setState(UserState::ACTIVE);
 
         $charlie = (new User())
             ->setEmail('charlie@libreforum.local')
@@ -59,7 +63,8 @@ class AppFixtures extends Fixture
             ->setForumRank('Modérateur')
             ->setRoles(['ROLE_MODERATOR'])
             ->setBio('Modération, UX et bonnes pratiques communautaires.')
-            ->setPassword($this->passwordHasher->hashPassword(new User(), 'password'));
+            ->setPassword($this->passwordHasher->hashPassword(new User(), 'password'))
+            ->setState(UserState::ACTIVE);
 
         foreach ([$admin, $alice, $bob, $charlie] as $user) {
             $manager->persist($user);

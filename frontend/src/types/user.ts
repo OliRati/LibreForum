@@ -9,4 +9,5 @@ export interface User {
   lastSeenAt: string | null;
   createdAt?: string;
   roles: string[];
+  state: string[];
 }

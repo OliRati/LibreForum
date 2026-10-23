@@ -3,6 +3,7 @@
 namespace App\Controller\Api;
 
 use App\Entity\User;
+use App\Enum\UserState;
 use App\Repository\PostRepository;
 use App\Repository\TopicRepository;
 use App\Service\PasswordPolicy;
@@ -67,7 +68,8 @@ final class AuthController extends AbstractController
             ->setDisplayName($payload['displayName'] ?? $payload['username'])
             ->setBio($payload['bio'] ?? null)
             ->setForumRank('Membre')
-            ->setRoles(['ROLE_USER']);
+            ->setRoles(['ROLE_USER'])
+            ->setState(UserState::ACTIVE);
 
         $hashedPassword = $passwordHasher->hashPassword($user, $password);
         $user->setPassword($hashedPassword);
