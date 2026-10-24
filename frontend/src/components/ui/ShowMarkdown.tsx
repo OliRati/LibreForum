@@ -63,6 +63,7 @@ export default function ShowMarkdown({ content }: Props) {
                     h4: ({ children }) => <div className="text-xl font-semibold text-zinc-300 mt-6 first:mt-0! mb-3">{children}</div>,
                     h5: ({ children }) => <div className="text-lg font-medium text-zinc-300 mt-5 first:mt-0! mb-2">{children}</div>,
                     h6: ({ children }) => <div className="text-xs font-medium text-zinc-300 tracking-wide mt-4 first:mt-0! mb-2">{children}</div>,
+                    p: ({children}) => <p className="text-zinc-300">{children}</p>,
                     a: ({ href, children }) => {
                         if (!isSafeUrl(href)) return <span className="text-gray-400">{children}</span>;
 
@@ -77,8 +78,8 @@ export default function ShowMarkdown({ content }: Props) {
                             </a>
                         );
                     },
-                    ul: ({children}) => <ul className="list-disc leading-6 pl-6">{children}</ul>,
-                    ol: ({children}) => <ol className="list-decimal leading-6 pl-6">{children}</ol>,
+                    ul: ({children}) => <ul className="text-zinc-300 list-disc pl-6">{children}</ul>,
+                    ol: ({children}) => <ol className="text-zinc-300 list-decimal pl-6">{children}</ol>,
                     blockquote: ({ children }) => {
                         return <blockquote className="ml-4 pl-2 py-2 my-2 border-l-3 border-gray-500">{children}</blockquote>
                     },

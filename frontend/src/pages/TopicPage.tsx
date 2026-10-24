@@ -187,7 +187,7 @@ export default function TopicPage() {
           </div>
         )}
 
-        <div className="mt-6 text-zinc-300">
+        <div className="mt-6">
           <ShowMarkdown content={topic.content} />
         </div>
 
