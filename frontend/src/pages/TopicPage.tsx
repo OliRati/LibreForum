@@ -187,7 +187,7 @@ export default function TopicPage() {
           </div>
         )}
 
-        <div className="mt-6 whitespace-pre-wrap leading-8 text-zinc-300">
+        <div className="mt-6 text-zinc-300">
           <ShowMarkdown content={topic.content} />
         </div>
 
@@ -218,7 +218,7 @@ export default function TopicPage() {
           </p>
         </div>
       )}
-      
+
       <section>
         <h2 className="mb-4 pb-4 text-2xl font-semibold">Réponses</h2>
 

@@ -33,7 +33,7 @@ export default function ShowMarkdown({ content }: Props) {
         .replace(/^(\d+)[\)\-]\s+/gm, "$1. ");
 
     return (
-        <div className="prose lg:prose-xl [&_a]:text-blue-600 [&_a]:underline [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:py-0 [&_ol]:list-decimal [&_ol]:pl-6 [&_ul]:leading-6 [&_li]:leading-0 text-left">
+        <div className="prose lg:prose-xl text-left">
             <ReactMarkdown
                 children={fixedContent}
                 remarkPlugins={[remarkGfm, remarkBreaks]}
@@ -57,12 +57,12 @@ export default function ShowMarkdown({ content }: Props) {
                     pre({ children }) {
                         return <>{children}</>
                     },
-                    h1: ({ children }) => <div className="text-4xl font-extrabold tracking-tight text-zinc-300 mt-10 mb-5">{children}</div>,
-                    h2: ({ children }) => <div className="text-3xl font-bold tracking-tight text-zinc-300 mt-8 mb-4">{children}</div>,
-                    h3: ({ children }) => <div className="text-2xl font-semibold text-zinc-300 mt-7 mb-3">{children}</div>,
-                    h4: ({ children }) => <div className="text-xl font-semibold text-zinc-300 mt-6 mb-3">{children}</div>,
-                    h5: ({ children }) => <div className="text-lg font-medium text-zinc-300 mt-5 mb-2">{children}</div>,
-                    h6: ({ children }) => <div className="text-xs font-medium text-zinc-300 tracking-wide mt-4 mb-2">{children}</div>,
+                    h1: ({ children }) => <div className="text-4xl font-extrabold tracking-tight text-zinc-300 mt-10 first:mt-0! mb-5">{children}</div>,
+                    h2: ({ children }) => <div className="text-3xl font-bold tracking-tight text-zinc-300 mt-8 first:mt-0! mb-4">{children}</div>,
+                    h3: ({ children }) => <div className="text-2xl font-semibold text-zinc-300 mt-7 first:mt-0! mb-3">{children}</div>,
+                    h4: ({ children }) => <div className="text-xl font-semibold text-zinc-300 mt-6 first:mt-0! mb-3">{children}</div>,
+                    h5: ({ children }) => <div className="text-lg font-medium text-zinc-300 mt-5 first:mt-0! mb-2">{children}</div>,
+                    h6: ({ children }) => <div className="text-xs font-medium text-zinc-300 tracking-wide mt-4 first:mt-0! mb-2">{children}</div>,
                     a: ({ href, children }) => {
                         if (!isSafeUrl(href)) return <span className="text-gray-400">{children}</span>;
 
@@ -77,6 +77,8 @@ export default function ShowMarkdown({ content }: Props) {
                             </a>
                         );
                     },
+                    ul: ({children}) => <ul className="list-disc leading-6 pl-6">{children}</ul>,
+                    ol: ({children}) => <ol className="list-decimal leading-6 pl-6">{children}</ol>,
                     blockquote: ({ children }) => {
                         return <blockquote className="ml-4 pl-2 py-2 my-2 border-l-3 border-gray-500">{children}</blockquote>
                     },
