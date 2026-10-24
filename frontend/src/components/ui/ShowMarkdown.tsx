@@ -33,7 +33,7 @@ export default function ShowMarkdown({ content }: Props) {
         .replace(/^(\d+)[\)\-]\s+/gm, "$1. ");
 
     return (
-        <div className="prose lg:prose-xl [&_a]:text-blue-600 [&_a]:underline [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 text-left">
+        <div className="prose lg:prose-xl [&_a]:text-blue-600 [&_a]:underline [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:py-0 [&_ol]:list-decimal [&_ol]:pl-6 [&_ul]:leading-6 [&_li]:leading-0 text-left">
             <ReactMarkdown
                 children={fixedContent}
                 remarkPlugins={[remarkGfm, remarkBreaks]}

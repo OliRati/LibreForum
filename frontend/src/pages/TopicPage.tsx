@@ -218,6 +218,7 @@ export default function TopicPage() {
           </p>
         </div>
       )}
+      
       <section>
         <h2 className="mb-4 pb-4 text-2xl font-semibold">Réponses</h2>
 
