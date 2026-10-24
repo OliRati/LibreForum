@@ -182,7 +182,7 @@ export default function TopicPage() {
         {topic.tags && topic.tags.length > 0 && (
           <div className="mt-4 flex flex-wrap gap-2">
             {topic.tags.map((tag) => (
-              <TagBadge key={tag.id} tag={tag.name} />
+              <TagBadge key={tag.id} tagName={tag.name} />
             ))}
           </div>
         )}
