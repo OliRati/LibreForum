@@ -8,8 +8,10 @@ import Pagination from "../components/ui/Pagination";
 import EmptyState from "../components/ui/EmptyState";
 import { Link } from "react-router-dom";
 import { isAdmin, isModerator } from '../utils/auth';
+import { useAuthStore } from "../features/auth/authStore";
 
 export default function HomePage() {
+  const token = useAuthStore((state) => state.token);
   const [categories, setCategories] = useState<Category[]>([]);
   const [topics, setTopics] = useState<Topic[]>([]);
   const [page, setPage] = useState(1);
@@ -33,7 +35,7 @@ export default function HomePage() {
     }
 
     load();
-  }, [page]);
+  }, [page, token]);
 
   if (loading) return <Loader />;
 
