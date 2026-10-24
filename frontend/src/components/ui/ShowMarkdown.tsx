@@ -40,17 +40,17 @@ export default function ShowMarkdown({ content }: Props) {
 
                 components={{
                     table: ({ children }) => (
-                        <table className="min-w-full border-collapse border border-slate-700">
+                        <table className="border-collapse border border-slate-700 text-zinc-300">
                             {children}
                         </table>
                     ),
                     th: ({ children }) => (
-                        <th className="border border-slate-700 bg-slate-900 px-3 py-2 text-left">
+                        <th className="border border-slate-700 bg-slate-900 px-3 py-2 text-left text-zinc-300">
                             {children}
                         </th>
                     ),
                     td: ({ children }) => (
-                        <td className="border border-slate-700 px-3 py-2">
+                        <td className="border border-slate-700 px-3 py-2 text-zinc-300">
                             {children}
                         </td>
                     ),
