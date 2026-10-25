@@ -44,7 +44,7 @@ class TagController extends AbstractController
 
         $data = json_decode($request->getContent(), true);
 
-        $tag = trim($data['name'] ?? '');
+        $tag = trim(ltrim(strip_tags($data['name'] ?? ''), '#'));
 
         if (!$tag) {
             return $this->json([

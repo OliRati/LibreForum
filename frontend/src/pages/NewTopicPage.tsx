@@ -16,6 +16,7 @@ export default function NewTopicPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
   const [title, setTitle] = useState("");
+  const [newTagName, setNewTagName] = useState("");
   const [content, setContent] = useState("");
   const [categoryId, setCategoryId] = useState<number | "">("");
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
@@ -58,8 +59,14 @@ export default function NewTopicPage() {
   }
 
   async function newTag(tagName: string): Promise<boolean> {
+    const normalizedTagName = tagName.replace(/^#+/, "");
+    if (!normalizedTagName) {
+      setTagError("Le nom du tag est requis.");
+      return false;
+    }
+
     // Vérifier si le tag existe déjà dans la liste
-    const existingTag = tags.find(tag => tag.name.toLowerCase() === tagName.toLowerCase());
+    const existingTag = tags.find(tag => tag.name.toLowerCase() === normalizedTagName.toLowerCase());
 
     if (existingTag) {
       if (selectedTags.includes(existingTag.id)) return false;
@@ -78,7 +85,7 @@ export default function NewTopicPage() {
         return false;
       }
 
-      const newTag = await createTag({ name: tagName });
+      const newTag = await createTag({ name: normalizedTagName });
 
       // Ajouter le nouveau tag à la liste
       setTags((prev) => [...prev, newTag]);
@@ -105,6 +112,19 @@ export default function NewTopicPage() {
       navigate(`/topic/${result.id}`);
     } catch {
       setError("Impossible de créer le sujet.");
+    }
+  }
+
+  async function handleTagSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+
+    try {
+      const result = await newTag(newTagName);
+      if (result)
+        setNewTagName("");
+    } catch {
+      setError("Impossibe de créer le tag");
     }
   }
 
@@ -148,34 +168,6 @@ export default function NewTopicPage() {
         </div>
 
         <div>
-          <label className="mb-2 block text-sm text-zinc-400">Tags</label>
-          <div className="flex flex-wrap gap-2">
-            {tags.map((tag) => {
-              const active = selectedTags.includes(tag.id);
-
-              return (
-                <button
-                  key={tag.id}
-                  type="button"
-                  onClick={() => toggleTag(tag.id)}
-                  className={`rounded-full px-3 py-2 text-sm transition ${active
-                    ? "bg-emerald-600 text-white border border-emerald-500"
-                    : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700 border border-zinc-600"
-                    }`}
-                >
-                  #{tag.name}
-                </button>
-              );
-            })}
-          </div>
-          {tagError && (
-            <div className="mt-3">
-              <Alert type="error" message={<>{tagError}</>} />
-            </div>
-          )}
-        </div>
-
-        <div>
           <MarkdownEditor
             label="Description"
             value={content}
@@ -191,6 +183,55 @@ export default function NewTopicPage() {
           Publier le sujet
         </button>
       </form>
+
+      <div>
+        <label className="mt-6 mb-2 block text-sm text-zinc-400">Tags</label>
+        <div className="flex flex-wrap gap-2">
+          {tags.map((tag) => {
+            const active = selectedTags.includes(tag.id);
+
+            return (
+              <button
+                key={tag.id}
+                type="button"
+                onClick={() => toggleTag(tag.id)}
+                className={`rounded-full px-3 py-2 text-sm transition ${active
+                  ? "bg-emerald-600 text-white border border-emerald-500"
+                  : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700 border border-zinc-600"
+                  }`}
+              >
+                #{tag.name}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="w-full mt-3">
+          <div className="w-full flex">
+            <form onSubmit={handleTagSubmit} className="">
+              <input
+                id="newtag"
+                className="text-zinc-200 bg-zinc-800 w-fit px-4 py-3 rounded-tl-xl rounded-bl-xl focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500"
+                type="text" placeholder="Saisissez un nouveau tag..."
+                value={newTagName}
+                onChange={(e) => setNewTagName(e.target.value)}
+              />
+              <button
+                className="text-zinc-200 bg-zinc-800 w-fit px-4 py-3 rounded-tr-xl rounded-br-xl cursor-pointer hover:bg-zinc-700"
+                type="submit">
+                Ajouter
+              </button>
+            </form>
+          </div>
+
+          {tagError && (
+            <div className="w-full mt-3 mb-6">
+              <Alert type="error" message={<>{tagError}</>} />
+            </div>
+          )}
+        </div>
+
+      </div>
 
       {/* Assistant IA */}
       <TextAssistant value={content} onChange={setContent} />
