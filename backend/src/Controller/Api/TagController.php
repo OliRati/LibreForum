@@ -52,6 +52,18 @@ class TagController extends AbstractController
             ], Response::HTTP_BAD_REQUEST);
         }
 
+        if (strlen($tag) > 30) {
+            return $this->json([
+                'message' => 'tag trop long'
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        if (strlen($tag) < 2) {
+            return $this->json([
+                'message' => 'tag trop court'
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
         $existingTag = $tagRepository->findOneBy(['name' => $tag]);
         if ($existingTag) {
             return $this->json($this->normalizeTag($existingTag), Response::HTTP_OK);
