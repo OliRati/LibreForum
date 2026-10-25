@@ -10,11 +10,13 @@ L'API ne déclare pas de version dans ses URL. Les identifiants de ressources so
 
 ## 2. Authentification et autorisations
 
-### État des fonctionnalités IA
+### État des fonctionnalités
 
-`GET /api/features` est public et retourne `{"aiEnabled": true}` ou `{"aiEnabled": false}`. Le frontend peut consulter cet état pour adapter l'interface. Le backend reste l'autorité : si l'IA est désactivée, les routes `/api/llm/*` répondent `503` avec le code `FEATURE_DISABLED`. La modération automatique IA des nouveaux posts est alors ignorée, mais la création du post reste disponible.
+`GET /api/features` est public et retourne les états `aiEnabled` et `chatEnabled`. Le frontend peut consulter cet état pour adapter l'interface. Le backend reste l'autorité : si l'IA est désactivée, les routes `/api/llm/*` répondent `503` avec le code `FEATURE_DISABLED`. La modération automatique IA des nouveaux posts est alors ignorée, mais la création du post reste disponible.
 
 Le réglage backend se fait avec la variable d'environnement `AI_FEATURES_ENABLED` (`true` par défaut). La définir à `false` désactive les appels IA ; le changement s'applique au redémarrage du backend.
+
+La réponse inclut également `chatEnabled`. Si le chat est désactivé, les routes `/api/chat/rooms` et `/api/chat/messages`, ainsi que leurs sous-routes, répondent `503` avec le code `FEATURE_DISABLED`. Le réglage backend se fait avec `CHAT_FEATURES_ENABLED` (`true` par défaut) ; le changement s'applique au redémarrage du backend.
 
 ### Connexion et jeton
 

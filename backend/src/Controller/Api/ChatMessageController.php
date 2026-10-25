@@ -6,6 +6,7 @@ use App\Entity\ChatMessage;
 use App\Entity\ChatRoom;
 use App\Entity\User;
 use App\Repository\ChatMessageRepository;
+use App\Service\ChatFeatureToggle;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -15,9 +16,17 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api/chat/messages')]
 final class ChatMessageController extends AbstractController
 {
+    public function __construct(private ChatFeatureToggle $chatFeatureToggle)
+    {
+    }
+
     #[Route('', methods: ['GET'])]
     public function index(ChatMessageRepository $chatMessageRepository): JsonResponse
     {
+        if (!$this->chatFeatureToggle->isEnabled()) {
+            return $this->chatUnavailableResponse();
+        }
+
         $messages = $chatMessageRepository->findBy([], ['createdAt' => 'DESC']);
 
         return $this->json(array_map(fn(ChatMessage $message) => [
@@ -41,6 +50,10 @@ final class ChatMessageController extends AbstractController
     #[Route('/{id}', methods: ['GET'])]
     public function show(ChatMessage $message): JsonResponse
     {
+        if (!$this->chatFeatureToggle->isEnabled()) {
+            return $this->chatUnavailableResponse();
+        }
+
         return $this->json([
             'id' => $message->getId(),
             'content' => $message->getContent(),
@@ -62,6 +75,10 @@ final class ChatMessageController extends AbstractController
     #[Route('', methods: ['POST'])]
     public function store(Request $request, EntityManagerInterface $em): JsonResponse
     {
+        if (!$this->chatFeatureToggle->isEnabled()) {
+            return $this->chatUnavailableResponse();
+        }
+
         $user = $this->getUser();
 
         if (!$user instanceof User) {
@@ -102,6 +119,10 @@ final class ChatMessageController extends AbstractController
     #[Route('/{id}', methods: ['PUT', 'PATCH'])]
     public function update(ChatMessage $message, Request $request, EntityManagerInterface $em): JsonResponse
     {
+        if (!$this->chatFeatureToggle->isEnabled()) {
+            return $this->chatUnavailableResponse();
+        }
+
         $user = $this->getUser();
 
         if (!$user instanceof User) {
@@ -129,9 +150,21 @@ final class ChatMessageController extends AbstractController
     #[Route('/{id}', methods: ['DELETE'])]
     public function delete(ChatMessage $message, EntityManagerInterface $em): JsonResponse
     {
+        if (!$this->chatFeatureToggle->isEnabled()) {
+            return $this->chatUnavailableResponse();
+        }
+
         $em->remove($message);
         $em->flush();
 
         return $this->json(['message' => 'Message supprimé']);
+    }
+
+    private function chatUnavailableResponse(): JsonResponse
+    {
+        return $this->json([
+            'code' => 'FEATURE_DISABLED',
+            'message' => 'Les fonctionnalités de chat sont désactivées.',
+        ], JsonResponse::HTTP_SERVICE_UNAVAILABLE);
     }
 }

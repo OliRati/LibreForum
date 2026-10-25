@@ -3,12 +3,15 @@ import { apiFetch } from '../../lib/api';
 
 interface AppFeatures {
   aiEnabled: boolean;
+  chatEnabled: boolean;
 }
 
-const AppFeaturesContext = createContext<AppFeatures>({ aiEnabled: false });
+const disabledFeatures: AppFeatures = { aiEnabled: false, chatEnabled: false };
+
+const AppFeaturesContext = createContext<AppFeatures>(disabledFeatures);
 
 export function AppFeaturesProvider({ children }: { children: ReactNode }) {
-  const [features, setFeatures] = useState<AppFeatures>({ aiEnabled: false });
+  const [features, setFeatures] = useState<AppFeatures>(disabledFeatures);
 
   useEffect(() => {
     let active = true;
@@ -20,13 +23,18 @@ export function AppFeaturesProvider({ children }: { children: ReactNode }) {
           typeof response !== 'object' ||
           response === null ||
           !('aiEnabled' in response) ||
-          typeof response.aiEnabled !== 'boolean'
+          typeof response.aiEnabled !== 'boolean' ||
+          !('chatEnabled' in response) ||
+          typeof response.chatEnabled !== 'boolean'
         ) {
           throw new Error('Invalid feature configuration response');
         }
 
         if (active) {
-          setFeatures({ aiEnabled: response.aiEnabled });
+          setFeatures({
+            aiEnabled: response.aiEnabled,
+            chatEnabled: response.chatEnabled,
+          });
         }
       } catch (error) {
         console.error('Unable to load application features', error);

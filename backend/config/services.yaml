@@ -9,6 +9,8 @@
 parameters:
     env(AI_FEATURES_ENABLED): 'true'
     app.ai_features_enabled: '%env(bool:AI_FEATURES_ENABLED)%'
+    env(CHAT_FEATURES_ENABLED): 'true'
+    app.chat_features_enabled: '%env(bool:CHAT_FEATURES_ENABLED)%'
 
 services:
     # default configuration for services in *this* file
@@ -28,6 +30,10 @@ services:
     App\Service\AiFeatureToggle:
         arguments:
             $enabled: '%app.ai_features_enabled%'
+
+    App\Service\ChatFeatureToggle:
+        arguments:
+            $enabled: '%app.chat_features_enabled%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
