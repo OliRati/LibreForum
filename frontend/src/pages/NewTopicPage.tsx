@@ -59,9 +59,31 @@ export default function NewTopicPage() {
   }
 
   async function newTag(tagName: string): Promise<boolean> {
-    const normalizedTagName = tagName.replace(/^#+/, "");
+    function stripHtmlTags(value: string): string {
+      const document = new DOMParser().parseFromString(value, "text/html");
+      return document.body.textContent ?? "";
+    }
+
+    const normalizedTagName = stripHtmlTags(tagName).replace(/^#+/, "").trim();
     if (!normalizedTagName) {
       setTagError("Le nom du tag est requis.");
+      return false;
+    }
+
+    const tagPattern = /^\p{L}+(?:-\p{L}+)*$/u;
+    const isValidTag = tagPattern.test(tagName);
+    if (!isValidTag) {
+      setTagError("Un tag est constitué de caractères alphabétiques constituant des mots clé, pouvant être séparés par un tiret simple.");
+      return false;
+    }
+
+    if (normalizedTagName.length > 30) {
+      setTagError("Un tag no doit pas dépasser 30 caracteres.");
+      return false;
+    }
+
+    if (normalizedTagName.length < 2) {
+      setTagError("Un tag doit au moins avoir 2 caractères.");
       return false;
     }
 
@@ -123,6 +145,8 @@ export default function NewTopicPage() {
       const result = await newTag(newTagName);
       if (result)
         setNewTagName("");
+      else
+        setError("Création du tag impossible");
     } catch {
       setError("Impossibe de créer le tag");
     }

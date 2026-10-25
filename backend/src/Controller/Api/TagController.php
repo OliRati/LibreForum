@@ -35,8 +35,7 @@ class TagController extends AbstractController
         TagRepository $tagRepository,
         Security $security,
         EntityManagerInterface $em
-    ): JsonResponse
-    {
+    ): JsonResponse {
         $user = $security->getUser();
         if (!$user) {
             return $this->json(['message' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
@@ -49,6 +48,14 @@ class TagController extends AbstractController
         if (!$tag) {
             return $this->json([
                 'message' => 'tag est requis'
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        $tagPattern = '/^\p{L}+(?:-\p{L}+)*$/u';
+
+        if (preg_match($tagPattern, $tag) !== 1) {
+            return $this->json([
+                'massage' => 'Le tag ne respecte pas le format attendu'
             ], Response::HTTP_BAD_REQUEST);
         }
 
