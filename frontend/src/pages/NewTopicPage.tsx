@@ -232,13 +232,13 @@ export default function NewTopicPage() {
           <div className="flex">
             <input
               id="newtag"
-              className="text-zinc-200 bg-zinc-800 w-full px-4 py-3 rounded-tl-xl rounded-bl-xl focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500"
+              className="text-zinc-200 bg-zinc-800 border border-zinc-700 w-full px-4 py-3 rounded-tl-xl rounded-bl-xl focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500"
               type="text" placeholder="Saisissez un tag..."
               value={newTagName}
               onChange={(e) => setNewTagName(e.target.value)}
             />
             <button
-              className="text-zinc-200 bg-zinc-800 w-fit px-4 py-3 rounded-tr-xl rounded-br-xl cursor-pointer hover:bg-zinc-700"
+              className="text-zinc-200 bg-zinc-800 border border-zinc-700 w-fit px-4 py-3 rounded-tr-xl rounded-br-xl cursor-pointer hover:bg-zinc-700"
               type="submit">
               Ajouter
             </button>

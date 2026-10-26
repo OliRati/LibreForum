@@ -39,7 +39,7 @@ export default function TextAssistant({ value, onChange }: Props) {
 
   return (
     <div className="shadow-lg shadow-black rounded-xl border bg-cyan-950 border-cyan-800 p-4 mt-4">
-      <div className="mb-2 font-semibold text-zinc-200">Assistant IA</div>
+      <div className="text-lg mb-2 font-semibold text-zinc-200">Assistant rédactionnel IA</div>
 
       <div className="flex flex-wrap gap-2 mb-4">
         <button onClick={() => run('improve')} className="shadow-lg shadow-black cursor-pointer rounded-xl px-3 py-2 bg-cyan-700 hover:bg-cyan-800 text-cyan-50 mr-2">Améliorer</button>
