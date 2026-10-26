@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { getTopic, type Topic } from "../api/topics";
 
@@ -38,7 +38,7 @@ export default function TopicPage() {
   const [totalPages, setTotalPages] = useState(0);
   const [total, setTotal] = useState(0);
 
-  async function loadData() {
+  const loadData = useCallback( async () => {
     if (!id) return;
 
     setLoading(true);
@@ -57,11 +57,11 @@ export default function TopicPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [id]);
 
   useEffect(() => {
-    loadData();
-  }, [id]);
+    void loadData();
+  }, [loadData, token]);
 
   useEffect(() => {
     if (!id) return;

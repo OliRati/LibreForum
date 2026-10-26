@@ -7,10 +7,12 @@ import Loader from "../components/ui/Loader";
 import EmptyState from "../components/ui/EmptyState";
 import Pagination from "../components/ui/Pagination";
 import { isUser } from '../utils/auth';
+import { useAuthStore } from "../features/auth/authStore";
 
 export default function CategoryPage() {
   const { id } = useParams();
 
+  const token = useAuthStore((state) => state.token);
   const [category, setCategory] = useState<Category | null>(null);
   const [topics, setTopics] = useState<Topic[]>([]);
   const [page, setPage] = useState(1);
@@ -37,7 +39,7 @@ export default function CategoryPage() {
     }
 
     load();
-  }, [id, page]);
+  }, [id, page, token]);
 
   if (loading) return <Loader />;
   if (!category) return <EmptyState title="Catégorie introuvable" />;
