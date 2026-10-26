@@ -27,27 +27,22 @@ export default function PostModerationActions({
   };
 
   return (
-    <div className="mt-2 flex flex-wrap gap-2 rounded border border-zinc-400 text-zinc-200 bg-gray-600 p-3">
+    <div className="flex items-center flex-wrap gap-2 text-zinc-200">
+      <div className="text-red-300">
+        Modération :
+      </div>
       <button
         disabled={loading}
         onClick={() => handleModerate('approved')}
-        className="rounded border px-3 py-1 text-sm hover:bg-gray-500 transition-all cursor-pointer"
+        className="rounded border border-red-300 text-red-100 px-3 py-1 text-sm hover:bg-red-800/20 transition-all cursor-pointer"
       >
         Valider
       </button>
 
       <button
         disabled={loading}
-        onClick={() => handleModerate('reported')}
-        className="rounded border px-3 py-1 text-sm hover:bg-gray-500 transition-all cursor-pointer"
-      >
-        Signaler
-      </button>
-
-      <button
-        disabled={loading}
         onClick={() => handleModerate('blocked')}
-        className="rounded border px-3 py-1 text-sm hover:bg-gray-500 transition-all cursor-pointer"
+        className="rounded border border-red-300 text-red-100 px-3 py-1 text-sm hover:bg-red-800/20 transition-all cursor-pointer"
       >
         Bloquer
       </button>

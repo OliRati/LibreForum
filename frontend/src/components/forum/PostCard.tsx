@@ -95,10 +95,14 @@ export default function PostCard({ post, onDeleted }: Props) {
             status={curPost.moderationStatus ?? null}
             toxicityScore={curPost.toxicityScore ?? null} />
         </div>
+
         <div className="flex flex-wrap gap-2 items-center">
           {moderator && (
-            <PostModerationActions post={curPost} onUpdated={loadPosts} />
+            <PostModerationActions postId={curPost.id} onUpdated={loadPosts} />
           )}
+        </div>
+
+        <div className="text-end flex gap-3">
           {canDelete && (
             <button
               type="button"
@@ -112,13 +116,12 @@ export default function PostCard({ post, onDeleted }: Props) {
                   alert('Impossible de supprimer ce message.');
                 }
               }}
-              className="rounded border px-3 py-1 text-sm text-red-200 hover:bg-red-600"
+              className="rounded border border-red-300 px-3 py-1 text-sm text-red-100 hover:bg-red-800/20 transition-all"
             >
               Supprimer
             </button>
           )}
-        </div>
-        <div className="text-end">
+
           <ReportButton postId={curPost.id} onReported={loadPosts} />
         </div>
       </div>

@@ -202,7 +202,7 @@ export default function TopicPage() {
             <button
               type="button"
               onClick={handleTopicDelete}
-              className="rounded border border-red-500 bg-red-600 px-3 py-1 text-sm text-white hover:bg-red-700"
+              className="rounded border border-red-300 px-3 py-1 text-sm text-red-100 hover:bg-red-800/20"
             >
               Supprimer le sujet
             </button>
