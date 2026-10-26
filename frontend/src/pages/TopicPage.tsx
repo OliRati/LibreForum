@@ -13,6 +13,7 @@ import Alert from "../components/ui/Alert";
 import ModerationBadge from '../components/moderation/ModerationBadge';
 import ReportButton from '../components/moderation/ReportButton';
 import TopicModerationActions from '../components/moderation/TopicModerationActions';
+import TopicActions from '../components/forum/TopicActions';
 import PostModerationActions from '../components/moderation/PostModerationActions';
 import { isModerator } from '../utils/auth';
 import { getTopicPosts, createPost, deleteTopic } from "../services/topics.js";
@@ -38,7 +39,7 @@ export default function TopicPage() {
   const [totalPages, setTotalPages] = useState(0);
   const [total, setTotal] = useState(0);
 
-  const loadData = useCallback( async () => {
+  const loadData = useCallback(async () => {
     if (!id) return;
 
     setLoading(true);
@@ -193,19 +194,24 @@ export default function TopicPage() {
 
 
         <div className="mb-0 mt-3 flex flex-wrap gap-2 items-center justify-between">
+          {canDeleteTopic && (
+              <TopicActions topic={topic} onUpdated={loadTopic} />
+          )}
           {moderator && (
             <div>
-              <TopicModerationActions topic={topic} onUpdated={loadTopic} />
+              <TopicModerationActions topicId={topic.id} onUpdated={loadTopic} />
             </div>
           )}
           {canDeleteTopic && (
-            <button
-              type="button"
-              onClick={handleTopicDelete}
-              className="rounded border border-red-300 px-3 py-1 text-sm text-red-100 hover:bg-red-800/20"
-            >
-              Supprimer le sujet
-            </button>
+            <>
+              <button
+                type="button"
+                onClick={handleTopicDelete}
+                className="rounded border border-red-300 px-3 py-1 text-sm text-red-100 hover:bg-red-800/20"
+              >
+                Supprimer le sujet
+              </button>
+            </>
           )}
         </div>
 

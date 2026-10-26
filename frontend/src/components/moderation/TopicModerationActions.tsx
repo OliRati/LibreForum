@@ -1,52 +1,21 @@
 import { useState } from 'react';
-import {
-  lockTopic,
-  moderateTopic,
-  pinTopic,
-} from '../../services/moderation';
-import type { Topic } from '../../types/topic';
+import { moderateTopic } from '../../services/moderation';
 
 interface TopicModerationActionsProps {
-  topic: Topic;
+  topicId: number;
   onUpdated?: () => void;
 }
 
 export default function TopicModerationActions({
-  topic,
+  topicId,
   onUpdated,
 }: TopicModerationActionsProps) {
   const [loading, setLoading] = useState(false);
 
-  const handlePin = async () => {
-    try {
-      setLoading(true);
-      await pinTopic(topic.id, !topic.isPinned, 'Action modérateur');
-      onUpdated?.();
-    } catch (err) {
-      console.error(err);
-      alert("Impossible de modifier l'état épinglé.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleLock = async () => {
-    try {
-      setLoading(true);
-      await lockTopic(topic.id, !topic.isLocked, 'Action modérateur');
-      onUpdated?.();
-    } catch (err) {
-      console.error(err);
-      alert("Impossible de modifier l'état verrouillé.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleModerate = async (status: string) => {
     try {
       setLoading(true);
-      await moderateTopic(topic.id, status, 'Action modérateur');
+      await moderateTopic(topicId, status, 'Action modérateur');
       onUpdated?.();
     } catch (err) {
       console.error(err);
@@ -57,43 +26,23 @@ export default function TopicModerationActions({
   };
 
   return (
-    <div className="mt-1 flex flex-wrap gap-2 rounded border border-zinc-400 text-zinc-200 bg-gray-600 p-3">
-      <button
-        disabled={loading}
-        onClick={handlePin}
-        className="rounded border px-3 py-1 text-sm hover:bg-gray-500"
-      >
-        {topic.isPinned ? 'Désépingler' : 'Épingler'}
-      </button>
-
-      <button
-        disabled={loading}
-        onClick={handleLock}
-        className="rounded border px-3 py-1 text-sm hover:bg-gray-500"
-      >
-        {topic.isLocked ? 'Déverrouiller' : 'Verrouiller'}
-      </button>
+    <div className="flex items-center gap-2 text-zinc-200">
+      <div className="text-red-300">
+        Modération :
+      </div>
 
       <button
         disabled={loading}
         onClick={() => handleModerate('approved')}
-        className="rounded border px-3 py-1 text-sm hover:bg-gray-500"
+        className="rounded border border-red-300 text-red-100 px-3 py-1 text-sm hover:bg-red-800/20 transition-all cursor-pointer"
       >
         Valider
       </button>
 
       <button
         disabled={loading}
-        onClick={() => handleModerate('reported')}
-        className="rounded border px-3 py-1 text-sm hover:bg-gray-500"
-      >
-        Signaler
-      </button>
-
-      <button
-        disabled={loading}
         onClick={() => handleModerate('blocked')}
-        className="rounded border px-3 py-1 text-sm hover:bg-gray-500"
+        className="rounded border border-red-300 text-red-100 px-3 py-1 text-sm hover:bg-red-800/20 transition-all cursor-pointer"
       >
         Bloquer
       </button>
