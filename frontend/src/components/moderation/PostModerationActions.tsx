@@ -27,7 +27,7 @@ export default function PostModerationActions({
   };
 
   return (
-    <div className="flex items-center flex-wrap gap-2 text-zinc-200">
+    <div className="flex items-center gap-2 text-zinc-200">
       <div className="text-red-300">
         Modération :
       </div>
