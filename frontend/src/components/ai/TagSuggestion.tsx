@@ -48,7 +48,7 @@ export default function TagSuggestion({ content, onSelect, excludedTagNames }: P
       {tags.length === 0 ? (
         <button
           onClick={generate}
-          className="cursor-pointer rounded-xl px-3 py-2 text-zinc-200 bg-cyan-700 hover:bg-cyan-800 mr-2"
+          className="shadow-lg shadow-black cursor-pointer rounded-xl px-3 py-2 bg-cyan-700 hover:bg-cyan-800 text-cyan-50 mr-2"
         >
           {loading ? 'Analyse en cours...' : 'Suggérer des tags'}
         </button>

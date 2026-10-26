@@ -145,10 +145,8 @@ export default function NewTopicPage() {
       const result = await newTag(newTagName);
       if (result)
         setNewTagName("");
-      else
-        setError("Création du tag impossible");
     } catch {
-      setError("Impossibe de créer le tag");
+      setTagError("Impossibe de créer le tag");
     }
   }
 
@@ -166,7 +164,7 @@ export default function NewTopicPage() {
             className="w-full rounded-xl text-zinc-200 bg-zinc-800 px-4 py-3 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="Titre du sujet"
+            placeholder="Entrez un titre de sujet"
           />
         </div>
 
@@ -230,22 +228,20 @@ export default function NewTopicPage() {
           })}
         </div>
 
-        <div className="w-full mt-3">
-          <div className="w-full flex">
-            <form onSubmit={handleTagSubmit} className="">
-              <input
-                id="newtag"
-                className="text-zinc-200 bg-zinc-800 w-fit px-4 py-3 rounded-tl-xl rounded-bl-xl focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500"
-                type="text" placeholder="Saisissez un nouveau tag..."
-                value={newTagName}
-                onChange={(e) => setNewTagName(e.target.value)}
-              />
-              <button
-                className="text-zinc-200 bg-zinc-800 w-fit px-4 py-3 rounded-tr-xl rounded-br-xl cursor-pointer hover:bg-zinc-700"
-                type="submit">
-                Ajouter
-              </button>
-            </form>
+        <form onSubmit={handleTagSubmit} className="w-full mt-3 mb-6">
+          <div className="flex">
+            <input
+              id="newtag"
+              className="text-zinc-200 bg-zinc-800 w-full px-4 py-3 rounded-tl-xl rounded-bl-xl focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500"
+              type="text" placeholder="Saisissez un tag..."
+              value={newTagName}
+              onChange={(e) => setNewTagName(e.target.value)}
+            />
+            <button
+              className="text-zinc-200 bg-zinc-800 w-fit px-4 py-3 rounded-tr-xl rounded-br-xl cursor-pointer hover:bg-zinc-700"
+              type="submit">
+              Ajouter
+            </button>
           </div>
 
           {tagError && (
@@ -253,7 +249,7 @@ export default function NewTopicPage() {
               <Alert type="error" message={<>{tagError}</>} />
             </div>
           )}
-        </div>
+        </form>
 
       </div>
 
