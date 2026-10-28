@@ -57,16 +57,16 @@ export default function SearchPage() {
       <section className="rounded-2xl border border-zinc-800 text-zinc-200 bg-zinc-900 p-6">
         <h1 className="mb-4 text-3xl font-bold">Recherche</h1>
 
-        <form onSubmit={handleSubmit} className="flex gap-3">
+        <form onSubmit={handleSubmit} className="flex flex-wrap gap-3">
           <input
-            className="flex-1 rounded-xl bg-zinc-800 px-4 py-3"
+            className="flex-1 rounded-xl bg-zinc-800 px-4 py-3 w-full sm:w-fit"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Rechercher un sujet..."
           />
           <button
             type="submit"
-            className="rounded-xl bg-emerald-600 px-5 py-3 font-medium hover:bg-emerald-500"
+            className="rounded-xl bg-emerald-600 px-5 py-3 font-medium hover:bg-emerald-500 w-full sm:w-fit"
           >
             Rechercher
           </button>

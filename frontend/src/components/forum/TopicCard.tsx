@@ -35,8 +35,8 @@ export default function TopicCard({ topic }: Props) {
           </div>
         )}
 
-        <div className="mt-4 flex items-center justify-between text-xs text-zinc-500">
-          <div className="flex items-center gap-4">
+        <div className="mt-4 flex flex-wrap items-center justify-between text-xs text-zinc-500">
+          <div className="flex flex-wrap items-center gap-x-4">
             <Link
               to={`/profile/${topic.author?.id}`}
               className="hover:text-zinc-300"
