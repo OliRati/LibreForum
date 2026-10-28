@@ -68,40 +68,53 @@ export default function ReportButton({
 
   return (
     <>
-      <button
-        onClick={() => {
-          if (!token) {
-            setShowLoginAlert(!showLoginAlert);
-          } else {
-            setOpen(true);
-          }
-        }}
-        className="rounded border px-3 py-1 text-sm text-zinc-200 hover:bg-gray-500 cursor-pointer transition-all"
-      >
-        {label}
-      </button>
+      <div>
+        <button
+          onClick={() => {
+            if (!token) {
+              setShowLoginAlert(!showLoginAlert);
+            } else {
+              setOpen(true);
+            }
+          }}
+          className="rounded border px-3 py-1 text-sm text-zinc-200 hover:bg-gray-500 cursor-pointer transition"
+        >
+          {label}
+        </button>
 
-      {showLoginAlert && (
-        <div className='mt-4'>
-        <Alert
-          type="info"
-          message={
-            <div>
-              Vous devez être connecté pour signaler un contenu.{' '}
-              <Link to="/login" className="text-indigo-400 hover:underline">
-                Connectez-vous
-              </Link>{' '}
-              ou{' '}
-              <Link to="/register" className="text-indigo-400 hover:underline">
-                inscrivez-vous
-              </Link>
-              .
+        {showLoginAlert && (
+          <Modal open={showLoginAlert} onClose={() => setShowLoginAlert(false)} title="Signaler ce contenu">
+            <Alert
+              type="info"
+              message={
+                <>
+                  <div className="text-left">
+                    Vous devez être connecté pour signaler un contenu.{' '}
+                    <Link to="/login" className="text-indigo-400 hover:underline">
+                      Connectez-vous
+                    </Link>{' '}
+                    ou{' '}
+                    <Link to="/register" className="text-indigo-400 hover:underline">
+                      inscrivez-vous
+                    </Link>
+                    .
+                  </div>
+                </>
+              }
+              onClose={() => setShowLoginAlert(false)}
+            />
+
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={() => setShowLoginAlert(false)}
+                className="rounded border transition border-gray-400 px-4 py-2 text-sm hover:bg-gray-700"
+              >
+                Fermer
+              </button>
             </div>
-          }
-          onClose={() => setShowLoginAlert(false)}
-        />
-        </div>
-      )}
+          </Modal>
+        )}
+      </div>
 
       <Modal open={open} onClose={() => setOpen(false)} title="Signaler ce contenu">
         <div className="space-y-4">
@@ -122,7 +135,7 @@ export default function ReportButton({
           <div className="flex justify-end gap-2">
             <button
               onClick={() => setOpen(false)}
-              className="rounded border transition border-gray-300 px-4 py-2 text-sm hover:bg-gray-500"
+              className="rounded border transition border-gray-400 px-4 py-2 text-sm hover:bg-gray-700"
             >
               Annuler
             </button>
@@ -130,7 +143,7 @@ export default function ReportButton({
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="rounded border transition border-emerald-300 bg-emerald-600 px-4 py-2 text-sm hover:bg-emerald-500 text-white font-semibold"
+              className="rounded border transition border-emerald-400 bg-emerald-700 px-4 py-2 text-sm hover:bg-emerald-800 text-white font-semibold"
             >
               {loading ? 'Envoi...' : 'Envoyer'}
             </button>

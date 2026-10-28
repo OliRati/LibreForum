@@ -12,12 +12,12 @@ export default function Modal({ open, title, children, onClose }: ModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-lg rounded-2xl text-gray-200 bg-gray-600 shadow-xl">
-        <div className="flex items-center justify-between border-b px-5 py-4">
-          <h2 className="text-lg font-semibold">{title || 'Modal'}</h2>
+      <div className="w-full max-w-lg rounded-2xl text-gray-300 bg-gray-900 border border-gray-700 shadow-xl">
+        <div className="flex items-center justify-between border-b border-gray-500 px-5 py-2">
+          <div className="text-lg font-semibold">{title || 'Modal'}</div>
           <button
             onClick={onClose}
-            className="rounded px-2 py-1 text-sm hover:bg-gray-500"
+            className="rounded px-2 py-1 text-lg hover:bg-gray-800 hover:text-gray-200 transition-all"
           >
             ✕
           </button>
