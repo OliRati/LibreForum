@@ -1,5 +1,7 @@
 import { apiFetch } from '../lib/api';
 
+export type ModerationStatus = 'approved' | 'blocked';
+
 export async function pinTopic(topicId: number, pinned: boolean, reason?: string) {
   return apiFetch(`/api/topics/${topicId}/pin`, {
     method: 'PATCH',
@@ -14,14 +16,14 @@ export async function lockTopic(topicId: number, locked: boolean, reason?: strin
   });
 }
 
-export async function moderateTopic(topicId: number, status: string, reason?: string) {
+export async function moderateTopic(topicId: number, status: ModerationStatus, reason?: string) {
   return apiFetch(`/api/topics/${topicId}/moderate`, {
     method: 'PATCH',
     body: JSON.stringify({ status, reason }),
   });
 }
 
-export async function moderatePost(postId: number, status: string, reason?: string) {
+export async function moderatePost(postId: number, status: ModerationStatus, reason?: string) {
   return apiFetch(`/api/posts/${postId}/moderate`, {
     method: 'PATCH',
     body: JSON.stringify({ status, reason }),

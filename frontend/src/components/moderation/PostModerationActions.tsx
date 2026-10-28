@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { moderatePost } from '../../services/moderation';
-import type { Post } from '../../types/post';
+import { moderatePost, type ModerationStatus } from '../../services/moderation';
 
 interface PostModerationActionsProps {
   postId: number;
@@ -13,7 +12,7 @@ export default function PostModerationActions({
 }: PostModerationActionsProps) {
   const [loading, setLoading] = useState(false);
 
-  const handleModerate = async (status: string) => {
+  const handleModerate = async (status: ModerationStatus) => {
     try {
       setLoading(true);
       await moderatePost(postId, status, 'Action modérateur');

@@ -5,12 +5,14 @@ namespace App\Controller\Api;
 use App\Entity\Post;
 use App\Entity\Tag;
 use App\Entity\Topic;
+use App\Entity\User;
 use App\Repository\CategoryRepository;
 use App\Repository\TagRepository;
 use App\Repository\TopicRepository;
 use App\Security\Voter\TopicVoter;
 use App\Service\AiFeatureToggle;
 use App\Service\LlmService;
+use App\Service\ModerationService;
 use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -74,6 +76,58 @@ class TopicController extends AbstractController
         }
 
         return $this->json($this->normalizeTopic($topic, $topicRepository));
+    }
+
+    #[Route('/{id}/lock', name: 'api_topic_lock', methods: ['PATCH'])]
+    public function lock(
+        Topic $topic,
+        Request $request,
+        ModerationService $moderationService
+    ): JsonResponse {
+        $this->denyAccessUnlessGranted(TopicVoter::LOCK, $topic);
+
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $data = json_decode($request->getContent(), true);
+        $locked = (bool) ($data['locked'] ?? true);
+        $reason = $data['reason'] ?? null;
+
+        $moderationService->lockTopic($topic, $locked, $reason, $user);
+
+        return $this->json([
+            'message' => $locked ? 'Topic locked' : 'Topic unlocked',
+            'topic' => [
+                'id' => $topic->getId(),
+                'isLocked' => $topic->isLocked(),
+            ],
+        ]);
+    }
+
+    #[Route('/{id}/pin', name: 'api_topic_pin', methods: ['PATCH'])]
+    public function pin(
+        Topic $topic,
+        Request $request,
+        ModerationService $moderationService
+    ): JsonResponse {
+        $this->denyAccessUnlessGranted(TopicVoter::PIN, $topic);
+
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $data = json_decode($request->getContent(), true);
+        $pinned = (bool) ($data['pinned'] ?? true);
+        $reason = $data['reason'] ?? null;
+
+        $moderationService->pinTopic($topic, $pinned, $reason, $user);
+
+        return $this->json([
+            'message' => $pinned ? 'Topic pinned' : 'Topic unpinned',
+            'topic' => [
+                'id' => $topic->getId(),
+                'isPinned' => $topic->isPinned(),
+            ],
+        ]);
     }
 
     #[Route('/{id}/posts', name: 'api_topics_posts', methods: ['GET'])]

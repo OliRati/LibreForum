@@ -14,12 +14,14 @@ class TopicVoter extends Voter
     public const EDIT = 'TOPIC_EDIT';
     public const DELETE = 'TOPIC_DELETE';
     public const MODERATE = 'TOPIC_MODERATE';
+    public const LOCK = 'TOPIC_LOCK';
+    public const PIN = 'TOPIC_PIN';
 
     public function __construct(private Security $security) {}
 
     protected function supports(string $attribute, mixed $subject): bool
     {
-        return in_array($attribute, [self::EDIT, self::DELETE, self::MODERATE], true)
+        return in_array($attribute, [self::EDIT, self::DELETE, self::MODERATE, self::LOCK, self::PIN], true)
             && $subject instanceof Topic;
     }
 
@@ -44,6 +46,8 @@ class TopicVoter extends Voter
 
         return match ($attribute) {
             self::EDIT, self::DELETE => $topic->getAuthor()?->getId() === $user->getId(),
+            self::LOCK, self::PIN => $topic->getAuthor()?->getId() === $user->getId()
+                || $this->security->isGranted('ROLE_MODERATOR'),
             self::MODERATE => $this->security->isGranted('ROLE_MODERATOR'),
             default => false,
         };

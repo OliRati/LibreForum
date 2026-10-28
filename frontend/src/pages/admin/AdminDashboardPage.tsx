@@ -35,8 +35,7 @@ export default function AdminDashboardPage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl p-6">
-
+    <>
       <section className="text-left p-3 bg-red-100 border-red-200 dark:bg-red-950 border dark:border-red-800 rounded-xl">
         <Link to={'/admin/dashboard'} className="hover:text-zinc-500 hover:dark:text-zinc-300">
           Administration du système
@@ -61,6 +60,6 @@ export default function AdminDashboardPage() {
           ))}
         </div>
       )}
-    </div>
+    </>
   );
 }

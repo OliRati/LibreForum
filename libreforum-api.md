@@ -146,10 +146,10 @@ Lors de la création d'un post par l'une ou l'autre route POST, son contenu est 
 
 | Méthode et route | Accès | Corps JSON |
 |---|---|---|
-| `PATCH /api/topics/{id}/lock` | Modérateur | `locked` (booléen, défaut `true`), `reason` (facultatif). Verrouille ou déverrouille le sujet. |
-| `PATCH /api/topics/{id}/pin` | Modérateur | `pinned` (booléen, défaut `true`), `reason` (facultatif). Épingle ou désépingle le sujet. |
-| `PATCH /api/topics/{id}/moderate` | Modérateur | `status` (défaut `approved`), `reason` (facultatif). Modifie l'état de modération du sujet et clôt les signalements en attente associés. |
-| `PATCH /api/posts/{id}/moderate` | Modérateur | `status` (défaut `approved`), `reason` (facultatif). Modifie l'état du post et clôt les signalements en attente associés. |
+| `PATCH /api/topics/{id}/lock` | Auteur du sujet, modérateur ou administrateur | `locked` (booléen, défaut `true`), `reason` (facultatif). Verrouille ou déverrouille le sujet. |
+| `PATCH /api/topics/{id}/pin` | Auteur du sujet, modérateur ou administrateur | `pinned` (booléen, défaut `true`), `reason` (facultatif). Épingle ou désépingle le sujet. |
+| `PATCH /api/topics/{id}/moderate` | Modérateur ou administrateur | `status` (`approved` ou `blocked`, défaut `approved`), `reason` (facultatif). Modifie l'état de modération du sujet et clôt les signalements en attente associés. Toute autre valeur retourne `400`. |
+| `PATCH /api/posts/{id}/moderate` | Modérateur ou administrateur | `status` (`approved` ou `blocked`, défaut `approved`), `reason` (facultatif). Modifie l'état du post et clôt les signalements en attente associés. Toute autre valeur retourne `400`. |
 
 Les actions sont consignées dans le journal de modération avec l'auteur de l'action et le motif fourni. 
 
