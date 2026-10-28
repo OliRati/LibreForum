@@ -159,7 +159,7 @@ Les actions sont consignées dans le journal de modération avec l'auteur de l'a
 |---|---|---|
 | `POST /api/reports` | JWT | Crée un signalement. `reason` est requis ; fournir `topicId`, `postId`, ou les deux. Un utilisateur ne peut signaler qu'une fois chaque sujet et chaque post. Une cible déjà signalée par cet utilisateur retourne `409`. Le statut de modération de la cible est passé à `reported`. Retourne `201` en cas de création. |
 | `GET /api/reports/mine` | JWT | Liste les signalements de l'utilisateur courant. |
-| `GET /api/reports` | Modérateur | Liste paginée des signalements, triés du plus récent au plus ancien. Paramètres `page` (défaut `1`) et `limit` (défaut `10`, borné entre 1 et 50). |
+| `GET /api/reports` | Modérateur ou administrateur | Liste paginée des signalements en attente (`pending`), triés du plus récent au plus ancien. Paramètres `page` (défaut `1`) et `limit` (défaut `10`, borné entre 1 et 50). `includeResolved=true` inclut également les signalements résolus. Le total et la pagination suivent le filtre appliqué. |
 | `GET /api/reports/{id}` | Modérateur ou administrateur | Retourne un signalement avec ses informations de déclarant, sujet et/ou post associé. |
 
 ## 8. Salons et messages de discussion

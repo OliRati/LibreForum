@@ -64,9 +64,11 @@ export default function ModerationReportCard({ report }: Props) {
                             <div>{curentReport.topic.title}</div>
                         </div>
 
-                        <div className="mb-0 mt-3">
-                            <TopicModerationActions topic={curentReport.topic} onUpdated={() => loadReport()} />
-                        </div>
+                        {curentReport.status === 'pending' && (
+                            <div className="mb-0 mt-3">
+                                <TopicModerationActions topic={curentReport.topic} onUpdated={() => loadReport()} />
+                            </div>
+                        )}
                     </>
                 )}
 
@@ -100,9 +102,11 @@ export default function ModerationReportCard({ report }: Props) {
                             </div>
                         </div>
 
-                        <div className="mb-0 mt-3">
-                            <PostModerationActions postId={curentReport.post.id} onUpdated={() => loadReport()} />
-                        </div>
+                        {curentReport.status === 'pending' && (
+                            <div className="mb-0 mt-3">
+                                <PostModerationActions postId={curentReport.post.id} onUpdated={() => loadReport()} />
+                            </div>
+                        )}
                     </>
                 )}
 

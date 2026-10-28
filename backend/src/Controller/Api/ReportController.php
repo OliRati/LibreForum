@@ -106,14 +106,19 @@ class ReportController extends AbstractController
     #[Route('', name: 'api_reports_list', methods: ['GET'])]
     public function list(Request $request, ReportRepository $reportRepository): JsonResponse
     {
-        $this->denyAccessUnlessGranted('ROLE_MODERATOR');
+        if (!$this->isGranted('ROLE_MODERATOR') && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException();
+        }
 
         $page = max(1, (int) $request->query->get('page', 1));
         $limit = max(1, min(50, (int) $request->query->get('limit', 10)));
         $offset = ($page - 1) * $limit;
+        $criteria = $request->query->getBoolean('includeResolved')
+            ? []
+            : ['status' => 'pending'];
 
-        $total = $reportRepository->count([]);
-        $reports = $reportRepository->findBy([], ['createdAt' => 'DESC'], $limit, $offset);
+        $total = $reportRepository->count($criteria);
+        $reports = $reportRepository->findBy($criteria, ['createdAt' => 'DESC'], $limit, $offset);
 
         $data = array_map(function (Report $report) {
             return $this->normalizeReport($report);

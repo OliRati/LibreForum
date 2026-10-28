@@ -15,12 +15,13 @@ export default function ModerationReportsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [total, setTotal] = useState(0);
+  const [includeResolved, setIncludeResolved] = useState(false);
 
-  const loadReports = async (page: number = 1) => {
+  const loadReports = async (page: number = 1, withResolved = includeResolved) => {
     try {
       setLoading(true);
       setError('');
-      const data = await getReports(page, ITEMS_PER_PAGE);
+      const data = await getReports(page, ITEMS_PER_PAGE, withResolved);
       setReports(data.items);
       setCurrentPage(data.page);
       setTotalPages(data.totalPages);
@@ -54,10 +55,25 @@ export default function ModerationReportsPage() {
     <>
       <h1 className="mb-6 text-2xl font-bold">Modération - Signalements</h1>
 
+      <label className="mb-6 flex w-fit items-center gap-2 text-sm text-zinc-200">
+        <input
+          type="checkbox"
+          checked={includeResolved}
+          onChange={(event) => {
+            const checked = event.target.checked;
+            setIncludeResolved(checked);
+            loadReports(1, checked);
+          }}
+        />
+        Inclure les signalements résolus
+      </label>
+
       {reports.length === 0 ? (
         <EmptyState
           title="Aucun signalement"
-          description="Pas de signalement pour le moment"
+          description={includeResolved
+            ? 'Aucun signalement pour le moment'
+            : 'Aucun signalement en attente'}
           />
       ) : (
         <>

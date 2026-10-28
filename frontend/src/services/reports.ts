@@ -24,10 +24,15 @@ export async function getReport(reportId: number): Promise<Report> {
   return apiFetch<Report>(`/api/reports/${reportId}`);
 }
 
-export async function getReports(page?: number, limit?: number): Promise<PaginatedReports> {
+export async function getReports(
+  page?: number,
+  limit?: number,
+  includeResolved = false,
+): Promise<PaginatedReports> {
   const params = new URLSearchParams();
   if (page) params.append('page', page.toString());
   if (limit) params.append('limit', limit.toString());
+  if (includeResolved) params.append('includeResolved', 'true');
   const queryString = params.toString();
   const url = queryString ? `/api/reports?${queryString}` : '/api/reports';
   return apiFetch<PaginatedReports>(url);
