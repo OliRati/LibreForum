@@ -23,7 +23,7 @@ export default function Modal({ open, title, children, onClose }: ModalProps) {
           </button>
         </div>
 
-        <div className="p-5">
+        <div className="p-4">
           {children}
         </div>
       </div>
