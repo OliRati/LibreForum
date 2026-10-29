@@ -45,6 +45,7 @@ class TopicController extends AbstractController
         $tagId = $tagId !== null ? (int) $tagId : null;
 
         $search = trim((string) $request->query->get('search', ''));
+        $search = ltrim($search, '#');
         $search = $search !== '' ? $search : null;
 
         $isModerator = $security->isGranted('ROLE_MODERATOR') || $security->isGranted('ROLE_ADMIN');
