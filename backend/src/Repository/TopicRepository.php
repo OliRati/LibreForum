@@ -78,7 +78,12 @@ class TopicRepository extends ServiceEntityRepository
         }
 
         if ($search) {
-            $qb->andWhere('LOWER(t.title) LIKE :search OR LOWER(t.content) LIKE :search')
+            $qb->leftJoin('t.tags', 'searchTag')
+                ->andWhere($qb->expr()->orX(
+                    'LOWER(t.title) LIKE :search',
+                    'LOWER(t.content) LIKE :search',
+                    'LOWER(searchTag.name) LIKE :search'
+                ))
                 ->setParameter('search', '%' . mb_strtolower($search) . '%');
         }
 
@@ -107,6 +112,10 @@ class TopicRepository extends ServiceEntityRepository
         if ($tagId) {
             $sql .= ' INNER JOIN topic_tags tt ON tt.topic_id = t.id';
         }
+        if ($search) {
+            $sql .= ' LEFT JOIN topic_tags search_tt ON search_tt.topic_id = t.id';
+            $sql .= ' LEFT JOIN tags search_tag ON search_tag.id = search_tt.tag_id';
+        }
         if ($categoryId) {
             $sql .= ' INNER JOIN categories c ON c.id = t.category_id';
         }
@@ -124,7 +133,7 @@ class TopicRepository extends ServiceEntityRepository
             $types['categoryId'] = \Doctrine\DBAL\ParameterType::INTEGER;
         }
         if ($search) {
-            $conditions[] = '(LOWER(t.title) LIKE :search OR LOWER(t.content) LIKE :search)';
+            $conditions[] = '(LOWER(t.title) LIKE :search OR LOWER(t.content) LIKE :search OR LOWER(search_tag.name) LIKE :search)';
             $params['search'] = '%' . mb_strtolower($search) . '%';
             $types['search'] = \Doctrine\DBAL\ParameterType::STRING;
         }
