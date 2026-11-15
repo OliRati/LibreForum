@@ -93,6 +93,14 @@ final class UserController extends AbstractController
             $payload = [];
         }
 
+        if (!isset($payload['currentPassword']) || !is_string($payload['currentPassword']) || $payload['currentPassword'] === '') {
+            return $this->json(['error' => 'Le mot de passe actuel est requis'], 400);
+        }
+
+        if (!$passwordHasher->isPasswordValid($currentUser, $payload['currentPassword'])) {
+            return $this->json(['error' => 'Le mot de passe actuel est incorrect'], 403);
+        }
+
         $newPassword = null;
         if (array_key_exists('password', $payload) && $payload['password'] !== '') {
             if (!is_string($payload['password'])) {

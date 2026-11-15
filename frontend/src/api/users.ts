@@ -17,6 +17,7 @@ export type UserProfile = {
 };
 
 export type UpdateUserPayload = {
+  currentPassword: string;
   displayName?: string | null;
   bio?: string | null;
   password?: string;
@@ -42,6 +43,8 @@ export async function updateUser(id: string | number, payload: UpdateUserPayload
       formData.append('bio', payload.bio ?? '');
     }
 
+    formData.append('currentPassword', payload.currentPassword);
+
     if (payload.password) {
       formData.append('password', payload.password);
     }
@@ -50,6 +53,7 @@ export async function updateUser(id: string | number, payload: UpdateUserPayload
     body = formData;
   } else {
     body = {
+      currentPassword: payload.currentPassword,
       displayName: payload.displayName,
       bio: payload.bio,
       password: payload.password,

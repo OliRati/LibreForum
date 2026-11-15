@@ -7,6 +7,7 @@ import EmptyState from "../components/ui/EmptyState";
 import { formatDate } from "../lib/formatDate";
 import { isOnline } from '../utils/auth.js';
 import PasswordInputGroup, { isPasswordValid, passwordsMatch } from "../components/ui/PasswordInputGroup";
+import { isAxiosError } from "axios";
 
 export default function ProfilePage() {
   const { id } = useParams();
@@ -18,6 +19,7 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [displayName, setDisplayName] = useState("");
   const [bio, setBio] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -96,9 +98,15 @@ export default function ProfilePage() {
       return;
     }
 
+    if (!currentPassword) {
+      setStatus({ type: "error", message: "Veuillez renseigner votre mot de passe actuel." });
+      return;
+    }
+
     try {
       setSaving(true);
       const payload: Parameters<typeof updateUser>[1] = {
+        currentPassword,
         displayName,
         bio,
         avatarFile,
@@ -142,13 +150,15 @@ export default function ProfilePage() {
 
       setCurrentUser(authUser);
       setStatus({ type: "success", message: "Profil mis à jour." });
+      setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
       setAvatarFile(null);
       setAvatarPreview(null);
     } catch (error) {
       console.error(error);
-      setStatus({ type: "error", message: "Impossible de mettre à jour le profil." });
+      const message = isAxiosError<{ error?: string }>(error) ? error.response?.data?.error : undefined;
+      setStatus({ type: "error", message: message ?? "Impossible de mettre à jour le profil." });
     } finally {
       setSaving(false);
     }
@@ -255,6 +265,19 @@ export default function ProfilePage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
+            <label className="block text-sm text-zinc-400">
+              Mot de passe actuel
+              <input
+                type="password"
+                value={currentPassword}
+                onChange={(event) => setCurrentPassword(event.target.value)}
+                autoComplete="current-password"
+                required
+                className="mt-2 w-full rounded bg-zinc-800 px-4 py-3 text-zinc-100 outline-none"
+                placeholder="Confirmer votre mot de passe actuel"
+              />
+            </label>
+
             <div className="grid gap-5 sm:grid-cols-2">
               <label className="block text-sm text-zinc-400">
                 Nom affiché
