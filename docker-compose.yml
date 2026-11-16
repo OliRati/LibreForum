@@ -131,9 +131,11 @@ services:
       SERVER_NAME: ':80'
       MERCURE_PUBLISHER_JWT_KEY: ${MERCURE_JWT_SECRET}
       MERCURE_SUBSCRIBER_JWT_KEY: ${MERCURE_JWT_SECRET}
+      # Symfony MercureBundle 0.4 emits legacy Mercure JWT claims.
       MERCURE_EXTRA_DIRECTIVES: |
         cors_origins *
         anonymous
+        protocol_version_compatibility 8
     healthcheck:
       test:
         [

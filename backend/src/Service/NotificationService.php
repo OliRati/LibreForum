@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\Notification;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Update;
 
@@ -11,7 +12,8 @@ class NotificationService
 {
     public function __construct(
         private EntityManagerInterface $em,
-        private HubInterface $hub
+        private HubInterface $hub,
+        private LoggerInterface $logger,
     ) {
     }
 
@@ -43,7 +45,14 @@ class NotificationService
             ])
         );
 
-        $this->hub->publish($update);
+        try {
+            $this->hub->publish($update);
+        } catch (\Exception $exception) {
+            $this->logger->error('Failed to publish Mercure notification', [
+                'error' => $exception->getMessage(),
+                'userId' => $user->getId(),
+            ]);
+        }
     }
 
     public function notifyNewPost($post)
