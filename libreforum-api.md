@@ -204,7 +204,7 @@ Le backend publie des mises à jour sur Mercure :
 - création de post : sujet `topic/{id}`, événement de type `post_created` ;
 - notifications : sujet `user/{id}`, événement de type `notification`.
 
-Ces publications complètent les réponses REST ; elles ne remplacent pas les routes HTTP. L'URL publique et les paramètres de connexion au hub dépendent de la configuration d'environnement Mercure.
+Ces publications complètent les réponses REST ; elles ne remplacent pas les routes HTTP. Les deux routes de création de réponse (`POST /api/topics/{id}/posts` et `POST /api/posts`) publient `post_created` sur `topic/{id}`. Le champ `post` suit le format attendu par le frontend pour un post, notamment avec un auteur structuré (`id`, `username`, `displayName`, `avatar`, `lastSeenAt`), afin que le frontend puisse l'ajouter directement au fil. L'URL publique et les paramètres de connexion au hub dépendent de la configuration d'environnement Mercure.
 
 ## 11. Limites connues de l'implémentation actuelle
 

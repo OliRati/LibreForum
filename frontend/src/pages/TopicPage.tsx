@@ -70,9 +70,12 @@ export default function TopicPage() {
     // S'abonner aux mises à jour Mercure pour ce topic
     const unsubscribe = subscribeToTopic(Number(id), (data) => {
       if (data.type === 'post_created') {
-        // Ajouter le nouveau post à la liste
         const newPost = data.post;
-        setPosts((prev) => [...prev, newPost]);
+        setPosts((previousPosts) =>
+          previousPosts.some((post) => post.id === newPost.id)
+            ? previousPosts
+            : [...previousPosts, newPost]
+        );
       }
     });
 

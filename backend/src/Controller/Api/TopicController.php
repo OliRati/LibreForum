@@ -12,6 +12,7 @@ use App\Repository\TopicRepository;
 use App\Security\Voter\TopicVoter;
 use App\Service\AiFeatureToggle;
 use App\Service\LlmService;
+use App\Service\MercurePostPublisher;
 use App\Service\ModerationService;
 use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -30,6 +31,7 @@ class TopicController extends AbstractController
         private LlmService $llm,
         private NotificationService $notificationService,
         private AiFeatureToggle $aiFeatureToggle,
+        private MercurePostPublisher $mercurePostPublisher,
     ) {}
 
     #[Route('', name: 'api_topics_index', methods: ['GET'])]
@@ -203,6 +205,8 @@ class TopicController extends AbstractController
 
         $em->persist($post);
         $em->flush();
+
+        $this->mercurePostPublisher->publishPostCreated($post);
 
         // Send notification to topic author if different from post author
         if ($topic->getAuthor() !== $user) {

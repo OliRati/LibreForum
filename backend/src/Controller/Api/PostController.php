@@ -7,25 +7,22 @@ use App\Repository\PostRepository;
 use App\Repository\TopicRepository;
 use App\Security\Voter\PostVoter;
 use App\Service\LlmService;
+use App\Service\MercurePostPublisher;
 use App\Service\NotificationService;
 use App\Service\AiFeatureToggle;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Mercure\HubInterface;
-use Symfony\Component\Mercure\Update;
 
 #[Route('/api/posts')]
 class PostController extends AbstractController
 {
     public function __construct(
-        private HubInterface $hub,
-        private LoggerInterface $logger
+        private MercurePostPublisher $mercurePostPublisher
     ) {
     }
 
@@ -115,33 +112,7 @@ class PostController extends AbstractController
         $em->persist($post);
         $em->flush();
 
-        // Mercure intégration
-        try {
-            $update = new Update(
-                'topic/' . $topic->getId(),
-                json_encode([
-                    'type' => 'post_created',
-                    'post' => [
-                        'id' => $post->getId(),
-                        'content' => $post->getContent(),
-                        'author' => $post->getAuthor()->getUsername(),
-                        'createdAt' => $post->getCreatedAt()->format(DATE_ATOM),
-                    ]
-                ])
-            );
-
-            $this->hub->publish($update);
-            $this->logger->info('Mercure update published for topic', [
-                'topicId' => $topic->getId(),
-                'postId' => $post->getId()
-            ]);
-        } catch (\Exception $e) {
-            $this->logger->error('Failed to publish Mercure update', [
-                'error' => $e->getMessage(),
-                'topicId' => $topic->getId(),
-                'postId' => $post->getId()
-            ]);
-        }
+        $this->mercurePostPublisher->publishPostCreated($post);
 
         // Launch a Post created notification
         $notificationService->notify(
