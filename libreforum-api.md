@@ -96,6 +96,9 @@ Pour mettre à jour un avatar par fichier, envoyer une requête `multipart/form-
 |---|---|---|
 | `GET /api/categories` | Public | Liste les catégories avec leurs compteurs de sujets, posts et participants, ainsi que la date de dernière contribution. |
 | `GET /api/categories/{id}` | Public | Retourne une catégorie et les mêmes indicateurs. |
+| `POST /api/categories` | JWT, administrateur | Crée une catégorie. `name` (1 à 150 caractères) est requis ; `description` et `icon` sont facultatifs et peuvent être `null`. Le slug est généré depuis le nom. Un nom ou slug déjà utilisé retourne `409`. |
+| `PUT /api/categories/{id}` ou `PATCH /api/categories/{id}` | JWT, administrateur | Modifie `name`, `description` et/ou `icon`. Le slug est régénéré si le nom change. Le corps doit contenir au moins un champ ; un nom ou slug déjà utilisé retourne `409`. |
+| `DELETE /api/categories/{id}` | JWT, administrateur | Supprime une catégorie vide. Retourne `204` en cas de succès et `409` si elle contient des sujets, afin de préserver les contenus associés. |
 | `GET /api/tags` | Public | Liste les tags par ordre alphabétique. |
 | `GET /api/tags/{id}` | Public | Retourne un tag. |
 | `POST /api/tags` | JWT | Crée un tag à partir du champ requis `name`. Si le nom existe déjà, renvoie le tag existant avec `200`; sinon, renvoie le nouveau tag avec `201`. |
