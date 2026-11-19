@@ -21,6 +21,7 @@ security:
         login:
             pattern: ^/api/login
             stateless: true
+            user_checker: App\Security\UserChecker
             json_login:
                 check_path: api_login
                 username_path: email
@@ -31,6 +32,7 @@ security:
         api:
             pattern: ^/api
             stateless: true
+            user_checker: App\Security\UserChecker
             jwt: ~
 
         main:
@@ -60,6 +62,7 @@ security:
         - { path: ^/api/posts$, methods: [GET], roles: PUBLIC_ACCESS }
         - { path: ^/api/posts/\d+$, methods: [GET], roles: PUBLIC_ACCESS }
         - { path: ^/api/users$, methods: [GET], roles: ROLE_ADMIN }
+        - { path: ^/api/users/\d+$, methods: [DELETE], roles: ROLE_ADMIN }
         - { path: ^/api/users/\d+$, methods: [GET], roles: PUBLIC_ACCESS }
 
         - { path: ^/api/reports, roles: IS_AUTHENTICATED_FULLY }

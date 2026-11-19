@@ -70,6 +70,7 @@ Les codes de statut utilisés incluent notamment :
 |---|---|
 | `200` | Lecture ou modification réussie ; peut aussi signaler qu'un tag existant a été réutilisé. |
 | `201` | Ressource créée. |
+| `204` | Suppression réussie sans corps de réponse. |
 | `400` | Donnée requise absente ou requête invalide. |
 | `401` | Utilisateur non authentifié. |
 | `403` | Opération interdite (par exemple, sujet verrouillé ou autorisation refusée). |
@@ -87,6 +88,7 @@ Les corps d'erreur contiennent généralement un champ `message` ou `error`, sel
 | `GET /api/users` | JWT, administrateur | Retourne la collection des profils, triée par date de création décroissante. La réponse inclut notamment les e-mails et rôles. |
 | `GET /api/users/{id}` | Public | Retourne le profil public et les compteurs d'activité d'un utilisateur. |
 | `PUT /api/users/{id}` ou `PATCH /api/users/{id}` | JWT, propriétaire ou modérateur/administrateur | Requiert `currentPassword`, qui est vérifié pour le compte authentifié avant toute modification (erreur `400` s'il manque, `403` s'il est incorrect). Modifie `displayName`, `bio` et éventuellement `avatar`. Le champ `password`, s'il est fourni et non vide, remplace le mot de passe après hachage et doit respecter les mêmes critères que lors de l'inscription : au moins 12 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial. Un modérateur/administrateur peut aussi modifier `forumRank`. |
+| `DELETE /api/users/{id}` | JWT, administrateur | Désactive logiquement le compte (`state=deleted`) et retourne `204`. Les contenus de l'utilisateur sont conservés et les comptes désactivés ne peuvent plus se connecter ni utiliser leur JWT. Un administrateur ne peut pas désactiver son propre compte. |
 
 Pour mettre à jour un avatar par fichier, envoyer une requête `multipart/form-data` contenant `avatarFile`. Les formats acceptés sont JPEG, PNG, WebP et GIF, avec une taille maximale de 2 Mo. Le fichier est enregistré sous `public/uploads/avatars`.
 

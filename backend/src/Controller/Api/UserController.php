@@ -3,6 +3,7 @@
 namespace App\Controller\Api;
 
 use App\Entity\User;
+use App\Enum\UserState;
 use App\Repository\PostRepository;
 use App\Repository\TopicRepository;
 use App\Repository\UserRepository;
@@ -15,6 +16,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/api/users')]
 final class UserController extends AbstractController
@@ -184,5 +186,26 @@ final class UserController extends AbstractController
                 'topicsParticipatedCount' => $postRepository->countDistinctTopicsByAuthor($user),
             ],
         ]);
+    }
+
+    #[Route('/{id}', name: 'api_users_delete', methods: ['DELETE'])]
+    #[IsGranted('ROLE_ADMIN')]
+    public function delete(User $user, EntityManagerInterface $em): JsonResponse
+    {
+        $currentUser = $this->getUser();
+        if (!$currentUser instanceof User) {
+            return $this->json(['error' => 'Non authentifié'], 401);
+        }
+
+        if ($currentUser->getId() === $user->getId()) {
+            return $this->json(['error' => 'Un administrateur ne peut pas supprimer son propre compte'], 403);
+        }
+
+        if ($user->getState() !== UserState::DELETED) {
+            $user->setState(UserState::DELETED);
+            $em->flush();
+        }
+
+        return new JsonResponse(null, 204);
     }
 }

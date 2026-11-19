@@ -10,6 +10,7 @@ export type RegisterPayload = {
   username: string;
   password: string;
   displayName?: string;
+  bio?: string | null;
 };
 
 export async function login(payload: LoginPayload) {

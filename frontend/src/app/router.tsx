@@ -19,6 +19,8 @@ import FAQ from '../pages/FAQ';
 import Moderation from '../pages/Moderation';
 import Signalement from '../pages/Signalement';
 import AdminDashboardPage from '../pages/admin/AdminDashboardPage';
+import AdminCategoriesPage from '../pages/admin/AdminCategoriesPage';
+import AdminUsersPage from '../pages/admin/AdminUsersPage';
 
 export const router = createBrowserRouter(
     [
@@ -62,6 +64,22 @@ export const router = createBrowserRouter(
                     element: (
                         <ProtectedRoute requiredRole="ROLE_ADMIN">
                             <AdminDashboardPage />
+                        </ProtectedRoute>
+                    ),
+                },
+                {
+                    path: "admin/categories",
+                    element: (
+                        <ProtectedRoute requiredRole="ROLE_ADMIN">
+                            <AdminCategoriesPage />
+                        </ProtectedRoute>
+                    ),
+                },
+                {
+                    path: "admin/users",
+                    element: (
+                        <ProtectedRoute requiredRole="ROLE_ADMIN">
+                            <AdminUsersPage />
                         </ProtectedRoute>
                     ),
                 }

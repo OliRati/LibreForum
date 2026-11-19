@@ -20,6 +20,7 @@ export type UpdateUserPayload = {
   currentPassword: string;
   displayName?: string | null;
   bio?: string | null;
+  forumRank?: string | null;
   password?: string;
   avatarFile?: File | null;
 };
@@ -43,6 +44,10 @@ export async function updateUser(id: string | number, payload: UpdateUserPayload
       formData.append('bio', payload.bio ?? '');
     }
 
+    if (payload.forumRank !== undefined) {
+      formData.append('forumRank', payload.forumRank ?? '');
+    }
+
     formData.append('currentPassword', payload.currentPassword);
 
     if (payload.password) {
@@ -56,12 +61,17 @@ export async function updateUser(id: string | number, payload: UpdateUserPayload
       currentPassword: payload.currentPassword,
       displayName: payload.displayName,
       bio: payload.bio,
+      forumRank: payload.forumRank,
       password: payload.password,
     };
   }
 
   const { data } = await api.patch(`/users/${id}`, body);
   return data.user ?? data;
+}
+
+export async function deleteUser(id: number): Promise<void> {
+  await api.delete(`/users/${id}`);
 }
 
 export async function getCurrentUser(): Promise<UserProfile> {
