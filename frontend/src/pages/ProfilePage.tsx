@@ -174,7 +174,7 @@ export default function ProfilePage() {
     <div className="mx-auto max-w-3xl space-y-6">
       <section className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
         <div className="flex items-start gap-5">
-          <div className="relative h-20 w-20 overflow-hidden rounded-full bg-zinc-800 text-2xl font-bold text-zinc-300">
+          <div className="relative h-20 w-20 overflow-hidden rounded-full bg-zinc-800 text-2xl font-bold text-zinc-400 border-2 border-zinc-500">
             {avatarUrl ? (
               <img
                 src={avatarUrl}
@@ -182,7 +182,7 @@ export default function ProfilePage() {
                 className="h-full w-full object-cover"
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center text-3xl">
+              <div className="flex h-full w-full items-center justify-center text-4xl font-bold">
                 {initials}
               </div>
             )}
@@ -317,8 +317,8 @@ export default function ProfilePage() {
 
             <div className="space-y-2">
               <p className="text-2xl text-zinc-400">Avatar</p>
-              <div className="flex items-center gap-4">
-                <div className="relative h-20 w-20 overflow-hidden rounded-full bg-zinc-800 text-3xl text-zinc-300">
+              <div className="flex items-center gap-4 flex-wrap">
+                <div className="relative h-20 w-20 overflow-hidden rounded-full bg-zinc-800 text-3xl text-zinc-400 border-2 border-zinc-500">
                   {avatarUrl ? (
                     <img
                       src={avatarUrl}
@@ -326,7 +326,7 @@ export default function ProfilePage() {
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center">
+                    <div className="flex h-full w-full items-center justify-center text-4xl font-bold">
                       {initials}
                     </div>
                   )}

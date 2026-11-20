@@ -17,6 +17,9 @@ export default function MenuBar() {
     navigate(`/search?q=${encodeURIComponent(search)}`);
   }
 
+  const avatarUrl = user?.avatar;
+  const initials = user && (user.displayName || user.username).charAt(0).toUpperCase();
+
   return (
     <header className="border-b border-zinc-400 bg-zinc-300 dark:border-zinc-800 dark:bg-zinc-900">
       <nav className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-4 md:flex-row md:items-center md:justify-between">
@@ -69,8 +72,21 @@ export default function MenuBar() {
             <>
               <Link
                 to={`/profile/${user.id}`}
-                className="text-sm hover:text-zinc-500 hover:dark:text-zinc-400"
+                className="text-sm hover:text-zinc-500 hover:dark:text-zinc-400 flex flex-col gap-1 items-center"
               >
+                {avatarUrl ? (
+                  <img
+                    src={avatarUrl}
+                    alt={`${user.displayName || user.username} avatar`}
+                    className="h-12 w-12 object-cover border-2 border-gray-200 rounded-full"
+                  />
+                ) : (
+                  <>
+                  <div className="h-12 w-12 flex items-center justify-center text-2xl font-bold border-2 text-zinc-400 border-zinc-500 bg-zinc-800 rounded-full">
+                    {initials}
+                  </div>
+                  </>
+                )}
                 {user.displayName || user.username}
               </Link>
               <button
