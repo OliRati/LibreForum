@@ -1,9 +1,9 @@
 interface ModerationBadgeProps {
-  status?: string | null;
+  status?: string | null | undefined;
   state?: string | null;
-  isPinned?: boolean;
-  isLocked?: boolean;
-  toxicityScore?: number | null;
+  isPinned?: boolean | undefined;
+  isLocked?: boolean | undefined;
+  toxicityScore?: number | null | undefined;
 }
 
 export default function ModerationBadge({
