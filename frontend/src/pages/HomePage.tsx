@@ -53,7 +53,7 @@ export default function HomePage() {
       {isModerator() && (
         <section className="text-left p-3 bg-amber-100 border-amber-200 dark:bg-amber-950 border dark:border-amber-800 rounded-xl">
           <Link to={'/moderation/reports'} className="hover:text-zinc-500 hover:dark:text-zinc-300">
-            Gérer les signalements
+            Gestion des signalements
           </Link>
         </section>
       )}
