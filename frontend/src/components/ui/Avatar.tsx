@@ -1,7 +1,7 @@
 type Props = {
   src: string | null | undefined;
   size: string;
-  name: string;
+  name: string | null;
 };
 
 export default function Avatar({ src, size, name }: Props) {
@@ -20,7 +20,15 @@ export default function Avatar({ src, size, name }: Props) {
       ) : (
         <>
           <div className={sizeInitials + " font-bold text-zinc-400"}>
-            {initials}
+            {initials ? (
+              <>
+                {initials}
+              </>
+            ) : (
+              <>
+                X
+              </>
+            )}
           </div>
         </>
       )}
