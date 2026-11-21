@@ -19,16 +19,8 @@ export default function Avatar({ src, size, name }: Props) {
         />
       ) : (
         <>
-          <div className={sizeInitials + " font-bold text-zinc-400"}>
-            {initials ? (
-              <>
-                {initials}
-              </>
-            ) : (
-              <>
-                X
-              </>
-            )}
+          <div className={sizeInitials + " font-bold leading-none text-zinc-400"}>
+            {initials || "X"}
           </div>
         </>
       )}
