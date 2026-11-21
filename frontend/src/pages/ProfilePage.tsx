@@ -8,6 +8,7 @@ import { formatDate } from "../lib/formatDate";
 import { isOnline } from '../utils/auth.js';
 import PasswordInputGroup, { isPasswordValid, passwordsMatch } from "../components/ui/PasswordInputGroup";
 import { isAxiosError } from "axios";
+import Avatar from "../components/ui/Avatar";
 
 export default function ProfilePage() {
   const { id } = useParams();
@@ -174,19 +175,11 @@ export default function ProfilePage() {
     <div className="mx-auto max-w-3xl space-y-6">
       <section className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
         <div className="flex items-start gap-5">
-          <div className="relative h-20 w-20 overflow-hidden rounded-full bg-zinc-800 text-2xl font-bold text-zinc-400 border-2 border-zinc-500">
-            {avatarUrl ? (
-              <img
-                src={avatarUrl}
-                alt={`${user.displayName || user.username} avatar`}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center text-4xl font-bold">
-                {initials}
-              </div>
-            )}
-          </div>
+          <Avatar
+            src={avatarUrl}
+            size="xl"
+            name={`${user.displayName || user.username}`}
+          />
 
           <div>
             <h1 className="text-3xl font-bold text-zinc-100">
@@ -318,19 +311,11 @@ export default function ProfilePage() {
             <div className="space-y-2">
               <p className="text-2xl text-zinc-400">Avatar</p>
               <div className="flex items-center gap-4 flex-wrap">
-                <div className="relative h-20 w-20 overflow-hidden rounded-full bg-zinc-800 text-3xl text-zinc-400 border-2 border-zinc-500">
-                  {avatarUrl ? (
-                    <img
-                      src={avatarUrl}
-                      alt="Aperçu de l'avatar"
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center text-4xl font-bold">
-                      {initials}
-                    </div>
-                  )}
-                </div>
+                <Avatar
+                  src={avatarUrl}
+                  size="xl"
+                  name={`${user.displayName || user.username}`}
+                />
 
                 <input
                   type="file"

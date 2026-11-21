@@ -12,6 +12,7 @@ import PostModerationActions from '../../components/moderation/PostModerationAct
 import { isModerator } from '../../utils/auth';
 import { getPost, deletePost } from "../../services/posts";
 import { useAuthStore } from '../../features/auth/authStore';
+import Avatar from '../ui/Avatar';
 
 type Props = {
   post: Post;
@@ -38,19 +39,11 @@ export default function PostCard({ post, onDeleted }: Props) {
     <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-5">
       <div className="mb-3 flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-zinc-800">
-            {curPost.author?.avatar ? (
-              <img
-                src={curPost.author.avatar}
-                alt={`${curPost.author.displayName || curPost.author?.username} avatar`}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <span className="text-lg font-semibold text-zinc-300">
-                {(curPost.author?.displayName || curPost.author?.username)?.charAt(0).toUpperCase()}
-              </span>
-            )}
-          </div>
+          <Avatar
+            src={curPost.author?.avatar}
+            size="sm"
+            name={(curPost.author?.displayName || curPost.author?.username)}
+          />
 
           <div>
             <Link

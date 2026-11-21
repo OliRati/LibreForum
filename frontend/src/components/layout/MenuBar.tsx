@@ -4,6 +4,7 @@ import ThemeToggle from "../ui/ThemeToggle";
 import { useAuth } from "../../features/auth/useAuth";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Avatar from "../ui/Avatar";
 
 export default function MenuBar() {
   const { user, logout } = useAuth();
@@ -18,7 +19,7 @@ export default function MenuBar() {
   }
 
   const avatarUrl = user?.avatar;
-  const initials = user && (user.displayName || user.username).charAt(0).toUpperCase();
+  const avatarName = user && (user.displayName || user.username);
 
   return (
     <header className="border-b border-zinc-400 bg-zinc-300 dark:border-zinc-800 dark:bg-zinc-900">
@@ -74,19 +75,7 @@ export default function MenuBar() {
                 to={`/profile/${user.id}`}
                 className="text-sm hover:text-zinc-500 hover:dark:text-zinc-400 flex flex-col gap-1 items-center"
               >
-                {avatarUrl ? (
-                  <img
-                    src={avatarUrl}
-                    alt={`${user.displayName || user.username} avatar`}
-                    className="h-12 w-12 object-cover border-2 border-gray-200 rounded-full"
-                  />
-                ) : (
-                  <>
-                  <div className="h-12 w-12 flex items-center justify-center text-2xl font-bold border-2 text-zinc-400 border-zinc-500 bg-zinc-800 rounded-full">
-                    {initials}
-                  </div>
-                  </>
-                )}
+                <Avatar size="sm" src={avatarUrl} name={avatarName} />
                 {user.displayName || user.username}
               </Link>
               <button
