@@ -81,7 +81,10 @@ export default function MarkdownEditor({
             </div>
             { /*
             {previewOpen && (
-              <div className="pointer-events-none absolute w-full h-full break-words overflow-y-auto max-h-[220px]">
+              <div
+                className="pointer-events-none absolute w-full h-full break-words overflow-y-auto max-h-[220px]"
+                style={{ minHeight }}
+              >
                 <ShowMarkdown content={value || '*Rien à prévisualiser pour le moment*'} />
               </div>
             )}
@@ -95,7 +98,10 @@ export default function MarkdownEditor({
         </div>
         {previewOpen && (
           <div className="rounded-xl border border-zinc-700 bg-zinc-800 p-4 shadow-lg shadow-black w-full overflow-hidden">
-            <div className="w-full h-full break-words overflow-y-auto max-h-[220px]">
+            <div
+              className="w-full h-full break-words overflow-y-auto max-h-[220px]"
+              style={{ minHeight }}
+            >
               <ShowMarkdown content={value || '*Rien à prévisualiser pour le moment*'} />
             </div>
           </div>
