@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import ShowMarkdown from './ShowMarkdown';
 
 type Props = {
@@ -18,12 +18,13 @@ export default function MarkdownEditor({
   label,
   title,
   placeholder = '',
-  initialPreviewOpen = true,
+  initialPreviewOpen = false,
   minHeight = '220px',
   debounceMs = 200,
 }: Props) {
   const [previewOpen, setPreviewOpen] = useState(initialPreviewOpen);
   const [previewContent, setPreviewContent] = useState(value);
+  const editorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -32,6 +33,13 @@ export default function MarkdownEditor({
 
     return () => window.clearTimeout(timer);
   }, [value, debounceMs]);
+
+  useEffect(() => {
+    const editor = editorRef.current;
+    if (editor && editor.innerText !== value) {
+      editor.innerText = value;
+    }
+  }, [value]);
 
   return (
     <div className="space-y-4">
@@ -54,15 +62,37 @@ export default function MarkdownEditor({
 
       <div className={`w-full grid gap-4 ${previewOpen ? "lg:grid-cols-[1fr_1fr]" : ""}`}>
         <div className="rounded-xl border border-zinc-700 bg-zinc-800 p-4 shadow-lg shadow-black w-full overflow-hidden">
-          <textarea
-            value={value}
-            onChange={(event) => onChange(event.target.value)}
-            placeholder={placeholder}
-            className="w-full h-full text-zinc-100 outline-none resize-none max-h-[220px]"
+          <div
+            className='relative w-full h-full max-h-[220px]'
             style={{ minHeight }}
-          />
+          >
+            <div
+              ref={editorRef}
+              id="editorContent"
+              className="absolute editor-content w-full h-full overflow-y-auto text-zinc-100 outline-none max-h-[220px]"
+              contentEditable="true"
+              role="textbox"
+              aria-label="Document text"
+              aria-multiline="true"
+              spellCheck="true"
+              style={{ minHeight }}
+              onInput={(event) => onChange(event.currentTarget.innerText)}
+            >
+            </div>
+            { /*
+            {previewOpen && (
+              <div className="pointer-events-none absolute w-full h-full break-words overflow-y-auto max-h-[220px]">
+                <ShowMarkdown content={value || '*Rien à prévisualiser pour le moment*'} />
+              </div>
+            )}
+            */ }
+            {!value && (
+              <div className='pointer-events-none absolute w-full h-full text-zinc-400'>
+                {placeholder}
+              </div>
+            )}
+          </div>
         </div>
-
         {previewOpen && (
           <div className="rounded-xl border border-zinc-700 bg-zinc-800 p-4 shadow-lg shadow-black w-full overflow-hidden">
             <div className="w-full h-full break-words overflow-y-auto max-h-[220px]">

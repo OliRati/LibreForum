@@ -73,10 +73,12 @@ export default function MenuBar() {
             <>
               <Link
                 to={`/profile/${user.id}`}
-                className="text-sm hover:text-zinc-500 hover:dark:text-zinc-400 flex flex-col gap-1 items-center"
+                className="flex flex-col gap-1 items-center justify-center  hover:text-zinc-500 hover:dark:text-zinc-400"
               >
                 <Avatar size="sm" src={avatarUrl} name={avatarName} />
-                {user.displayName || user.username}
+                <div className="text-nowrap text-sm">
+                  {user.displayName || user.username}
+                </div>
               </Link>
               <button
                 onClick={logout}

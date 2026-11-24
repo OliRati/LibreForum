@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { createPost } from '../../services/topics';
 import TextAssistant from '../ai/TextAssistant';
 import MarkdownEditor from '../ui/MarkdownEditor';
@@ -10,8 +10,16 @@ interface Props {
 
 export default function CreatePostForm({ topicId, onCreated }: Props) {
   const [content, setContent] = useState('');
+  const [replaceContent, setReplaceContent] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (!replaceContent) return;
+
+    setContent(replaceContent);
+    setReplaceContent('');
+  }, [replaceContent]);
 
   const handleSubmit = async () => {
     setError('');
@@ -46,7 +54,7 @@ export default function CreatePostForm({ topicId, onCreated }: Props) {
       />
 
       {/* Assistant IA */}
-      <TextAssistant value={content} onChange={setContent} />
+      <TextAssistant value={content} onChange={setReplaceContent} />
 
       {error && <div className="text-red-600 mt-2">{error}</div>}
 
