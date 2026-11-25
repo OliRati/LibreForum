@@ -83,7 +83,7 @@ export default function ModerationReportsPage() {
         <>
           <div className="space-y-4">
             {reports.map((report) => (
-              <ModerationReportCard report={report} />
+              <ModerationReportCard key={report.id} report={report} />
             ))}
           </div>
 
