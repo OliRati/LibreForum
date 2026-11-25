@@ -17,9 +17,7 @@ export default function AdminDashboardPage() {
   return (
     <div className="space-y-6">
       <section className="text-left rounded-xl border border-red-200 bg-red-100 p-3 dark:border-red-800 dark:bg-red-950">
-        <Link to="/admin/dashboard" className="hover:text-zinc-500 dark:hover:text-zinc-300">
-          Administration du système
-        </Link>
+        <span className="text-zinc-700 dark:text-zinc-300">Administration du système</span>
       </section>
 
       <header>
