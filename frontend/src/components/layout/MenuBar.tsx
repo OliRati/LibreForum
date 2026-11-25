@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import libreForumLogo from "../../assets/img/LibreForum-logo.png";
 import ThemeToggle from "../ui/ThemeToggle";
 import { useAuth } from "../../features/auth/useAuth";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Avatar from "../ui/Avatar";
 
@@ -10,7 +10,22 @@ export default function MenuBar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
+  const [userMenuOpened, setUserMenuOpened] = useState(false);
   const [search, setSearch] = useState("");
+  const userMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!userMenuOpened) return;
+
+    function handlePointerDown(event: PointerEvent) {
+      if (!userMenuRef.current?.contains(event.target as Node)) {
+        setUserMenuOpened(false);
+      }
+    }
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    return () => document.removeEventListener("pointerdown", handlePointerDown);
+  }, [userMenuOpened]);
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -70,23 +85,36 @@ export default function MenuBar() {
 
         <div className="flex items-center gap-4 text-sm">
           {user ? (
-            <>
-              <Link
-                to={`/profile/${user.id}`}
+            <div ref={userMenuRef} className="relative">
+              <button
+                type="button"
+                onClick={() => setUserMenuOpened((prev) => !prev)}
                 className="flex flex-col gap-1 items-center justify-center  hover:text-zinc-500 hover:dark:text-zinc-400"
               >
                 <Avatar size="sm" src={avatarUrl} name={avatarName} />
                 <div className="text-nowrap text-sm">
                   {user.displayName || user.username}
                 </div>
-              </Link>
-              <button
-                onClick={logout}
-                className="rounded px-3 py-2 text-sm text-gray-900 bg-zinc-400 hover:bg-zinc-400/50 dark:text-gray-300 dark:bg-zinc-800 dark:hover:bg-zinc-700 border border-zinc-500 dark:border-zinc-700 transition-all cursor-pointer"
-              >
-                Déconnexion
               </button>
-            </>
+              {userMenuOpened && (
+                <div
+                  className="absolute bg-zinc-300 dark:bg-zinc-950 dark:border-zinc-700 p-3 border-2 border-zinc-400 rounded-xl flex flex-col gap-3"
+                >
+                  <Link to={`/profile/${user.id}`}
+                    className="flex flex-col gap-1 items-center justify-center  hover:text-zinc-500 hover:dark:text-zinc-400"
+                    onClick={() => setUserMenuOpened(false)}
+                  >
+                    Mon profile
+                  </Link>
+                  <button
+                    onClick={() => { setUserMenuOpened(false); logout() }}
+                    className="rounded px-3 py-2 text-sm text-gray-900 bg-zinc-400 hover:bg-zinc-400/50 dark:text-gray-300 dark:bg-zinc-800 dark:hover:bg-zinc-700 border border-zinc-500 dark:border-zinc-700 transition-all cursor-pointer"
+                  >
+                    Déconnexion
+                  </button>
+                </div>
+              )}
+            </div>
           ) : (
             <>
               <Link to="/login" className="hover:text-zinc-500 hover:dark:text-zinc-400">Connexion</Link>

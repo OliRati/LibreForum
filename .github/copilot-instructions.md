@@ -18,20 +18,21 @@ Ces consignes sont un point de départ : complète-les au fur et à mesure que l
 - Ne jamais ajouter de secrets ni de valeurs locales sensibles au dépôt. Utiliser `.env.example` pour documenter les variables nécessaires, sans y placer de vraies valeurs secrètes.
 - Mettre à jour la documentation directement concernée par un changement de comportement ou d'API.
 - Ajouter ou adapter des tests pour les comportements modifiés, en suivant les tests et outils déjà présents.
+- Exécuter les tests et vérifications dans le conteneur Docker Compose adapté au composant concerné ; utiliser `docker compose exec -T <service> ...` si le service est déjà lancé.
 
 ## Frontend
 
 - Utiliser TypeScript et respecter le mode strict configuré dans `frontend/tsconfig.json`.
 - Réutiliser les composants, hooks, services et conventions déjà présents dans `frontend/src/` plutôt que dupliquer la logique.
 - Pour les échanges avec l'API, rechercher d'abord les fonctions et types existants dans `frontend/src/api/` et `frontend/src/services/`.
-- Vérifier les changements frontend avec `cd frontend && npm run lint` et `cd frontend && npm run build`.
+- Vérifier les changements frontend dans le conteneur `frontend` avec `docker compose exec -T frontend npm run lint` et `docker compose exec -T frontend npm run build`.
 
 ## Backend
 
 - Respecter les conventions Symfony, Doctrine et PHP déjà utilisées dans `backend/src/`.
 - Pour un changement d'API, vérifier les contrôleurs, les règles d'accès, la validation et la sérialisation concernés ; mettre à jour `libreforum-api.md` si nécessaire.
 - Pour les changements de schéma, utiliser une migration Doctrine plutôt qu'une modification manuelle de la base.
-- Exécuter les tests backend avec `cd backend && php bin/phpunit` lorsque l'environnement et les dépendances le permettent.
+- Exécuter les tests backend dans le conteneur `php` avec `docker compose exec -T php php bin/phpunit` lorsque l'environnement et les dépendances le permettent.
 
 ## Vérifications
 
