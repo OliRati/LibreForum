@@ -6,8 +6,6 @@ import TopicCard from "../components/forum/TopicCard";
 import Loader from "../components/ui/Loader";
 import Pagination from "../components/ui/Pagination";
 import EmptyState from "../components/ui/EmptyState";
-import { Link } from "react-router-dom";
-import { isAdmin, isModerator } from '../utils/auth';
 import { useAuthStore } from "../features/auth/authStore";
 
 export default function HomePage() {
@@ -41,22 +39,6 @@ export default function HomePage() {
 
   return (
     <div className="space-y-10">
-
-      {isAdmin() && (
-        <section className="text-left p-3 bg-red-100 border-red-200 dark:bg-red-950 border dark:border-red-800 rounded-xl">
-          <Link to={'/admin/dashboard'} className="hover:text-zinc-500 hover:dark:text-zinc-300">
-            Administration du système
-          </Link>
-        </section>
-      )}
-
-      {isModerator() && (
-        <section className="text-left p-3 bg-amber-100 border-amber-200 dark:bg-amber-950 border dark:border-amber-800 rounded-xl">
-          <Link to={'/moderation/reports'} className="hover:text-zinc-500 hover:dark:text-zinc-300">
-            Gestion des signalements
-          </Link>
-        </section>
-      )}
 
       <section>
         <h1 className="text-zinc-900 dark:text-zinc-200 mb-5 text-4xl font-bold text-center text-shadow-lg text-shadow-zinc-500 ">Bienvenue sur LibreForum</h1>

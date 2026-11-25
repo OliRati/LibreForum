@@ -1,9 +1,10 @@
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import libreForumLogo from "../../assets/img/LibreForum-logo.png";
 import ThemeToggle from "../ui/ThemeToggle";
 import { useAuth } from "../../features/auth/useAuth";
-import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { isAdmin, isModerator } from '../../utils/auth';
 import Avatar from "../ui/Avatar";
 
 export default function MenuBar() {
@@ -106,6 +107,26 @@ export default function MenuBar() {
                   >
                     Mon profile
                   </Link>
+                  {isAdmin() && (
+                    <Link to={'/admin/dashboard'}
+                      className="hover:text-zinc-500 hover:dark:text-zinc-300"
+                      onClick={() => setUserMenuOpened(false)}
+                    >
+                      <section className="text-left p-3 bg-red-100 border-red-200 dark:bg-red-950 border dark:border-red-800 rounded-xl">
+                        Administration du système
+                      </section>
+                    </Link>
+                  )}
+                  {isModerator() && (
+                    <Link to={'/moderation/reports'}
+                      className="hover:text-zinc-500 hover:dark:text-zinc-300"
+                      onClick={() => setUserMenuOpened(false)}
+                    >
+                      <section className="text-left p-3 bg-amber-100 border-amber-200 dark:bg-amber-950 border dark:border-amber-800 rounded-xl">
+                        Gestion des signalements
+                      </section>
+                    </Link>
+                  )}
                   <button
                     onClick={() => { setUserMenuOpened(false); logout() }}
                     className="rounded px-3 py-2 text-sm text-gray-900 bg-zinc-400 hover:bg-zinc-400/50 dark:text-gray-300 dark:bg-zinc-800 dark:hover:bg-zinc-700 border border-zinc-500 dark:border-zinc-700 transition-all cursor-pointer"

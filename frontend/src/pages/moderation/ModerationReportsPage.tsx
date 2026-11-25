@@ -53,7 +53,11 @@ export default function ModerationReportsPage() {
 
   return (
     <>
-      <h1 className="mb-6 text-2xl font-bold">Modération - Signalements</h1>
+      <section className="text-left p-3 bg-amber-100 border-amber-200 dark:bg-amber-950 border dark:border-amber-800 rounded-xl">
+        <h1 className='text-2xl font-bold'>Gestion des signalements</h1>
+      </section>
+
+      <p className="mb-6 mt-3 text-xl font-bold">Liste des Modérations et Signalements en attente.</p>
 
       <label className="mb-6 flex w-fit items-center gap-2 text-sm text-zinc-200">
         <input
@@ -74,7 +78,7 @@ export default function ModerationReportsPage() {
           description={includeResolved
             ? 'Aucun signalement pour le moment'
             : 'Aucun signalement en attente'}
-          />
+        />
       ) : (
         <>
           <div className="space-y-4">
